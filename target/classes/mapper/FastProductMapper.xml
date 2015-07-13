@@ -173,6 +173,14 @@
 			   m.order_type,
 			   m.order_status,
 			   m.deleted,
+			   m.tax_audite_time,
+			   m.tax_audite_person,
+			   m.tax_audite_status,
+			   m.tax_audite_remark,
+			   m.blank_audite_time,
+			   m.blank_audite_person,
+			   m.blank_audite_status,
+			   m.blank_audite_remark,
 			   s.select_value as `status`,
 			   m.credit,
 			   m.contact_phone,
@@ -180,8 +188,6 @@
 			   m.created_time,
 			   m.modified_id,
 			   m.modified_time,
-			   m.order_type,
-			   m.order_status,
 			   m.remark
 			 from m_product_fast_info  m
 			 left join m_area_province p on  m.area_province = p.id
@@ -204,26 +210,26 @@
 			set `status` = #{fspdt.status},
 				modified_id = #{name},
 				modified_time = now()
-				<if test="fspdt.status == 3 || fspdt.status == 5">
+				<if test="fspdt.status == 2 || fspdt.status == 3 || fspdt.status == 5">
 					,tax_audite_time = now(),
 					tax_audite_person = #{fspdt.taxAuditePerson},
-					tax_audite_remark = #{fspdt.taxAuditeRemark},
+					tax_audite_remark = #{fspdt.taxAuditeRemark}
 					<if test="fspdt.status == 3">
-						tax_audite_status = 1
+						,tax_audite_status = 1
 					</if>
 					<if test="fspdt.status == 5">
-						tax_audite_status = 0
+						,tax_audite_status = 0
 					</if>
 				</if>
-				<if test="fspdt.status == 8 || fspdt.status == 9">
+				<if test="fspdt.status == 7 || fspdt.status == 8 || fspdt.status == 9">
 					,blank_audite_time = now(),
 					blank_audite_person = #{fspdt.blankAuditePerson},
-					blank_audite_remark = #{fspdt.blankAuditeRemark},
+					blank_audite_remark = #{fspdt.blankAuditeRemark}
 					<if test="fspdt.status == 8">
-						blank_audite_status = 1
+						,blank_audite_status = 1
 					</if>
 					<if test="fspdt.status == 9">
-						blank_audite_status = 0
+						,blank_audite_status = 0
 					</if>
 				</if>
 				<if test="fspdt.status == 10">

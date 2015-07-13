@@ -336,26 +336,26 @@
 			status = #{order.status},
 			modified_time = now(),
 			modified_id = #{order.modifiedId}
-		<if test="order.status == 3 || order.status == 5">
+		<if test="order.status == 2 || order.status == 3 || order.status == 5">
 		   ,tax_audite_time = now(),
 			tax_audite_person = #{order.taxAuditePerson},
-			tax_audite_remark = #{order.taxAuditeRemark},
+			tax_audite_remark = #{order.taxAuditeRemark}
 			<if test="order.status == 3">
-				tax_audite_status = 1
+				,tax_audite_status = 1
 			</if>
 			<if test="order.status == 5">
-				tax_audite_status = 0
+				,tax_audite_status = 0
 			</if>
 		</if>
-		<if test="order.status == 8 || order.status == 9">
+		<if test="order.status == 7 || order.status == 8 || order.status == 9">
 			,blank_audite_time = now(),
 			blank_audite_person = #{order.blankAuditePerson},
-			blank_audite_remark = #{order.blankAuditeRemark},
+			blank_audite_remark = #{order.blankAuditeRemark}
 			<if test="order.status == 8">
-				blank_audite_status = 1
+				,blank_audite_status = 1
 			</if>
 			<if test="order.status == 9">
-				blank_audite_status = 0
+				,blank_audite_status = 0
 			</if>
 		</if>
 		<if test="order.status == 10">
