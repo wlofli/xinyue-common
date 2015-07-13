@@ -207,12 +207,12 @@
 				<if test="fspdt.status == 3 || fspdt.status == 5">
 					,tax_audite_time = now(),
 					tax_audite_person = #{fspdt.taxAuditePerson},
-					tax_audite_remark = #{fspdt.taxAuditeRemark}
+					tax_audite_remark = #{fspdt.taxAuditeRemark},
 					<if test="fspdt.status == 3">
-						tax_audite_status = 1,
+						tax_audite_status = 1
 					</if>
 					<if test="fspdt.status == 5">
-						tax_audite_status = 0,
+						tax_audite_status = 0
 					</if>
 				</if>
 				<if test="fspdt.status == 8 || fspdt.status == 9">
