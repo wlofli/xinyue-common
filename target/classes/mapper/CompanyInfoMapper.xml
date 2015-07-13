@@ -1,0 +1,968 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.CompanyInfoDAO">
+	<resultMap type="com.xinyue.manage.model.CompanyInfo" id="infoResault">
+		<result column="id" property="id"/>
+		<result column="tax_code" property="taxCode"/>
+		<result column="company_name" property="companyName"/>
+		<result column="zone" property="zone"/>
+		<result column="company_register_time" property="companyRegisterDate"/>
+		<result column="legal_person" property="legalPerson"/>
+		<result column="register_fund" property="registerFund"/>
+		<result column="industry" property="industry"/>
+		<result column="contact_person" property="contactPerson"/>
+		<result column="contact_tel" property="contactTel"/>
+		<result column="authentication_status" property="authenticationStatus"/>
+		<result column="register_time" property="registerDate"/>
+		<result column="login_name" property="memberName"/>
+		<result column="order_count" property="loanTimes"/>
+	</resultMap>
+	
+	<sql id="updateMember">
+		<if test="type == 'app'">
+			applicant_info = #{applicantId},
+		</if>
+		<if test="type == 'comp'">
+			license_info=#{licenseId},
+		</if>
+		<if test="type == 'cont'">
+			control_info=#{controlId},
+		</if>
+		<if test="type == 'est'">
+			real_estate=#{realEstate},
+		</if>
+		<if test="type == 'debt'">
+			debt_info=#{debt},
+		</if>
+	</sql>
+	
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="selectResault">
+		<result column="skey" property="key"/>
+		<result column="value" property="value"/>
+	</resultMap>
+	<!-- 列表检索条件 -->
+	<sql id="searchCon">
+		<![CDATA[WHERE m.license_info <> '' AND m.deleted=0 ]]>
+		<if test="authentication_status != ''">
+			AND a.success_flag=#{authentication_status}
+		</if>
+		<if test="company_name != ''">
+			AND l.company_name LIKE '%' #{company_name} '%'
+		</if>
+		<if test="legal_person != ''">
+			AND l.legal_representative LIKE '%' #{legal_person} '%'
+		</if>
+		<if test="tax_code != ''">
+			AND l.tax_registration_area LIKE '%' #{tax_code} '%'
+		</if>
+		<if test="industry != 0">
+			AND a.industry=#{industry}
+		</if>
+		<if test="contact_person != ''">
+			AND a.contact_name LIKE '%'#{contact_person}'%'
+		</if>
+		<if test="contact_tel != ''">
+			AND a.contact_tel LIKE '%'#{contact_tel}'%'
+		</if>
+		<if test="register_date_start != '' and register_date_end != ''">
+			AND (l.registered_time BETWEEN #{register_date_start} AND #{register_date_end}) 
+		</if>
+		<if test="register_date_start != '' and register_date_end ==''">
+			<![CDATA[AND l.registered_time >= #{register_date_start} ]]>
+		</if>
+		<if test="register_date_end != '' and register_date_start ==''">
+			<![CDATA[AND l.registered_time <= #{register_date_end} ]]>
+		</if>
+		<if test="register_fund_start != '' and register_fund_end != ''">
+			AND (l.registered_capital BETWEEN #{register_fund_start} AND #{register_fund_end}) 
+		</if>
+		<if test="register_fund_start != '' and register_fund_end ==''">
+			<![CDATA[AND l.registered_capital >= #{register_fund_start} ]]>
+		</if>
+		<if test="register_fund_end != '' and register_fund_start ==''">
+			<![CDATA[AND l.registered_capital <= #{register_fund_end} ]]>
+		</if>
+		<if test="loan_times_start != '' and loan_times_end != ''">
+			AND (om.count_order BETWEEN #{loan_times_start} AND #{loan_times_end}) 
+		</if>
+		<if test="loan_times_start != '' and loan_times_end ==''">
+			<![CDATA[AND om.count_order >= #{loan_times_start} ]]>
+		</if>
+		<if test="loan_times_end != '' and loan_times_start ==''">
+			<![CDATA[AND om.count_order <= #{loan_times_end} ]]>
+		</if>
+	</sql>
+	
+	<select id="getIndustryList" resultMap="selectResault">
+		SELECT 
+			code as skey,
+			name as value
+		 FROM m_industry_info ORDER BY code;
+	</select>
+	
+	<select id="getCompanyInfoByCondition" parameterType="hashmap" resultMap="infoResault">
+		SELECT 
+		    m.id as id,
+		    l.tax_registration_area as tax_code,
+		    l.company_name as company_name,
+		    concat_ws('', p.name, c.name) as zone,
+		    DATE_FORMAT(l.registered_time, '%Y-%m-%d') as company_register_time,
+		    l.legal_representative as legal_person,
+		    l.registered_capital as register_fund,
+		    t.name as industry,
+		    a.contact_name as contact_person,
+		    a.contact_tel as contact_tel,
+		    s.select_value as authentication_status,
+		    DATE_FORMAT(m.register_time, '%Y-%m-%d') as register_time,
+		    m.login_name as login_name,
+		    om.count_order as order_count
+		FROM
+		    m_member_info m
+		        LEFT JOIN
+		    m_license_info l ON l.id = m.license_info
+		        LEFT JOIN
+		    m_authentication_info a ON m.realname_info = a.id
+		        LEFT JOIN
+		    m_area_province p ON substring(p.code, 1, 2) = substring(l.business_licensee, 1, 2)
+		        LEFT JOIN
+		    m_area_city c ON substring(c.code, 1, 4) = substring(l.business_licensee, 1, 4)
+		        LEFT JOIN
+		    m_industry_info t ON a.industry = t.code
+		        LEFT JOIN
+		    (SELECT 
+		        *
+		    FROM
+		        m_select_info
+		    WHERE
+		        type_code = 'auth_status') s ON a.success_flag = s.select_key
+		        LEFT JOIN
+		    (SELECT 
+		        o.member_id member_id, COUNT(o.member_id) count_order
+		    FROM
+		        m_order_info o
+		    LEFT JOIN m_member_info m ON m.id = o.member_id
+		    WHERE
+		        o.status = 6
+		    GROUP BY o.member_id) om ON m.id = om.member_id
+		<include refid="searchCon" />
+		<if test="index != -99">
+			ORDER BY m.id LIMIT #{index},10;
+		</if>
+	</select>
+	
+	<select id="getAllCountBySearchInfo" parameterType="hashmap" resultType="int">
+		SELECT COUNT(m.id) count
+		FROM m_member_info m
+		LEFT JOIN m_license_info l ON l.id=m.license_info
+		LEFT JOIN m_authentication_info a ON m.realname_info=a.id 
+		LEFT JOIN m_area_province p ON substring(p.code,1,2)=substring(l.business_licensee,1,2)
+		LEFT JOIN m_area_city c ON substring(c.code,1,4)=substring(l.business_licensee,1,4)
+		LEFT JOIN m_industry_info t ON a.industry=t.code
+		LEFT JOIN (SELECT * FROM m_select_info WHERE type_code='auth_status') s ON a.success_flag=s.select_key
+		LEFT JOIN (SELECT o.member_id member_id,
+						  COUNT(o.member_id) count_order 
+					FROM m_order_info o 
+					LEFT JOIN m_member_info m ON m.id=o.member_id 
+					WHERE o.status=6 GROUP BY o.member_id) om
+			ON m.id=om.member_id
+		<include refid="searchCon" />;
+	</select>
+	
+	<update id="deleteCompanyById" parameterType="list">
+		<foreach collection="companyCode" item="item" separator=";">
+			UPDATE m_license_info 
+				SET deleted=1,
+					modified_id=#{user},
+					modified_time=now()
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<select id="getCompanyCodeByMemberId" parameterType="list" resultType="string">
+		<foreach collection="codeList" item="item" separator=";">
+			SELECT license_info FROM m_member_info
+			WHERE id=#{item}
+		</foreach>
+	</select>
+	
+	
+	<select id="getDetailIdByMemberId" parameterType="string" resultType="hashmap">
+		SELECT 
+		    m.id as member_id,
+		    m.applicant_info as applicant_id,
+		    m.license_info as license_id,
+		    l.control_info as control_id,
+		    m.real_estate as estate_id,
+		    m.debt_info as debt_id,
+		    m.rating_info as rating_id,
+		    m.realname_info as realname_id
+		FROM
+		    m_member_info m,
+		    m_license_info l
+		WHERE
+		    m.license_info = l.id AND m.id = #{code};
+		
+	</select>
+	
+	<select id="getApplicantInfoById" parameterType="string" resultType="com.xinyue.manage.model.Applicant">
+		select 
+		    a.id as id,
+		    a.name as name,
+		    a.phone as phone,
+		    a.email as email,
+		    a.deadline as limitDate,
+		    a.amount money,
+		    s1.select_value as interestRate,
+		    s2.select_value as repayType,
+		    s3.select_value as guaranteeType,
+		    a.guarantor_user_name as guaranteePerson,
+		    a.guarantor_name as guaranteeGoods,
+		    a.guarantor_amount as guaranteeMoney,
+		    p.name as guaranteeProvince,
+		    c.name as guaranteeCity,
+		    z.name as guaranteeZone,
+		    guarantor_is_area as isLocation
+		from
+		    m_applicant_info a
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'maxrate_type') s1 ON a.max_rate = s1.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'repay_type') s2 ON a.repayment = s2.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'guarantee_type') s3 ON a.guarantee = s3.select_key
+		        left join
+		    m_area_province p ON a.area_province = p.code
+		        left join
+		    m_area_city c ON a.area_city = c.code
+		        left join
+		    m_area_zone z ON a.area_zone = z.code
+		where
+		    a.id = #{id};
+	</select>
+	
+	<select id="getCompanyBaseInfoById" parameterType="string" resultType="com.xinyue.manage.model.CompanyBase">
+		select 
+		    l.control_info as controlInfo,
+		    l.company_name as companyName,
+		    l.legal_representative as legalPerson,
+		    s1.select_value as paperType,
+		    l.credential_number as paperNumber,
+		    l.business_licensee as licenseeNumber,
+		    date_format(l.registered_time, '%Y-%m-%d') as companyRegisterDate,
+		    l.inspection as yearCheck,
+		    l.inspection_time as yearCheckDate,
+		    s2.select_value as registerFundType,
+		    l.registered_capital as registerFund,
+		    s3.select_value as factFundType,
+		    l.paid_capital as factFund,
+		    s4.select_value as companyType,
+		    l.registered_address as registerAddress,
+		    p.name as companyProvince,
+		    c.name as companyCity,
+		    z.name as companyZone,
+		    l.business_limit as businessRange,
+		    l.agency_number as organizationCode,
+		    l.household_number as companyEdoorNum,
+		    l.company_phone as companyTel,
+		    l.company_fax as companyFax,
+		    date_format(l.company_end_time, '%Y-%m-%d') as licenseeDeadLine,
+		    s5.select_value as licenseeType,
+		    s6.select_value as organizationType,
+		    l.tax_registration_area as taxCode
+		from
+		    m_license_info l
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'idcard_type') s1 ON l.credential_type = s1.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'capital_type') s2 ON l.register_type = s2.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'capital_type') s3 ON l.paid_type = s3.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'company_type') s4 ON l.company_type = s4.select_key
+		        left join
+		    m_area_province p ON l.area_province = p.code
+		        left join
+		    m_area_city c ON l.area_city = p.code
+		        left join
+		    m_area_zone z ON l.area_zone = p.code
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'business_type') s5 ON l.business_registration_type = s5.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'agency_type') s6 ON l.agency_type = s6.select_key
+		where
+		    l.id = #{id};
+	</select>
+	
+	<select id="getHoldInfoById" parameterType="string" resultType="com.xinyue.manage.model.Hold">
+		select 
+		    s1.select_value as holdType,
+		    h.hold_person as controlPerson,
+		    s2.select_value as paperType,
+		    h.credential_number as paperNumber,
+		    h.work_year as workYear,
+		    s3.select_value as education,
+		    s4.select_value as marriage
+		from
+		    m_hold_info h
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'hold_type') s1 ON h.hold_type = s1.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'idcard_type') s2 ON h.credential_type = s2.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'education_type') s3 ON h.educational = s3.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'marriage_type') s4 ON h.marriage = s4.select_key
+		where
+		    id in (select 
+		            hold_id
+		        from
+		            m_member_hold
+		        where
+		            member_id = #{id})
+		order by h.order_num;
+	</select>
+	
+	<select id="getControlInfoById" parameterType="string" resultType="com.xinyue.manage.model.Control">
+		select 
+		    t.name as industry,
+		    date_format(c.business_start_time, '%Y-%m-%d') as businessStartDate,
+		    c.business_area as businessArea,
+		    s1.select_value as saleArea,
+		    c.business_fix as fixedBusinessPlace,
+		    c.market_year as interYear,
+		    s2.select_value as auditType,
+		    c.person_num as peopleNumber,
+		    c.credit_exit as haveLoanCard,
+		    c.credit_number as loanCardNumber
+		from
+		    m_control_info c
+		        left join
+		    m_industry_info t ON c.industry = t.code
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'business_area') s1 ON c.product_area = s1.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'audit_type') s2 ON c.audit_type = s2.select_key
+		where
+		    c.id = #{id};
+	</select>
+	
+	<select id="getBusinessInfoById" parameterType="string" resultType="com.xinyue.manage.model.Business">
+		select 
+			b.id,
+		    b.year,
+		    b.sales,
+		    b.month_water,
+		    b.order_amount,
+		    b.month_electriicity,
+		    b.vat_amount,
+		    b.income_tax_amount
+		from
+		    m_business_info b
+		where
+		    b.target_id = #{id}
+		order by
+		    b.year;
+	</select>
+	
+	<select id="getRealEstateInfoById" parameterType="string" resultType="com.xinyue.manage.model.RealEstate">
+		select 
+			r.id as id,
+		    r.factory_room as factory,
+		    r.land as land,
+		    r.office as office,
+		    r.shop as shop,
+		    r.private_property as privateProperty,
+		    r.machinery_equipment as equipment,
+		    r.other_estate as other
+		from
+		    m_real_estate r
+		where
+		    r.id = #{id};
+	</select>
+	
+	<select id="getDebtInfoById" parameterType="string" resultType="com.xinyue.manage.model.Debt">
+		select 
+		    d.capital_debt_ratio as rate,
+		    s1.select_value as collateral,
+		    d.income_debt_ratio as repayIncome,
+		    d.big_company as isBig,
+		    d.company_capital as netAsset,
+		    d.capital_turnover_rate as floatRate,
+		    d.company_person_capital as factAsset
+		from
+		    m_debt_info d
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'collateral_type') s1 ON d.guaranty = s1.select_key
+		where
+		    d.id = #{id};
+	</select>
+	
+	<select id="getRatingInfoById" parameterType="string" resultType="com.xinyue.manage.model.Rating">
+	</select>
+	
+	<select id="getDocumentInfoById" parameterType="string" resultType="com.xinyue.manage.model.Document">
+		select 
+		    d.id as documentId, 
+		    d.file_name as documentName, 
+		    d.file_dir as documentDir, 
+		    t.name as documentType
+		from
+		    m_document_info d
+		        left join
+		    m_document_type t ON d.file_type = t.type_id
+		where
+		    d.member_id = #{id};
+	</select>
+	
+	<select id="getDocumentById" parameterType="string" resultType="com.xinyue.manage.model.Document">
+		select 
+		    d.id as documentId, 
+		    d.file_name as documentName, 
+		    d.file_dir as documentDir
+		from
+		    m_document_info d
+		where
+		    d.id = #{id};
+	</select>
+	<select id="editApplicantInfoById" parameterType="string" resultType="com.xinyue.manage.model.Applicant">
+		select 
+		    a.id as id,
+		    a.name as name,
+		    a.phone as phone,
+		    a.email as email,
+		    a.deadline as limitDate,
+		    a.amount money,
+		    a.max_rate as interestRate,
+		    a.repayment as repayType,
+		    a.guarantee as guaranteeType,
+		    a.guarantor_user_name as guaranteePerson,
+		    a.guarantor_name as guaranteeGoods,
+		    a.guarantor_amount as guaranteeMoney,
+		    a.area_province as guaranteeProvince,
+		    a.area_city as guaranteeCity,
+		    a.area_zone as guaranteeZone,
+		    a.guarantor_is_area as isLocation
+		from
+		    m_applicant_info a
+		where
+		    a.id = #{id};
+	</select>
+	<select id="editCompanyBaseInfoById"  parameterType="string" resultType="com.xinyue.manage.model.CompanyBase">
+		select 
+			l.id as id,
+		    l.control_info as controlInfo,
+		    l.company_name as companyName,
+		    l.legal_representative as legalPerson,
+		    l.credential_type as paperType,
+		    l.credential_number as paperNumber,
+		    l.business_licensee as licenseeNumber,
+		    date_format(l.registered_time, '%Y-%m-%d') as companyRegisterDate,
+		    l.inspection as yearCheck,
+		    l.inspection_time as yearCheckDate,
+		    l.register_type as registerFundType,
+		    l.registered_capital as registerFund,
+		    l.paid_type as factFundType,
+		    l.paid_capital as factFund,
+		    l.company_type as companyType,
+		    l.registered_address as registerAddress,
+		    l.area_province as companyProvince,
+		    l.area_city as companyCity,
+		    l.area_zone as companyZone,
+		    l.business_limit as businessRange,
+		    l.agency_number as organizationCode,
+		    l.household_number as companyEdoorNum,
+		    l.company_phone as companyTel,
+		    l.company_fax as companyFax,
+		    date_format(l.company_end_time, '%Y-%m-%d') as licenseeDeadLine,
+		    l.business_registration_type as licenseeType,
+		    l.agency_type as organizationType,
+		    l.tax_registration_area as taxCode
+		from
+		    m_license_info l
+		where
+		    l.id = #{id};
+	</select>
+	<select id="editHoldInfoById" parameterType="string" resultType="com.xinyue.manage.model.Hold">
+		select 
+			h.id as id,
+		    h.hold_type as holdType,
+		    h.hold_person as controlPerson,
+		    h.credential_type as paperType,
+		    h.credential_number as paperNumber,
+		    h.work_year as workYear,
+		    h.educational as education,
+		    h.marriage as marriage
+		from
+		    m_hold_info h
+		where
+		    id in (select 
+		            hold_id
+		        from
+		            m_member_hold
+		        where
+		            member_id = #{id})
+		order by h.order_num;
+	</select>
+	
+	<select id="editControlInfoById" parameterType="string" resultType="com.xinyue.manage.model.Control">
+		select 
+			c.id as id,
+		    c.industry as industry,
+		    date_format(c.business_start_time, '%Y-%m-%d') as businessStartDate,
+		    c.business_area as businessArea,
+		    c.product_area as saleArea,
+		    c.business_fix as fixedBusinessPlace,
+		    c.market_year as interYear,
+		    c.audit_type as auditType,
+		    c.person_num as peopleNumber,
+		    c.credit_exit as haveLoanCard,
+		    c.credit_number as loanCardNumber
+		from
+		    m_control_info c
+		where
+		    c.id = #{id};
+	</select>
+	
+	<select id="editDebtInfoById" parameterType="string" resultType="com.xinyue.manage.model.Debt">
+		select 
+		    d.capital_debt_ratio as rate,
+		    d.guaranty as collateral,
+		    d.income_debt_ratio as repayIncome,
+		    d.big_company as isBig,
+		    d.company_capital as netAsset,
+		    d.capital_turnover_rate as floatRate,
+		    d.company_person_capital as factAsset
+		from
+		    m_debt_info d
+		where
+		    d.id = #{id};
+	</select>
+	
+	<update id="updateApplicant" parameterType="hashmap">
+		update m_applicant_info 
+		set 
+		    name = #{name},
+		    phone = #{phone},
+		    email = #{email},
+		    deadline = #{limitDate},
+		    amount = #{money},
+		    max_rate = #{interestRate},
+		    repayment = #{repayType},
+		    guarantee = #{guaranteeType},
+		    guarantor_name = #{guaranteeGoods},
+		    guarantor_user_name = #{guaranteePerson},
+		    guarantor_amount = #{guaranteeMoney},
+		    area_province = #{guaranteeProvince},
+		    area_city = #{guaranteeCity},
+		    area_zone = #{guaranteeZone},
+		    guarantor_is_area = #{isLocation},
+		    modified_id = #{user},
+		    modified_time = now()
+		where
+		    id = #{id};
+	</update>
+	
+	<insert id="addApplicant" parameterType="hashmap">
+		insert into 
+			m_applicant_info(
+				id,
+				name,
+				phone,
+				email,
+				deadline,
+				amount,
+				max_rate,
+				repayment,
+				guarantee,
+				guarantor_name,
+				guarantor_user_name,
+				guarantor_amount,
+				area_province,
+				area_city,
+				area_zone,
+				guarantor_is_area,
+				deleted,
+				created_time,
+				modified_time,
+				created_id,
+				modified_id)
+			values(
+				#{id},
+				#{name},
+				#{phone},
+				#{email},
+				#{limitDate},
+				#{money},
+				#{interestRate},
+				#{repayType},
+				#{guaranteeType},
+				#{guaranteeGoods},
+				#{guaranteePerson},
+				#{guaranteeMoney},
+				#{guaranteeProvince},
+				#{guaranteeCity},
+				#{guaranteeZone},
+				#{isLocation},
+				0,
+				now(),
+				now(),
+				#{user},
+				#{user});
+	</insert>
+	
+	<insert id="addCompanyBase" parameterType="hashmap">
+		insert into m_license_info(
+			id,
+			company_name,
+			legal_representative,
+			credential_type,
+			credential_number,
+			business_licensee,
+			registered_time,
+			inspection,
+			inspection_time,
+			register_type,
+			registered_capital,
+			paid_type,
+			paid_capital,
+			company_type,
+			registered_address,
+			area_province,
+			area_city,
+			area_zone,
+			business_limit,
+			agency_number,
+			company_household_number,
+			company_phone,
+			company_fax,
+			company_end_time,
+			business_registration_type,
+			agency_type,
+			tax_registration_area,
+			created_time,
+			modified_time,
+			created_id,
+			modified_id
+		) values (
+			#{id},
+			#{companyName},
+			#{legalPerson},
+			#{paperType},
+			#{paperNumber},
+			#{licenseeNumber},
+			#{companyRegisterDate},
+			#{yearCheck},
+			#{yearCheckDate},
+			#{registerFundType},
+			#{registerFund},
+			#{factFundType},
+			#{factFund},
+			#{companyType},
+			#{registerAddress},
+			#{companyProvince},
+			#{companyCity},
+			#{companyZone},
+			#{businessRange},
+			#{organizationCode},
+			#{companyEdoorNum},
+			#{companyTel},
+			#{companyFax},
+			#{licenseeDeadLine},
+			#{licenseeType},
+			#{organizationType},
+			#{taxCode},
+			now(),
+			now(),
+			#{user},
+			#{user}
+			);
+	</insert>
+	
+	<update id="updateCompanyBase" parameterType="hashmap">
+		update m_license_info 
+		set 
+		    company_name=#{companyName},
+			legal_representative=#{legalPerson},
+			credential_type=#{paperType},
+			credential_number=#{paperNumber},
+			business_licensee=#{licenseeNumber},
+			registered_time=#{companyRegisterDate},
+			inspection=#{yearCheck},
+			inspection_time=#{yearCheckDate},
+			register_type=#{registerFundType},
+			registered_capital=#{registerFund},
+			paid_type=#{factFundType},
+			paid_capital=#{factFund},
+			company_type=#{companyType},
+			registered_address=#{registerAddress},
+			area_province=#{companyProvince},
+			area_city=#{companyCity},
+			area_zone=#{companyZone},
+			business_limit=#{businessRange},
+			agency_number=#{organizationCode},
+			company_household_number=#{companyEdoorNum},
+			company_phone=#{companyTel},
+			company_fax=#{companyFax},
+			company_end_time=#{licenseeDeadLine},
+			business_registration_type=#{licenseeType},
+			agency_type=#{organizationType},
+			tax_registration_area=#{taxCode},
+			modified_time=now(),
+			modified_id=#{user}
+		where
+		    id = #{id};
+	</update>
+	
+	<update id="updateMemberInfo" parameterType="hashmap" >
+		update m_member_info 
+		set 
+		    <include refid="updateMember" />
+		    modified_time = now(),
+		    modified_id = #{user}
+		where
+		    id = #{memberId};
+	</update>
+	
+	<update id="updateHolds" parameterType="list">
+		<foreach collection="holds" item="hold" separator=";">
+			update m_hold_info 
+			set 
+			    hold_type = #{hold.holdType},
+			    hold_person = #{hold.controlPerson},
+			    credential_type = #{hold.paperType},
+			    credential_number = #{hold.paperNumber},
+			    work_year = #{hold.workYear},
+			    educational = #{hold.education},
+			    marriage = #{hold.marriage}
+			where
+			    id = #{hold.id}
+		</foreach>
+	</update>
+	
+	<insert id="addControl"  parameterType="hashmap">
+		insert into 
+			m_control_info(
+				id,
+				industry,
+				business_start_time,
+				business_area,
+				product_area,
+				business_fix,
+				market_year,
+				audit_type,
+				person_num,
+				credit_exit,
+				credit_number) 
+		values (
+			#{id},
+			#{industry},
+			#{businessStartDate},
+			#{businessArea},
+			#{saleArea},
+			#{fixedBusinessPlace},
+			#{interYear},
+			#{auditType},
+			#{peopleNumber},
+			#{haveLoanCard},
+			#{loanCardNumber}
+		);
+	</insert>
+	
+	<update id="updateControl" parameterType="hashmap">
+		update m_control_info 
+		set 
+		    industry = #{industry},
+		    business_start_time = #{businessStartDate},
+		    business_area = #{businessArea},
+		    product_area = #{saleArea},
+		    business_fix = #{fixedBusinessPlace},
+		    market_year = #{interYear},
+		    audit_type = #{auditType},
+		    person_num = #{peopleNumber},
+		    credit_exit = #{haveLoanCard},
+		    credit_number = #{loanCardNumber}
+		where
+		    id = #{id};
+	</update>
+	
+	<update id="updateBusiness" parameterType="list">
+		<foreach collection="businesses" item="business" separator=";">
+			update m_business_info 
+			set 
+			    sales = #{business.totalSales},
+			    month_water = #{business.monthWaterMoney},
+			    order_amount = #{business.monthOrderMoney},
+			    month_electriicity = #{business.monthElectricMoney},
+			    vat_amount = #{business.totalVAT},
+			    income_tax_amount = #{business.totalIncomeTax}
+			where
+			    id = #{business.id};
+		</foreach>
+	</update>
+	
+	<insert id="addEstate" parameterType="hashmap">
+		insert into 
+			m_real_estate 
+		values (
+			#{id},
+			#{factory},
+			#{land},
+			#{office},
+			#{shop},
+			#{private},
+			#{equipment},
+			#{other},
+			0,
+			now(),
+			#{user},
+			now(),
+			#{user}
+		);
+	</insert>
+	
+	<update id="updateEstate" parameterType="hashmap">
+		update m_real_estate 
+		set 
+		    factory_room = #{factory},
+		    land = #{land},
+		    office = #{office},
+		    shop = #{shop},
+		    private_property = #{private},
+		    machinery_equipment = #{equipment},
+		    other_estate = #{other},
+		    modified_time = now(),
+		    modified_id = #{user}
+		where
+		    id = #{id};
+	</update>
+	
+	<insert id="addDebt" parameterType="hashmap">
+		insert into 
+			m_debt_info (
+				id,
+				capital_debt_ratio,
+				guaranty,
+				repayment_income,
+				big_company,
+				company_capital,
+				capital_turnover_rate,
+				company_person_capital,
+				deleted,
+				created_time,
+				modified_time,
+				created_id,
+				modified_id
+			)
+		values (
+			#{id},
+			#{rate},
+			#{collateral},
+			#{repayIncome},
+			#{isBig},
+			#{netAsset},
+			#{floatRate},
+			#{factAsset},
+			0,
+			now(),
+			now(),
+			#{user},
+			#{user}
+		);
+	</insert>
+	
+	<update id="updateDebt" parameterType="hashmap">
+		update m_debt_info 
+		set 
+		    capital_debt_ratio = #{rate},
+		    guaranty = #{collateral},
+		    repayment_income = #{repayIncome},
+		    big_company = #{isBig},
+		    company_capital = #{netAsset},
+		    capital_turnover_rate = #{floatRate},
+		    company_person_capital = #{factAsset},
+		    modified_time = now(),
+		    modified_id = #{user}
+		where
+		    id = #{id};
+	</update>
+</mapper>

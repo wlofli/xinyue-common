@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xinyue.manage.dao.NewDAO">
+	<resultMap type="com.xinyue.manage.model.NewType" id="newType">
+		<result column="id" property="id" />
+		<result column="order_num" property="orderNum" />
+		<result column="name" property="name" />
+		<result column="status" property="status" />
+		<result column="deleted" property="deleted" />
+		<result column="created_time" property="createdTime" />
+		<result column="created_id" property="createdId" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="modified_id" property="modifiedId" />
+	</resultMap>
+	<resultMap id="selectInfo" type="com.xinyue.manage.beans.SelectInfo">
+		<result column="select_key" property="key" />
+		<result column="select_value" property="value" />
+	</resultMap>
+
+	<resultMap type="com.xinyue.manage.model.NewInfo" id="newInfo">
+		<result column="id" property="id" />
+		<result column="title" property="title" />
+		<result column="send_date" property="sendDate" />
+		<result column="top" property="top" />
+		<result column="status" property="status" />
+		<result column="image_url" property="imageUrl" />
+		<result column="type" property="type" />
+		<result column="new_type" property="newType" />
+		<result column="author" property="author" />
+		<result column="composition_source" property="compositionSource" />
+		<result column="source_url" property="sourceUrl" />
+		<result column="file_name" property="fileName" />
+		<result column="file_dir" property="fileDir" />
+		<result column="new_main_content" property="newMainContent" />
+		<result column="new_content" property="newContent" />
+		<result column="deleted" property="deleted" />
+		<result column="created_time" property="createdTime" />
+		<result column="created_id" property="createdId" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="modified_id" property="modifiedId" />
+		<result column="show_title" property="showTitle" />
+		<result column="news_keywords" property="newsKeywords" />
+		<result column="news_description" property="newsDescription" />
+		<result column="content_temp" property="contentTemp" />
+		
+		<collection property="substationList"  column="id" javaType="java.util.ArrayList"
+			ofType="String" select="getNewSubstationListName"></collection>
+		
+	</resultMap>
+
+
+	<!-- newType类 -->
+	<insert id="addNewType" parameterType="com.xinyue.manage.model.NewType">
+		insert into m_new_type
+		(id,order_num,name,status,deleted,created_time,created_id,modified_time,modified_id)
+		values
+		(#{id},#{orderNum},#{name},#{status},#{deleted},now(),#{createdId},now(),#{modifiedId})
+
+	</insert>
+<!-- 	key=>id value=>name -->
+	<select id="getAllNewTypeList" resultMap="selectInfo">
+		select  
+			id as select_key, 
+			name as select_value
+			from m_new_type
+			where deleted = 0
+	</select>
+	
+	<select id="getNewTypeCount" resultType="int">
+		select count(*)
+			from m_new_type
+			where deleted = 0
+	</select>
+	
+	<select id="getNewType" resultMap="newType">
+		select * 
+			from m_new_type
+		where id = #{id}
+	
+	</select>
+
+	<select id="getNewTypeByPage" resultMap="newType">
+		select
+		*
+		from m_new_type
+		where deleted = 0
+		order by order_num
+		limit #{pageNo},#{pageSize}
+	</select>
+	
+	<update id="deleteNewType">
+		update m_new_type
+		set 
+			deleted = 1,
+			modified_time = now(),
+			modified_id = #{modifiedId}
+		where id = #{id}
+	
+	</update>
+		
+	<update id="updateNewType" parameterType="com.xinyue.manage.model.NewType">
+		update m_new_type
+		set name = #{name},
+			order_num = #{orderNum},
+			modified_time = now(),
+			modified_id = #{modifiedId}
+		where id = #{id}
+	</update>
+	
+	<update id="updateNewTypes" >
+		update m_new_type
+		set 
+		<if test="status == 0">
+			status = 1,
+		</if>
+		<if test="status == 1">
+			deleted =1,
+		</if>
+		modified_time = now(),
+		modified_id = #{modifiedId}
+		where id =
+		 <foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach> 
+	</update>
+
+
+	<select id="getNewNumber" resultType="int">
+		select count(*)
+		from m_new_info
+		where  deleted = 0  and new_type = #{id}
+	
+	
+	</select>
+
+
+
+
+
+	<!-- 以下为newInfo表 -->
+	
+	<select id="getNewInfoCount" resultType="int">
+		select count(*)
+			from m_new_info i
+		where i.deleted = 0 
+<!-- 		修改了获取总数时需要新闻类型需要为不被删除 -->
+			and i.new_type in (
+				select 
+					m_new_type.id
+				from 
+					m_new_type
+				where 
+					m_new_type.deleted = 0
+			)
+			
+		<if test="searchNew.keywords == 1">
+			and title like '%' #{searchNew.value} '%'
+		</if>
+		<if test="searchNew.keywords == 2">
+			and new_content like '%' #{searchNew.value} '%'
+		</if>
+		<if test="searchNew.keywords == 3">
+			and new_content like '%' #{searchNew.value} '%' or title like '%' #{searchNew.value} '%'
+			
+		</if>
+		<if test="searchNew.publish != null">
+			and publish like '%'  #{searchNew.publish} '%'
+		</if>
+		<if test="searchNew.pubDate != null">
+			and send_date between #{searchNew.pubDate} and #{searchNew.endDate}
+		</if>
+		<if test="searchNew.newType != null">
+			and new_type like '%' #{searchNew.newType} '%'
+		</if>
+		<if test="searchNew.city != 0">
+			and id in (
+				select tab_new_id from new2substation 
+				where tab_substation_id = #{searchNew.city}	
+			)
+		
+		</if>	
+	</select>
+	
+	<select id="getListByPage" resultMap="newInfo">
+		select
+			i.id,
+			title,
+			send_date,
+			i.status,
+			t.name as new_type,
+			author
+		from m_new_info i
+		left join m_new_type t on t.id = i.new_type 
+		
+		where i.deleted = 0 and t.deleted = 0
+		<if test="searchNew.keywords == 1">
+			and title like '%' #{searchNew.value} '%'
+		</if>
+		<if test="searchNew.keywords == 2">
+			and new_content like '%' #{searchNew.value} '%'
+		</if>
+		<if test="searchNew.keywords == 3">
+			and ( new_content like '%' #{searchNew.value} '%' or title like '%' #{searchNew.value} '%')
+		</if>
+		<if test="searchNew.publish != null">
+			and publish like '%'  #{searchNew.publish} '%'
+		</if>
+		<if test="searchNew.pubDate != null">
+			and send_date between #{searchNew.pubDate} and #{searchNew.endDate}
+		</if>
+		<if test="searchNew.newType != null">
+			and i.new_type = #{searchNew.newType} 
+		</if>
+		<if test="searchNew.city != 0">
+			and i.id in (
+				select tab_new_id from new2substation 
+				where tab_substation_id = #{searchNew.city}	
+			)
+		</if>
+			
+		limit #{pageNo},#{pageSize}
+	</select>
+	<insert id="addNewInfo" parameterType="com.xinyue.manage.model.NewInfo">
+		insert into m_new_info
+		(id,title,send_date,top,status,image_url,type,new_type,author,composition_source,source_url,
+		file_name,file_dir,new_main_content,new_content,deleted,created_time,created_id,modified_time,modified_id,show_title,
+		news_keywords,news_description,content_temp,publish)
+		values
+		(#{id},#{title},#{sendDate},#{top},#{status},#{imageUrl},#{type},#{newType},#{author},#{compositionSource},#{sourceUrl},
+		#{fileName},#{fileDir},#{newMainContent},#{newContent},#{deleted},now(),#{createdId},now(),#{modifiedId},#{showTitle},
+		#{newsKeywords},#{newsDescription},#{contentTemp},#{publish})
+
+	</insert>
+
+	<select id="getNewInfo" resultMap="newInfo">
+		select
+		*
+		from m_new_info
+		where id = #{id}
+	</select>
+
+	<update id="deleteNewInfo">
+		update m_new_info
+		set deleted = 1,
+		modified_id = #{modifiedId}
+		where id = #{id}
+	</update>
+	<update id="updateNewInfo" parameterType="com.xinyue.manage.model.NewInfo">
+		update m_new_info
+		set
+			title = #{title},
+			send_date = #{sendDate},
+			top = #{top},
+			status = #{status},
+			image_url = #{imageUrl},
+			type = #{type},
+			new_type = #{newType},
+			author = #{author},
+			composition_source = #{compositionSource},
+			source_url = #{sourceUrl},
+			file_name = #{fileName},
+			file_dir = #{fileDir},
+			new_main_content = #{newMainContent},
+			new_content = #{newContent},
+			modified_time = now(),
+			modified_id = #{modifiedId},
+			show_title = #{showTitle},
+			news_keywords = #{newsKeywords},
+			news_description = #{newsDescription},
+			content_temp = #{contentTemp}
+		where id = #{id}
+	</update>
+	
+	<update id="updateNewInfos" >
+		update m_new_info
+		set 
+		<if test="status == 0">
+			status = 1,
+		</if>
+		<if test="status == 1">
+			deleted =1,
+		</if>
+		modified_time = now(),
+		modified_id = #{modifiedId}
+		where id =
+		 <foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach> 
+	</update>
+
+
+	<select id="getAllSubstationList" resultMap="selectInfo">
+		select 
+			id as select_key,
+			substation_name as select_value
+		from
+			m_city_substation_info
+	</select>
+	
+	<select id="getSearchNewType" resultMap="selectInfo">
+		select select_key as select_key,
+			   select_value as select_value
+		from m_select_info
+		where type_code = #{typeCode}
+	</select>
+<!-- 获取城市名称 -->
+	<select id="getNewSubstationListName" resultType="string">
+		SELECT
+			substation_name
+		FROM
+			m_city_substation_info
+		WHERE
+			id IN (
+				SELECT
+					tab_substation_id
+				FROM
+					new2substation
+				WHERE
+					tab_new_id = #{id}
+			)
+	</select>
+	
+
+
+</mapper>

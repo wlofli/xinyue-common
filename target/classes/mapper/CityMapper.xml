@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.CityInfoDAO">
+	<resultMap id="ProvinceResult" type="com.xinyue.manage.model.Province" >
+		<id column="code" property="code" jdbcType="VARCHAR" />
+		<result column="id" property="id" />
+		<result column="code" property="code" />
+		<result column="name" property="name" />
+		<result column="location" property="location" />
+		<collection property="cities" select="selectCitiesByProvince" column="code" ofType="com.xinyue.manage.model.City" />
+	</resultMap>
+	<resultMap type="com.xinyue.manage.model.City" id="citiesResult">
+		<association property="province" javaType="com.xinyue.manage.model.Province" column="province" select="selectProvinceById"/>
+	</resultMap>
+	
+	<resultMap type="com.xinyue.manage.model.SubStation" id="subStationResult">
+		<result column="substation_name" property="subName"/>
+		<result column="substation_code" property="stationCode"/>
+		<result column="province_id" property="selectedP"/>
+		<result column="city_id" property="selectedC"/>
+		<result column="zone_id" property="selectedZ"/>
+		<result column="first_letter" property="firstLetter"/>
+		<result column="hot" property="hot"/>
+	</resultMap>
+	
+	<select id="selectProvinceById" parameterType="java.lang.Integer" resultMap="ProvinceResult">
+		SELECT * FROM m_area_province where id=#{id}
+	</select>
+	
+	<select id="selectCitiesByProvince" parameterType="String" resultMap="citiesResult">
+		SELECT * FROM m_area_city where parent_id=#{provinceCode}
+	</select>
+	
+	<select id="getCityInfoByIndex" resultType="com.xinyue.manage.beans.CityInfo">
+		SELECT s.substation_code as code,s.substation_name as partName,p.name as provinceName,
+			c.name as cityName,s.first_letter as pinyin,s.hot as hot,
+			cw.name as location
+		FROM moke.m_city_substation_info s
+		LEFT JOIN m_area_province p ON s.province_id = p.code
+		LEFT JOIN m_area_city c ON s.city_id = c.code
+		LEFT JOIN m_chinese_word_info cw ON p.location = cw.code
+		WHERE s.deleted=0 
+		LIMIT #{index},10
+	</select>
+	
+	<select id="getCityInfoCount" resultType="int">
+		SELECT count(cs.id) as total 
+			FROM m_city_substation_info cs
+			WHERE cs.deleted = 0
+	</select>
+	
+	<select id="getAllProvince" resultType="com.xinyue.manage.model.Province">
+		SELECT * FROM m_area_province
+	</select>
+	
+	<select id="getCitiesByProvinceId" resultType="com.xinyue.manage.model.City">
+		SELECT * FROM m_area_city WHERE parent_id=#{id}
+	</select>
+	
+	<select id="getZonesByCityId" resultType="com.xinyue.manage.model.Zone">
+		SELECT * FROM m_area_zone WHERE parent_id=#{id}
+	</select>
+	
+	<select id="addSubStation" parameterType="hashmap">
+		INSERT INTO m_city_substation_info 
+			(substation_name,substation_code,province_id,city_id,zone_id,first_letter,hot,created_time,
+			modified_time,created_id,modified_id)
+		VALUES 
+			(#{subName},#{code},#{provinceId},#{cityId},#{zoneId},#{firstL},#{hot},now(),now(),#{user},#{user})
+	</select>
+	
+	<select id="updateSubStation" parameterType="hashmap">
+		UPDATE m_city_substation_info SET
+			substation_name=#{subName},province_id=#{provinceId},city_id=#{cityId},
+			zone_id=#{zoneId},first_letter=#{firstL},hot=#{hot},modified_id=#{user},
+			modified_time=now(),deleted=#{del}
+		WHERE substation_code=#{code}
+	</select>
+	
+	<select id="getCityInfoExsitByName" resultType="String">
+		SELECT cs.substation_code
+			FROM m_city_substation_info cs
+			WHERE cs.substation_name=#{name}
+	</select>
+	
+	<select id="deleteSubStationByCode" parameterType="String">
+		UPDATE m_city_substation_info SET
+			deleted=1
+		WHERE substation_code=#{code}
+	</select>
+	
+	<select id="selectSubStationByCode" resultMap="subStationResult">
+		SELECT substation_name,substation_code,province_id,
+			city_id,zone_id,first_letter,hot
+		 FROM m_city_substation_info
+			WHERE substation_code=#{code}
+	</select>
+	
+	<select id="getCityInfoBySearchConditions" parameterType="com.xinyue.manage.beans.SearchCity" resultType="com.xinyue.manage.beans.CityInfo">
+		SELECT s.substation_code as code,s.substation_name as partName,p.name as provinceName,
+			c.name as cityName,s.first_letter as pinyin,s.hot as hot,
+			cw.name as location
+		FROM moke.m_city_substation_info s
+		LEFT JOIN m_area_province p ON s.province_id = p.code
+		LEFT JOIN m_area_city c ON s.city_id = c.code
+		LEFT JOIN m_chinese_word_info cw ON p.location = cw.code
+		WHERE s.deleted=0 
+		<if test="searchLetter != '' and searchLetter != null">
+			AND s.first_letter like '%' #{searchLetter} '%'
+		</if>
+		<if test="searchProvince != '' and searchProvince != 0">
+			AND s.province_id = #{searchProvince}
+		</if>
+		<if test="searchCity != '' and searchCity != 0">
+			AND s.city_id = #{searchCity}
+		</if>
+		<if test="searchZone != '' and searchZone != 0">
+			AND s.zone_id = #{searchZone}
+		</if>
+			LIMIT #{searchPage},10
+	</select>
+	
+	<select id="getCountBySearchConditions" parameterType="com.xinyue.manage.beans.SearchCity" resultType="int">
+		SELECT count(s.id) as total 
+			FROM m_city_substation_info s
+			WHERE s.deleted = 0
+		<if test="searchName != '' and searchName != null">
+			AND s.substation_name like '%' #{searchName} '%'
+		</if>
+		<if test="searchLetter != '' and searchLetter != null">
+			AND s.first_letter like '%' #{searchLetter} '%'
+		</if>
+		<if test="searchProvince != '' and searchProvince != 0">
+			AND s.province_id = #{searchProvince}
+		</if>
+		<if test="searchCity != '' and searchCity != 0">
+			AND s.city_id = #{searchCity}
+		</if>
+		<if test="searchZone != '' and searchZone != 0">
+			AND s.zone_id = #{searchZone}
+		</if>
+	</select>
+</mapper>

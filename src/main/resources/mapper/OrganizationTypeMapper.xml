@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wenhai.you -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.OrganizationTypeDao">
+
+	<select id="findListPage" resultType="com.xinyue.manage.model.OrganizationType">
+		select otypeid as id , name , number , deleted , (select count(*) from m_organization_info o where o.genre = t.otypeid) as count 
+		from m_organization_type t where t.deleted = 0 order by t.otypeid asc limit #{start} , #{pageSize};
+	</select>
+	
+	
+	<select id="getCount" resultType="int">
+		select  
+		count(t.otypeid) 
+		from m_organization_type t 
+		where t.deleted = 0 
+	</select>
+	
+	<update id="delOrganizationType">
+		update m_organization_type set deleted = 1 where otypeid = 
+		<foreach collection="list" item="item" index="index" separator=" or otypeid = ">  
+	        #{item}  
+	    </foreach> 
+	</update>
+	<update id="updateOrgByType">
+		update m_organization_info set genre=null , modified_time=now() , modified_id = #{modifyUser} where genre =
+		<foreach collection="list" item="item" index="index" separator=" or genre = ">  
+	        #{item}  
+	    </foreach> 
+	</update>
+	<update id="updateOrganizationType" parameterType="com.xinyue.manage.model.OrganizationType">
+		update m_organization_type set name = #{name} , number = #{number} where otypeid = #{id}
+	</update>
+	
+	<insert id="addOrganizationType" parameterType="com.xinyue.manage.model.OrganizationType">
+		insert into m_organization_type(name , number , deleted)
+		 values(#{name} , #{number} , 0)
+	</insert>
+	
+	<select id="findTypeById" resultType="com.xinyue.manage.model.OrganizationType">
+		select otypeid id , name name , number number from m_organization_type where otypeid = #{id}
+	</select>
+	
+	<select id="findByName" resultType="com.xinyue.manage.model.OrganizationType">
+		select otypeid id , name name , number number from m_organization_type where name = #{name}
+	</select>
+	
+</mapper>

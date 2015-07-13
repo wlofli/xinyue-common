@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.AuthenticationDAO">
+	<resultMap type="com.xinyue.manage.model.Authentication" id="authenticationResault">
+		<result column="code" property="code"/>
+		<result column="tax_code" property="taxCode"/>
+		<result column="company_name" property="companyName"/>
+		<result column="zone" property="zone"/>
+		<result column="reg_time" property="companyRegDate"/>
+		<result column="legal_person_name" property="legalPersonName"/>
+		<result column="reg_fund" property="regFund"/>
+		<result column="indeustry" property="industry"/>
+		<result column="contact_name" property="contactPerson"/>
+		<result column="contact_tel" property="contactTel"/>
+		<result column="member_name" property="memberName"/>
+		<result column="reg_member_time" property="regDate"/>
+		<result column="auth_time" property="authenticationDate"/>
+		<result column="auth_status" property="authenticationStatus"/>
+		<result column="auth_type" property="authenticationType"/>
+	</resultMap>
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="selectResault">
+		<result column="sKey" property="key"/>
+		<result column="sValue" property="value"/>
+	</resultMap>
+	<resultMap type="com.xinyue.manage.model.Authentication" id="detailResault">
+		<result column="tax_code" property="taxCode"/>		
+		<result column="company_name" property="companyName"/>
+		<result column="zone" property="zone"/>
+		<result column="legal_person_name" property="legalPersonName"/>
+		<result column="id_number" property="legalPersonID"/>
+		<result column="legal_person_tel" property="legalPersonTel"/>
+		<result column="registration_address" property="registerAddress"/>
+		<result column="registration_date" property="companyRegDate"/>
+		<result column="registration_fund" property="regFund"/>
+		<result column="contact_name" property="contactPerson"/>
+		<result column="contact_sex" property="contactSex"/>
+		<result column="contact_tel" property="contactTel"/>
+		<result column="post_code" property="postCode"/>
+		<result column="address" property="contactAddress"/>
+		<result column="business_license_name" property="businessLicense"/>
+		<result column="tax_registration_name" property="taxRegistration"/>
+		<result column="organization_code_name" property="organizationCode"/>
+		<result column="identity_carda" property="identityCarda"/>
+		<result column="identity_cardn" property="identityCardn"/>
+		<result column="identity_cardp" property="identityCardp"/>
+		<result column="success_flag" property="authenticationStatus"/>
+		<result column="messages" property="messages"/>
+	</resultMap>
+	
+	<select id="getIndustryList" resultMap="selectResault">
+		SELECT code as sKey,name as sValue FROM m_industry_info WHERE parent_code = '';
+	</select>
+	
+	<select id="getAuthenticationInfo" parameterType="hashmap" resultMap="authenticationResault">
+		SELECT 
+			a.id as code,
+			l.tax_registration_country as tax_code,
+			a.company_name as company_name,
+			concat_ws('',p.name,c.name) as zone,
+			date_format(a.registration_date,'%Y-%m-%d') as reg_time,
+			a.legal_person_name as legal_person_name,
+			a.registration_fund as reg_fund,
+			t.name as indeustry,
+			a.contact_name as contact_name,
+			a.contact_tel as contact_tel,
+			m.login_name as member_name,
+			date_format(m.created_time,'%Y-%m-%d') as reg_member_time,
+			date_format(a.created_time,'%Y-%m-%d') as auth_time,
+			s1.select_value as auth_status,
+			s.select_value as auth_type
+		FROM moke.m_authentication_info a
+		 LEFT JOIN m_industry_info t ON t.code=a.industry
+		 LEFT JOIN m_member_info m ON m.realname_info=a.id
+		 LEFT JOIN m_license_info l ON l.id=m.license_info
+		 LEFT JOIN m_select_info s ON s.select_key=a.success_flag
+		 LEFT JOIN m_select_info s1 ON s1.select_key=a.authenticate_type
+		 LEFT JOIN m_area_city c ON c.code=a.business_license_code
+		 LEFT JOIN m_area_province p ON p.code=concat_ws('',substring(a.business_license_code,1,2),'0000')
+		WHERE s.type_code='auth_status' AND s1.type_code='auth_type' 
+		<if test="companyName != null and companyName != ''">
+			AND a.company_name LIKE '%'#{companyName}'%'
+		</if>
+		<if test="legalPersonName !=null and legalPersonName !=''">
+			AND a.legal_person_name LIKE '%'#{legalPersonName}'%'
+		</if>
+		<if test="taxCode !=null and taxCode !=''">
+			AND l.tax_registration_country LIKE '%'#{taxCode}'%'
+		</if>
+		<if test="industry !=null and industry !=0">
+			AND a.industry=#{industry}
+		</if>
+		<if test="contactName !=null and contactName !=''">
+			AND a.contact_name LIKE '%'#{contactName}'%'
+		</if>
+		<if test="contactTel !=null and contactTel !=''">
+			AND a.contact_tel LIKE '%'#{contactTel}'%'
+		</if>
+		<if test="timeStart != '' and timeEnd !=''">
+			AND (a.created_time BETWEEN #{timeStart} AND #{timeEnd})
+		</if>
+		<if test="timeStart != '' and timeEnd ==''">
+			<![CDATA[AND a.created_time >= #{timeStart}]]>
+		</if>
+		<if test="timeEnd != '' and timeStart ==''">
+			<![CDATA[AND a.created_time <= #{timeEnd}]]>
+		</if>
+		<if test="fundStart != '' and fundEnd !=''">
+			AND (a.registration_fund BETWEEN #{fundStart} AND #{fundEnd})
+		</if>
+		<if test="fundStart != '' and fundEnd ==''">
+			<![CDATA[AND a.registration_fund >= #{fundStart}]]>
+		</if>
+		<if test="fundEnd != '' and fundStart ==''">
+			<![CDATA[AND a.registration_fund <= #{fundEnd}]]>
+		</if>
+		ORDER BY a.created_time 
+		<if test="index != -99">
+		LIMIT #{index},10;
+		</if>
+		
+	</select>
+	
+	<select id="getAllCount" resultType="int">
+		SELECT COUNT(*) FROM m_authentication_info;
+	</select>
+	
+	<select id="getDetailByCode" parameterType="String" resultMap="detailResault">
+		SELECT 
+		    l.tax_registration_area as tax_code,
+		    a.company_name as company_name,
+		    concat_ws('', p.name, c.name) as zone,
+		    a.legal_person_name as legal_person_name,
+		    a.legal_personidnumber as id_number,
+		    a.legal_person_tel as legal_person_tel,
+		    a.registration_address as registration_address,
+		    a.registration_date as registration_date,
+		    a.registration_fund as registration_fund,
+		    a.contact_name as contact_name,
+		    a.contact_sex as contact_sex,
+		    a.contact_tel as contact_tel,
+		    a.post_code as post_code,
+		    a.address as address,
+		    a.business_license_name as business_license_name,
+		    a.tax_registration_name as tax_registration_name,
+		    a.organization_code_name as organization_code_name,
+		    a.identity_carda as identity_carda,
+		    a.identity_cardn as identity_cardn,
+		    a.identity_cardp as identity_cardp,
+		    a.success_flag as success_flag
+		FROM
+		    m_authentication_info a
+		        LEFT JOIN
+		    m_member_info m ON m.realname_info = a.id
+		        LEFT JOIN
+		    m_license_info l ON m.license_info = l.id
+		        LEFT JOIN
+		    m_area_city c ON c.code = a.business_license_code
+		        LEFT JOIN
+		    m_area_province p ON p.code = concat_ws('',
+		            substring(a.business_license_code, 1, 2),
+		            '0000')
+		WHERE
+		    a.id = #{code};
+		
+	</select>
+	
+	<update id="updateAuthenticationStatusByCode" parameterType="hashmap">
+		UPDATE m_authentication_info 
+			SET success_flag=#{status},modified_id=#{user},modified_time=now()
+		WHERE id=#{code}
+	</update>
+</mapper>

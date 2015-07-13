@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wenhai.you -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.AdvertisingDao">
+
+	<select id="findForPage" resultType="com.xinyue.manage.model.Advertising" parameterType="com.xinyue.manage.beans.AdvertisingInfo">
+		SELECT 
+			id id,
+			title title , 
+			type type , 
+			link_url url , 
+			logo_file_name thumbnail , 
+			logo_file_dir directory ,
+			specifications specifications,
+			deleted deleted,
+			created_time createTime ,
+			created_id createUser,
+			modified_time updateTime ,
+			modified_id updateUser ,
+			end_time endTime,
+			si.select_value state
+		FROM m_advertising_info ai inner join m_select_info si
+		on ai.publish = si.select_key 
+		<if test="title != null and title!= ''"> 
+			inner join m_select_info d on d.select_key = ai.type
+		</if>
+		where ai.deleted = 0 and si.type_code = 'publish_type'
+		<if test="title != null and title!= ''"> and d.select_value like concat(#{title} , '%')</if> 
+		LIMIT #{start},#{pageSize}
+	</select> 
+	<select id="getCountByType" resultType="int" parameterType="string">
+		SELECT 
+			count(ai.id)
+		FROM m_advertising_info ai inner join m_select_info si
+		on ai.publish = si.select_key
+		<if test="title != null and title!= ''"> 
+			inner join m_select_info d on d.select_key = ai.type
+		</if>
+		where ai.deleted = 0 and si.type_code = 'publish_type'
+		<if test="title != null and title!= ''"> and d.select_value like concat(#{title} , '%')</if> 
+	</select>
+	
+
+	<update id="delByAdvertisingId" parameterType="string">
+		update m_advertising_info set deleted = 1 , modified_time = now() , modified_id = #{modifyUser} where id = #{id}
+	</update>
+	
+	<update id="delAdvertisingMulti"  parameterType="java.util.List">
+		UPDATE m_advertising_info SET deleted = 1 , modified_time = now() , modified_id = #{modifyUser} WHERE id=  
+	    <foreach collection="list" item="item" index="index" separator=" or id = " >  
+	        #{item}  
+	    </foreach> 
+	</update>
+	
+	<insert id="addAdvert" parameterType="com.xinyue.manage.model.Advertising">
+		insert into m_advertising_info(
+			id , 
+			title , 
+			type , 
+			link_url , 
+			deleted , 
+			logo_file_name , 
+			logo_file_dir , 
+			specifications , 
+			created_time , 
+			created_id 
+			<choose>
+				<when test="endTime">
+					, end_time
+				</when>
+			</choose>
+			) 
+		values (
+			#{id} , 
+			#{title} , 
+			#{type} , 
+			#{url} , 
+			#{deleted} , 
+			#{thumbnail} , 
+			#{directory} , 
+			#{specifications} , 
+			now() , 
+			#{createUser}  
+			<choose>
+				<when test="endTime">
+					, #{endTime}
+				</when>
+			</choose>
+			)
+		
+	</insert>
+	
+	<select id="getAdvertById" resultType="com.xinyue.manage.model.Advertising">
+		SELECT 
+			id id ,
+			title title , 
+			type type , 
+			link_url url , 
+			logo_file_name thumbnail , 
+			logo_file_dir directory ,
+			specifications specifications,
+			deleted deleted,
+			created_time createTime ,
+			createUser createUser,
+			modified_time updateTime ,
+			modified_id updateUser ,
+			end_time endTime
+		FROM m_advertising_info 
+		where id = #{id}
+	</select>
+	
+	<update id="updateAdvert" parameterType="com.xinyue.manage.model.Advertising">
+		update m_advertising_info set 
+			title = #{title}, 
+			type=#{type} , 
+			link_url = #{url} , 
+			specifications = #{specifications} ,
+			logo_file_name = #{thumbnail},
+			modified_id = #{updateUser},
+			modified_time = now()
+			<choose>
+				<when test="endTime">
+					, end_time = #{endTime}
+				</when>
+			</choose>
+			where id = #{id}
+	</update>
+	
+	<update id="updatePublish">
+		update m_advertising_info set publish = 2 ,modified_time = now() , modified_id = #{modifyUser} 
+		 where id = 
+		  <foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach> 
+	    and publish != 4
+	</update>
+	
+	<update id="updateShielding">
+		update m_advertising_info set publish = 3 ,modified_time = now() , modified_id = #{modifyUser} 
+		 where id = 
+		  <foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach> 
+	    and publish != 4
+	</update>
+	
+	<update id="updateOverdue">
+		<![CDATA[
+		update m_advertising_info set publish = 4 where end_time < curdate()
+		]]>
+	</update>
+	
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wenhai.you -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.SelectDao">
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="selectResult">
+		<result column="skey" property="key"/>
+		<result column="svalue" property="value"/>
+	</resultMap>
+
+	<select id="findSelectByCode" resultType="com.xinyue.manage.model.Select" parameterType="string">
+		select 
+			type_code dicCode, 
+			select_key dicKey,
+			select_value dicVal 
+		from m_select_info 
+		where type_code = #{code} ORDER BY select_key;
+	</select>
+	
+	<select id="showValue" resultType="string" parameterType="com.xinyue.manage.model.Select">
+		select 
+			select_value dicVal 
+		from m_select_info 
+		where type_code = #{dicCode} and select_key = #{dicKey}
+	</select>
+	
+	<select id="findSelectByType" parameterType="String" resultMap="selectResult">
+		SELECT 
+		    select_key skey, select_value svalue
+		FROM
+		    m_select_info
+		WHERE
+		    type_code = #{code}
+		ORDER BY select_key;
+	</select>
+	
+	<select id="getIndustryList" resultType="com.xinyue.manage.model.Select">
+		select 
+		code dicKey,
+		name dicVal
+		from m_industry_info
+	</select>
+	
+	<select id="getOrgList" resultType="com.xinyue.manage.model.Select">
+		select 
+		otypeid dicKey,
+		name dicVal
+		from m_organization_type where deleted = 0
+	</select>
+
+	
+	<select id="findProvince" resultMap="selectResult">
+		SELECT 
+		    code skey,
+		    name svalue
+		FROM
+		    m_area_province;
+	</select>
+	
+	<select id="findCitiesByProvinceId" parameterType="string" resultMap="selectResult">
+		SELECT 
+		    code skey, name svalue
+		FROM
+		    moke.m_area_city
+		WHERE
+		    parent_id = #{code};
+	</select>
+	
+	<select id="findZonesByCityId" parameterType="string" resultMap="selectResult">
+		SELECT 
+		    code skey, name svalue
+		FROM
+		    m_area_zone
+		WHERE
+		    parent_id = #{code};
+	</select>
+
+</mapper>

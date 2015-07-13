@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.OrderCustomerDAO">
+	<resultMap type="com.xinyue.manage.model.OrderAppointed" id="appointed">
+		<result column="id" property="id" />
+		<result column="credit_name" property="creditName" />
+		<result column="credit_phone" property="creditPhone" />
+		<result column="blank" property="blank" />
+		<result column="price" property="price" />
+		<result column="deleted" property="deleted" />
+		<result column="created_id" property="createdId" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_id" property="modifiedId" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="order_id" property="orderId" />
+		<result column="type" property="type" />
+		<result column="manage_id" property="manageId" />
+	</resultMap>
+	<resultMap type="com.xinyue.manage.model.OrderAuction" id="auction">
+		<result column="id" property="id" />
+		<result column="fixed_price" property="fixedPrice" />
+		<result column="start_price" property="startPrice" />
+		<result column="lower_add_price" property="lowerAddPrice" />
+		<result column="now_price" property="nowPrice" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="deleted" property="deleted" />
+		<result column="created_id" property="createdId" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_id" property="modifiedId" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="order_id" property="orderId" />
+		<result column="type" property="type" />
+		<result column="manage_id" property="manageId" />
+	</resultMap>
+	<resultMap type="com.xinyue.manage.model.OrderFixed" id="fixed">
+		<result column="id" property="id" />
+		<result column="price" property="price" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="deleted" property="deleted" />
+		<result column="created_id" property="createdId" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_id" property="modifiedId" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="order_id" property="orderId" />
+		<result column="type" property="type" />
+		<result column="manage_id" property="manageId" />
+	</resultMap>
+	<resultMap type="com.xinyue.manage.model.OrderLowPrice" id="lowprice">
+		<result column="id" property="id" />
+		<result column="max_price" property="maxPrice" />
+		<result column="min_price" property="minPrice" />
+		<result column="per_minus" property="perMinus" />
+		<result column="miniute" property="miniute" />
+		<result column="now_price" property="nowPrice" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="deleted" property="deleted" />
+		<result column="created_id" property="createdId" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_id" property="modifiedId" />
+		<result column="modified_time" property="modifiedTime" />
+		<result column="order_id" property="orderId" />
+		<result column="type" property="type" />
+		<result column="manage_id" property="manageId" />
+	</resultMap>
+	
+<!-- 	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="select"> -->
+<!-- 		<result column="key" property="key" /> -->
+<!-- 		<result column="value" property="value" /> -->
+<!-- 	</resultMap> -->
+		
+	
+	<insert id="addOrderAppointed" parameterType="com.xinyue.manage.model.OrderAppointed">
+		insert into c_order_appoint (id,credit_name,credit_phone,blank,price,deleted,created_id,
+					created_time,modified_id,modified_time,order_id,type,manage_id)
+			values (#{id},#{creditName},#{creditPhone},#{blank},#{price},#{deleted},#{createdId},
+					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+	
+	</insert>
+	<insert id="addOrderAuction" parameterType="com.xinyue.manage.model.OrderAuction">
+		insert into c_order_auction (id,fixed_price,start_price,lower_add_price,now_price,start_time,
+					end_time,deleted,created_id,created_time,modified_id,modified_time,order_id,type,manage_id)
+			values (#{id},#{fixedPrice},#{startPrice},#{lowerAddPrice},#{nowPrice},#{startTime},
+					#{endTime},#{deleted},#{createdId},now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+	</insert>
+	<insert id="addOrderFixed" parameterType="com.xinyue.manage.model.OrderFixed">
+		insert into c_order_fixed (id,price,start_time,end_time,deleted,created_id,
+					created_time,modified_id,modified_time,order_id,type,manage_id)
+			values (#{id},#{price},#{startTime},#{endTime},#{deleted},#{createdId},
+					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+	</insert>
+	<insert id="addOrderLowPrice" parameterType="com.xinyue.manage.model.OrderLowPrice">
+		insert into c_order_lowprice (id,max_price,min_price,per_minus,miniute,now_price,start_time,end_time,
+					deleted,created_id,created_time,modified_id,modified_time,order_id,type,manage_id)
+			values (#{id},#{maxPrice},#{minPrice},#{perMinus},#{miniute},#{nowPrice},#{startTime},#{endTime},
+					#{deleted},#{createdId},now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+	</insert>
+	
+	
+	<update id="deleteOrderCustomer">
+		update ${tabName}
+		 set deleted = 1,
+		 	 modified_time = now(),
+			 modified_id = #{modifiedId}
+		where order_id = #{orderId} and type = #{type}
+	</update>
+	<update id="updateOrderType">
+		update 
+			${tabName} 
+		 set order_type = #{orderType},
+		 	 order_status = #{orderStatus},
+		 	 status = #{status},
+		 	 modified_time = now(),
+		 	 modified_id = #{modifyId}
+		 where id = #{id} and deleted = 0
+	</update>
+	
+	<select id="getOrderFixed" resultMap="fixed">
+		select * 
+			from c_order_fixed
+		where 
+			order_id = #{orderId} and deleted = 0 and type = #{type}
+	</select>
+
+	<select id="getOrderAuction" resultMap="auction">
+		select * 
+			from c_order_auction
+		where 
+			order_id = #{orderId} and deleted = 0 and type = #{type}
+	
+	</select>
+	
+	
+	<select id="getOrderAppointed" resultMap="appointed">
+		select * 
+			from c_order_appoint
+		where 
+			order_id = #{orderId} and deleted = 0 and type = #{type}
+	
+	</select>	
+	
+	<select id="getOrderLowPrice" resultMap="lowprice">
+		select * 
+			from c_order_lowprice
+		where 
+			order_id = #{orderId} and deleted = 0 and type = #{type}
+	
+	</select>
+	 
+	 <select id="getOrderType" resultType="string">
+	 	select
+	 		order_type 
+	 	from
+	 		${tabName}	
+	 	where id = #{id} and deleted = 0
+	 
+	 </select>
+			
+	
+
+</mapper>
