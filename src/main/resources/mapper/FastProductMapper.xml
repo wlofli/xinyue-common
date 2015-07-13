@@ -245,6 +245,4 @@
 		    id in 
 		    <foreach collection="list" item="id" index="index" separator="," open="(" close=")">#{id}</foreach>
 	</update>
-
-
 </mapper>

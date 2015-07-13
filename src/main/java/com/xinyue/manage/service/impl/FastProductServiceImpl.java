@@ -67,4 +67,17 @@ public class FastProductServiceImpl implements FastProductService{
 		
 	}
 
+	@Override
+	public boolean updateFastProductStatusList(List<String> idList,
+			String status, String modifiedId) {
+		// TODO Auto-generated method stub
+		try {
+			fastProductDAO.updateFastProductStatusList(idList, status, modifiedId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RuntimeException();
+		}
+		return true;
+	}
+
 }
