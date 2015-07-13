@@ -16,22 +16,16 @@
 		<result column="applicant_info" property="applicantInfo"/>
 		<result column="rating_info" property="ratingInfo"/>
 		<result column="credit" property="credit"/>
-		
 		<result column="company_info" property="companyInfo"/>
 		<result column="link_phone" property="linkPhone"/>
 		<result column="code" property="code"/>
 		<result column="product_info" property="productInfo"/>
 		<result column="product_name" property="productName"/>
 		<result column="product_code" property="productCode"/>
-		
 		<result column="commit_time" property="commitTime"/>
 		<result column="status" property="status"/>
 		<result column="audite_time" property="auditeTime"/>
 		<result column="audite_person" property="auditePerson"/>
-		
-		
-		
-		
 		<result column="credit_real" property="creditReal"/>
 		<result column="blank_audite_time" property="blankAuditeTime"/>
 		<result column="blank_audite_remark" property="blankAuditeRemark"/>
@@ -53,7 +47,6 @@
 		<result column="province" property="province"/>
 		<result column="city" property="city"/>
 		<result column="zone" property="zone"/>
-		
 <!-- 		<result column="order_status" property="orderStatus" /> -->
 <!-- 		<result column="order_type" property="orderType" /> -->
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
@@ -97,6 +90,7 @@
 				o.order_type,
 				o.order_status,
 				o.credit,
+				o.creditReal,
 				link_phone,
 				d.code as product_code,
 				o.code,
