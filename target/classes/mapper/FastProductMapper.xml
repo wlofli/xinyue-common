@@ -234,9 +234,16 @@
 				</if>
 			where
 				id = #{fspdt.id}
+	</update>
 	
-	
-	
+	<update id="updateFastProductStatusList">
+		update m_product_fast_info
+		  set `status` = #{status},
+		  	 modified_time = now(),
+		  	 modified_id = #{modifiedId}
+		  where
+		    id in 
+		    <foreach collection="list" item="id" index="index" separator="," open="(" close=")">#{id}</foreach>
 	</update>
 
 

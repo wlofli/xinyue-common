@@ -24,6 +24,17 @@ public interface FastProductService {
 	public FastProduct getFastProduct(String id);
 	
 	
+	/**
+	 * 修改快速申贷订单状态列表
+	 * add by lzc
+	 * date: 2015年7月13日
+	 * @param idList 
+	 * @param status 状态
+	 * @param modifiedId
+	 * @return
+	 */
+	public boolean updateFastProductStatusList(List<String> idList, String status, String modifiedId);
+	
 	
 	/**
 	 * 

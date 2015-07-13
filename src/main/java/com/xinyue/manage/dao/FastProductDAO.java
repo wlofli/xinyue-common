@@ -30,4 +30,8 @@ public interface FastProductDAO {
 	public void updateFastProduct(FastProduct fspdt);
 	
 	
+	public void updateFastProductStatusList(@Param("list")List<String> idList, @Param("status")String status, 
+			@Param("modifiedId")String modifiedId);
+	
+	
 }
