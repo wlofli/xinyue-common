@@ -63,8 +63,6 @@ public class FastProductServiceImpl implements FastProductService{
 			logger.info(e.toString());
 			throw new RuntimeException();
 		}
-		
-		
 	}
 
 	@Override
