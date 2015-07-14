@@ -2,6 +2,10 @@
 <!-- wenhai.you -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xinyue.manage.dao.OrganizationDao">
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="selectResult">
+		<result column="skey" property="key" />
+		<result column="svalue" property="value" />
+	</resultMap>
 
 	<select id="findPageData" resultType="com.xinyue.manage.model.Organization" 
 		parameterType="com.xinyue.manage.beans.OrganizationInfo">
@@ -153,5 +157,15 @@
 	
 	<select id="findOrgNameByPinying" resultType="com.xinyue.manage.model.Organization">
 		select * from m_organization_info where deleted = 0 and status = 0 and pinying like concat(#{pinying} , '%') or name like concat(#{pinying} , '%') group by number
+	</select>
+	
+	<select id="getOrganizations" resultMap="selectResult">
+		SELECT 
+		    number as skey, name as svalue
+		FROM
+		    m_organization_info
+		where
+		    deleted = 0
+		order by number;
 	</select>
 </mapper>

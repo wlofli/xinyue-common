@@ -48,10 +48,10 @@
 	</select>
 
 	
-	<select id="findProvince" resultMap="selectResult">
+	<select id="findProvince" resultMap="selectResult" >
 		SELECT 
-		    code skey,
-		    name svalue
+		    code as skey,
+		    name as svalue
 		FROM
 		    m_area_province;
 	</select>
