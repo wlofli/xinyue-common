@@ -90,7 +90,7 @@
 				o.order_type,
 				o.order_status,
 				o.credit,
-				o.creditReal,
+				o.credit_real,
 				link_phone,
 				d.code as product_code,
 				o.code,
