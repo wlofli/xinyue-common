@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -28,10 +29,10 @@ import com.xinyue.manage.util.GlobalConstant;
  * @2015年5月6日
  * @下午2:05:30
  */
-@Service("advertisingService")
+@Service
 public class AdvertisingServiceImpl implements AdvertisingService {
 
-	@Autowired
+	@Resource
 	private AdvertisingDao advertisingDao;
 	
 	private Logger logger = Logger.getLogger(AdvertisingServiceImpl.class);

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.OrganizationInfo;
+import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.OrganizationDao;
 import com.xinyue.manage.model.Organization;
 import com.xinyue.manage.service.OrganizationService;
@@ -158,5 +159,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 	public List<Organization> findOrgNameByPinying(String pinying) {
 		// TODO Auto-generated method stub
 		return orgDao.findOrgNameByPinying(pinying);
+	}
+
+	@Override
+	public List<SelectInfo> getOrganizations() {
+		return orgDao.getOrganizations();
 	}
 }

@@ -51,7 +51,7 @@ public interface SelectService {
 	public List<SelectInfo> findZonesByCityCode(String code);
 	//mzj add 2015/06/03 end
 	
-	public List<SelectInfo> getIndustryList();
+	public List<Select> getIndustryList();
 	
 	public List<Select> getOrgList();
 }

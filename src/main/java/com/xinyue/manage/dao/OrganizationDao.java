@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.OrganizationInfo;
+import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Organization;
 
 /**
@@ -81,4 +82,8 @@ public interface OrganizationDao {
 	 * @return
 	 */
 	public List<Organization> findOrgNameByPinying(@Param("pinying") String pinying);
+
+	//add by mzj 2015/07/06 start
+	public List<SelectInfo> getOrganizations();
+	//add by mzj 2015/07/06 end
 }

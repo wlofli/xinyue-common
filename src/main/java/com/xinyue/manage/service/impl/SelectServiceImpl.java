@@ -2,7 +2,8 @@ package com.xinyue.manage.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.SelectInfo;
@@ -16,11 +17,12 @@ import com.xinyue.manage.service.SelectService;
  * @2015年5月18日
  * @上午9:33:15
  */
-@Service("selectService")
+@Service
 public class SelectServiceImpl implements SelectService {
 
-	@Autowired
+	@Resource
 	private SelectDao sdao;
+	
 	@Override
 	public List<Select> findSelectByCode(String code) {
 		// TODO Auto-generated method stub
@@ -60,7 +62,7 @@ public class SelectServiceImpl implements SelectService {
 		return sdao.findZonesByCityId(code);
 	}
 	
-	public List<SelectInfo> getIndustryList() {
+	public List<Select> getIndustryList() {
 		
 		return sdao.getIndustryList();
 	}

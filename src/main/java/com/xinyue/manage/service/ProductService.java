@@ -2,10 +2,8 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
-import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.beans.ProductInfo;
 import com.xinyue.manage.model.Product;
-import com.xinyue.manage.model.ProductType;
 
 /**
  * 

@@ -41,7 +41,7 @@ public interface SelectDao {
 
 	List<SelectInfo> findZonesByCityId(@Param("code")String code);
 	
-	List<SelectInfo> getIndustryList();
+	List<Select> getIndustryList();
 	
 	public List<Select> getOrgList();
 }
