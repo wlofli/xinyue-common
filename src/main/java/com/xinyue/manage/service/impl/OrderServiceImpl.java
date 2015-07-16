@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.OrderDAO;
 import com.xinyue.manage.model.Document;
@@ -111,6 +112,13 @@ public class OrderServiceImpl implements OrderService{
 		 status = null;
 		return orderDAO.getCountByStatus(order, status);
 		
+	}
+
+
+	@Override
+	public List<Order> getListByMemberId(String memberId, SearchOrder order) {
+		// TODO Auto-generated method stub
+		return orderDAO.getListByMemberId(memberId, order, GlobalConstant.ORDER_INIT);
 	}
 
 	

@@ -8,6 +8,9 @@ public class GlobalConstant {
 	public static final String SESSION_USER_LOGIN_TIME = "session_user_login_time"; //表示用户登录的时间；
 	public static final String USER_LAST_LOGINED_TIME = "user_last_logined_time";  //表示上次登录的时间
 	
+	public static final String SESSION_MEMBER_INFO = "session_member_info";
+	public static final String SESSION_CHECK_CODE = "session_check_code";
+	
 	public static final String USER = "admin";
 
 	public static final String TYPE_CITY = "tc";

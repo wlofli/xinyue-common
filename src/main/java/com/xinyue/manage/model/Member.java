@@ -10,6 +10,10 @@ import java.io.Serializable;
  */
 public class Member implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 103398990170708810L;
 	private String id;
 	private String loginName; 
 	private String memberName;
@@ -32,6 +36,10 @@ public class Member implements Serializable {
 	private Object createUser;
 	private Object modifyUser;
 	private String status;
+	
+	//2015/07/15 茅 追加 START
+	private String password;
+	//2015/07/15 茅 追加 END
 	
 	public String getCityids() {
 		return cityids;
@@ -177,6 +185,18 @@ public class Member implements Serializable {
 				+ ", zoneid=" + zoneid + ", address=" + address + ", memberid="
 				+ memberid + ", createUser=" + createUser + ", status="
 				+ status + "]";
+	}
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 }
