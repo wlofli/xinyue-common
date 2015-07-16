@@ -2,6 +2,7 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.Order;
@@ -35,7 +36,7 @@ public interface OrderService {
 	public List<Order> getListByStatus(Order order ,int pageSize, int pageNo, List<String> statusList);
 	
 	
-//	public List<Order> getListByMember(String memberId);
+	public List<Order> getListByMemberId(String memberId,SearchOrder order);
 	
 	
 	public int getCount(Order order);
@@ -71,7 +72,6 @@ public interface OrderService {
 	public List<SelectInfo> getStatus(String typeCode);
 	
 	
-//	public List<SelectOrder> doAuthority(List<SelectInfo> selectInfos, HttpServletRequest request);
 	
 	
 	public List<Document> getDocumentInfoById(String id);

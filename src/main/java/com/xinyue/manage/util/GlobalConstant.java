@@ -158,11 +158,14 @@ public class GlobalConstant {
 	
 	//订单状态
 	public static final String ORDER_STATUS = "order_status";
+	
 	public static final String ORDER_STATUS_BLANK = "6";//等待机构审核
 	public static final String ORDER_STATUS_PASS = "3";//新越网审核通过
 	public static final String ORDER_STATUS_PASS_CHINESE = "新越网审核通过";//新越网审核通过
 	public static final String ORDER_STATUS_PASS_SET = "4";//新越网审核通过设为推荐
 	public static final String ORDER_STATUS_PASS_SET_CHINESE = "新越网审核通过设为推荐";//新越网审核通过设为推荐
+	public static final String ORDER_INIT = "order_inti";//会员订单状态typecode
+	public static final String ORDER_INIT_NUMBER = "2";//订单初始化
 	
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info

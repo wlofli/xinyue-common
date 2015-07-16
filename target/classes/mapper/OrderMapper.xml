@@ -252,6 +252,23 @@
 		limit #{pageNo}, #{pageSize}
 	</select>
 	
+	<select id="getListByMemberId" resultMap="order">
+		select o.id,
+			   o.code,
+			   d.`name` as product_name,
+			   b.name as bank,
+			   o.created_time,
+			   o.credit,
+			   o.status
+		from m_order_info
+		where delete != 1 and member_id = #{id}
+<!-- 		undone -->
+			   
+			   
+			   
+	</select>
+	
+	
 	<select id="getStatus" resultMap="selectInfo">
 		select 
 			   select_key as  'key',

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.Order;
@@ -19,6 +20,8 @@ public interface OrderDAO {
 	
 	public List<Order> getListByStatus(@Param("order")Order order,@Param("pageSize")int pageSize, 
 			@Param("pageNo")int pageNo,@Param("list")List<String> idList, @Param("typeCode")String typeCode);
+	
+	public List<Order> getListByMemberId(@Param("id")String id, @Param("order")SearchOrder order, @Param("typeCode")String typeCode);
 	
 	public int getCount(@Param("order")Order order);
 	
