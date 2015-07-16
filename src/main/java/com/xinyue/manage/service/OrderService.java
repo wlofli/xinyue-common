@@ -35,6 +35,9 @@ public interface OrderService {
 	public List<Order> getListByStatus(Order order ,int pageSize, int pageNo, List<String> statusList);
 	
 	
+//	public List<Order> getListByMember(String memberId);
+	
+	
 	public int getCount(Order order);
 	
 	public int getCountByStatus(Order order, List<String> status);
@@ -76,26 +79,7 @@ public interface OrderService {
 	//undone 订单详情打印下载功能 ->freemarker wordtemplete
 //	public void downLoadOrder(HttpServletResponse response, Order order);
 	
-//	public Applicant getApplicant(String id);
-//	
-//	
-//	public CompanyBase getcoCompanyBase(String id);
-//	
-//	
-//	public List<Hold> getHoldInfoList(String id);
-//	
-//	
-//	public ControlInfo getControlInfo(String id);
-//	
-//	
-//	public List<Business> getBusinessInfoList(String id);
-//	
-//	public Debt getdeDebtInfo(String id);
-//	
-//	
-//	public RealEstate getRealEstate(String id);
-//	
-//	public Rating getRatingInfo(String id);
+	
 	
 	
 	

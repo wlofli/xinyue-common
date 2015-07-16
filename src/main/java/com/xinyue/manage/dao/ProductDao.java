@@ -58,4 +58,13 @@ public interface ProductDao {
 	public void updateProduct(Product pro);
 	
 	public void updateStatus();
+	
+	/**
+	 * 根据推荐标志获取产品信息
+	 * add by lzc
+	 * date: 2015年7月16日
+	 * @param recommend 
+	 * @return
+	 */
+	public List<Product> getListByRecommend(@Param("recommend")String recommend);
 }

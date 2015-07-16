@@ -39,7 +39,7 @@ public class Order {
 	private String linkUserName;//用户名
 	
 	private String applicatPerson;//申请人
-	private String orderNumber;//订单号
+	private String orderNumber;
 	private Double credit;//贷款额度
 	private String linkPhone;//手机号
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )

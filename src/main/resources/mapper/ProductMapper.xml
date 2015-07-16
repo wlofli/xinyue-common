@@ -205,4 +205,11 @@
 				when down_time<curdate() then 3  end 
      	]]>
      </update>
+     
+     
+<!--      add by lzc -->
+     <select id="getListByRecommend" resultType="com.xinyue.manage.model.Product">
+     	select * from m_product_info
+     	where deleted = 0 and recommend = #{recommend}
+     </select>
 </mapper>

@@ -204,6 +204,10 @@ public class GlobalConstant {
 	public static final String ORDER_ORDERSTATUS_NOSTART = "4";//未开始
 	public static final String ORDER_ORDERSTATUS_RESET = "5";//重置标识
 	
+	//add by lzc 产品信息
+	public static final String PRODUCT_RECOMMEND_ON = "1";//推荐
+	public static final String PRODUCT_RECOMMEND_OFF = "0";//不推荐
+	
 	
 	//2015/06/18 茅 权限名称追加 START
 	//帮助中心权限

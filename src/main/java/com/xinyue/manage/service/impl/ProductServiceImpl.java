@@ -116,5 +116,12 @@ public class ProductServiceImpl implements ProductService{
 			throw new RuntimeException("产品保存失败", e);
 		}
 	}
+
+
+	@Override
+	public List<Product> getListByRecommend(String Recommend) {
+		// TODO Auto-generated method stub
+		return pdao.getListByRecommend(Recommend);
+	}
 	
 }

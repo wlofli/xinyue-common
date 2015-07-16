@@ -52,4 +52,13 @@ public interface ProductService {
 	public void saveProduct(Product pro , String user);
 	
 	
+	/**
+	 * 
+	 * add by lzc
+	 * date: 2015年7月16日
+	 * @param Recommend value->0 || 1
+	 * @return
+	 */
+	public List<Product> getListByRecommend(String Recommend);
+	
 }
