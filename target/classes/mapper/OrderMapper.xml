@@ -261,7 +261,7 @@
 			   o.credit,
 			   o.status
 		from m_order_info
-		where delete != 1 and member_id = #{id}
+		where delete =0 and member_id = #{id}
 <!-- 		undone -->
 			   
 			   

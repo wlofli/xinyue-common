@@ -133,33 +133,6 @@
 	</select>
 	
 	
-<!-- 	<select id="countFastProductByStatus" resultType="int"> -->
-<!-- 		select count(*) -->
-<!-- 			 from m_product_fast_info  -->
-<!-- 			 where -->
-<!-- 			 deleted = 0 -->
-<!-- 			 <if test="fspdt.id != null and fspdt.id !=''"> -->
-<!-- 			 	and id like '%' #{fspdt.id} '%' -->
-<!-- 			 </if> -->
-<!-- 			 <if test="fspdt.company != null and fspdt.company !=''"> -->
-<!-- 			 	and company like '%' #{fspdt.company} '%' -->
-<!-- 			 </if> -->
-<!-- 			 <if test="fspdt.contactName != null and fspdt.contactName !=''"> -->
-<!-- 			 	and contact_name like '%'	#{fspdt.contactName} '%' -->
-<!-- 			 </if> -->
-<!-- 			 <if test="fspdt.contactPhone != null and fspdt.contactPhone !=''"> -->
-<!-- 			 	and contact_phone like '%' #{fspdt.contactPhone} '%' -->
-<!-- 			 </if> -->
-<!-- 			  <if test="fspdt.status != '' and fspdt.status != null"> -->
-<!-- 			 	and status = #{fspdt.status} -->
-<!-- 			 </if> -->
-<!-- 			<if test="list != null"> -->
-<!-- 				and status in -->
-<!-- 				<foreach collection="list" item="status" index="index" open="(" close=")" separator=","> -->
-<!-- 					#{status} -->
-<!-- 				</foreach> -->
-<!-- 			</if> -->
-<!-- 	</select> -->
 	
 	<select id="getFastProduct" resultMap="fspdt">
 		select m.id,
