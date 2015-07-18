@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.CooperationInfoDAO">
+	<resultMap type="com.xinyue.manage.model.Cooperation" id="cooperationResault">
+		<result column="code" property="code"/>
+		<result column="name" property="name"/>
+		<result column="imagepath" property="logoPath"/>
+		<result column="text" property="coopText"/>
+		<result column="url" property="coopUrl"/>
+		<result column="province" property="coopProvince"/>
+		<result column="city" property="coopCity"/>
+		<result column="zone" property="coopZone"/>
+		<result column="linktype" property="coopType"/>
+		<result column="publish" property="coopPublish"/>
+		<result column="status" property="coopStatus"/>
+		<result column="deadline" property="deadLine"/>
+		<result column="lindex" property="coopIndex"/>
+	</resultMap>
+	
+	<select id="getList" parameterType="hashmap" resultMap="cooperationResault">
+		SELECT 
+		    c.id as code,
+		    c.link_name as name,
+		    concat_ws('/', c.logo_file_dir, c.logo_file_name) as imagepath,
+		    c.link_url as url,
+		    date_format(c.end_time, '%Y-%m-%d') as deadline,
+		    s.select_value as linktype,
+		    s1.select_value as publish,
+		    p.name as province,
+		    ci.name as city,
+		    z.name as zone,
+		    c.link_status as status,
+		    c.link_index as lindex
+		FROM
+		    m_cooperation_info c
+		        LEFT JOIN
+		    m_select_info s ON c.logo_type = s.select_key
+		        LEFT JOIN
+		    m_select_info s1 ON c.link_status = s1.select_key
+		        LEFT JOIN
+		    m_area_province p ON substring(p.code, 1, 2) = substring(c.location, 1, 2)
+		        LEFT JOIN
+		    m_area_city ci ON substring(ci.code, 1, 4) = substring(c.location, 1, 4)
+		        LEFT JOIN
+		    m_area_zone z ON z.code = c.location
+		WHERE
+		    s.type_code = 'link_type'
+		        AND c.deleted = 0
+		        AND s1.type_code = 'publish_type'
+		<if test="linkName != ''">
+			AND c.link_name LIKE '%' #{linkName} '%'
+		</if>
+		<if test="linkType != '' and linkType != 0">
+			AND c.logo_type=#{linkType}
+		</if>
+		<if test="status != '' and status !=0">
+			AND c.link_publish=#{status}
+		</if>
+		<if test="location != '' and location !=0">
+			AND c.location=#{location}
+		</if>
+		LIMIT #{index},10
+	</select>
+	
+	<select id="getCooperationInfoByCode" resultMap="cooperationResault">
+		SELECT 
+		    c.id as code,
+		    c.link_name as name,
+		    concat_ws('', c.logo_file_dir, c.logo_file_name) as imagepath,
+		    c.link_url as url,
+		    c.link_text as text,
+		    c.logo_type as linktype,
+		    c.location as city,
+		    date_format(c.end_time, '%Y-%m-%d') as deadline
+		FROM
+		    m_cooperation_info c
+		WHERE
+		    c.id = #{code};
+	</select>
+	
+	<insert id="addFriendShipLinkInfo" parameterType="hashmap">
+		INSERT INTO m_cooperation_info (id,link_name,link_url,logo_file_name,logo_file_dir,
+			logo_type,link_text,location,end_time,link_status,created_time,modified_time,
+			created_id,modified_id) VALUES(
+				#{code},#{name},#{url},#{imageName},#{imageUrl},#{type},#{text},
+				#{location},#{deadLine},#{status},now(),now(),#{user},#{user});
+	</insert>
+	
+	<update id="updateFriendShipLinkInfo" parameterType="hashmap">
+		UPDATE m_cooperation_info SET
+			link_name=#{name},link_url=#{url},logo_file_name=#{imageName},logo_file_dir=#{imageUrl},
+			link_text=#{text},logo_type=#{type},location=#{location},end_time=#{deadLine},
+			link_status=#{status},modified_time=now(),modified_id=#{user}
+		WHERE id=#{code};
+	</update>
+	
+	<update id="deleteCooperationByCode" parameterType="list">
+		<foreach collection="code" item="item" index="index" separator=";">
+		UPDATE m_cooperation_info SET
+			deleted=1,modified_time=now(),modified_id=#{user} 
+		WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<update id="publishCooperationByCode" parameterType="list">
+		<foreach collection="code" item="item" index="index" separator=";">
+			UPDATE m_cooperation_info SET
+				link_publish=2,modified_time=now(),modified_id=#{user} 
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<update id="forbidCooperationByCode" parameterType="list">
+		<foreach collection="code" item="item" index="index" separator=";">
+			UPDATE m_cooperation_info SET
+				link_publish=3,modified_time=now(),modified_id=#{user} 
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<select id="getOverdueData" resultType="string">
+		SELECT id FROM m_cooperation_info WHERE to_days(now())-to_days(end_time) > 0;
+	</select>
+	
+	<update id="updateStatus" parameterType="list">
+		<foreach collection="code" item="item" index="index" separator=";">
+			UPDATE m_cooperation_info SET
+				link_publish=4
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<select id="checkIndexByIndex" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM m_cooperation_info
+		WHERE link_index=#{index}
+	</select>
+	
+	<update id="updateSortIndex">
+		UPDATE m_cooperation_info SET
+			link_index=#{index},modified_time=now(),modified_id=#{user} 
+		WHERE id=#{code}
+	</update>
+	
+	<select id="getCount" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*) FROM m_cooperation_info WHERE deleted=0
+		<if test="linkName != ''">
+			AND link_name LIKE '%' #{linkName} '%'
+		</if>
+		<if test="linkType != '' and linkType != 0">
+			AND logo_type=#{linkType}
+		</if>
+		<if test="status != '' and status !=0">
+			AND link_publish=#{status}
+		</if>
+		<if test="location != '' and location !=0">
+			AND location=#{location}
+		</if>
+	</select>
+</mapper>

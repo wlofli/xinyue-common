@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xinyue.manage.dao.NewSubstationDAO">
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="newSubstation">
+		<result column="key" property="key" />
+		<result column="value" property="value" />
+	</resultMap>
+<!-- 	key代表的是substation_id,value代表的是newinfo_id -->
+	<insert id="addNewSubstation">
+		<foreach collection="list" item="item" separator=";">
+			insert into new2substation
+				(tab_new_id,tab_substation_id)
+				values ( #{value},#{item})
+		</foreach>
+			
+	</insert>
+	
+	<delete id="deleteNewSubstation">
+		delete from new2substation
+			where tab_new_id = #{value}
+	</delete>
+<!-- 	获取城市id -->
+	<select id="getNewSubstationList" resultType="string">
+		select tab_substation_id
+			from new2substation
+		where tab_new_id =#{id}
+	</select>
+<!-- 获取城市名称 -->
+	<select id="getNewSubstationListName" resultType="string">
+		SELECT
+			substation_name
+		FROM
+			m_city_substation_info
+		WHERE
+			id IN (
+				SELECT
+					tab_substation_id
+				FROM
+					new2substation
+				WHERE
+					tab_new_id = #{id}
+			)
+		
+	
+	</select>
+
+</mapper>

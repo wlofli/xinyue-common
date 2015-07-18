@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.HelperDAO">
+	<resultMap type="com.xinyue.manage.model.Helper" id="helpResault">
+		<result column="id" property="code"/>
+		<result column="title" property="name"/>
+		<result column="date" property="date"/>
+		<result column="status" property="status"/>
+		<result column="content" property="content"/>
+		<result column="author" property="author"/>
+		<result column="type" property="type"/>
+	</resultMap>
+	
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="selectResault">
+		<result column="skey" property="key"/>
+		<result column="svalue" property="value"/>
+	</resultMap>
+	
+	<select id="getList" resultMap="helpResault" parameterType="int">
+		SELECT 
+		    a.id as id,
+		    a.title as title,
+		    DATE_FORMAT(a.modified_time, '%Y-%m-%d') as date,
+		    s.select_value as status,
+		    h.name as type
+		FROM
+		    m_assist_info a
+		        LEFT JOIN
+		    m_select_info s ON s.select_key = a.help_status
+		        LEFT JOIN
+		    m_help_type h ON a.type = h.id
+		WHERE
+		    a.deleted = 0
+		        AND s.type_code = 'publish_type'
+		ORDER BY created_time
+		LIMIT #{index},10;
+	</select>
+	
+	<select id="getCount" resultType="int">
+		SELECT COUNT(*) FROM m_assist_info WHERE deleted=0;
+	</select>
+	
+	<update id="publishHelperByCode" parameterType="list">
+		<foreach collection="codeList" item="item" index="index" separator=";">
+			UPDATE m_assist_info SET
+				help_status=2,modified_time=now(),modified_id=#{user} 
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<update id="forbidHelperByCode" parameterType="list">
+		<foreach collection="codeList" item="item" separator=";">
+			UPDATE m_assist_info SET
+				help_status=3,modified_time=now(),modified_id=#{user} 
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<update id="deleteHelperByCode" parameterType="list">
+		<foreach collection="codeList" item="item" separator=";">
+			UPDATE m_assist_info SET
+				deleted=1,modified_time=now(),modified_id=#{user} 
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<select id="getHelperByCode" parameterType="String" resultMap="helpResault">
+		SELECT id as id,title as title,DATE_FORMAT(spread_time,'%Y-%m-%d') as date,
+			   help_status as status,content as content,author as author
+		FROM m_assist_info WHERE deleted=0 AND id=#{code}
+	</select>
+	
+	<update id="updateHelperByCode" parameterType="hashmap">
+		UPDATE m_assist_info SET
+			title=#{name},
+			author=#{author},
+			help_status=#{status},
+			type=#{type},
+			content=#{text},
+			spread_time=#{date},
+			modified_time=now(),
+			modified_id=#{user}
+		WHERE id=#{code};
+	</update>
+	
+	<insert id="addHelperByCode" parameterType="hashmap">
+		INSERT INTO m_assist_info(id,title,content,author,type,deleted,spread_time,created_time,
+					created_id,modified_time,modified_id,help_status) 
+		VALUES
+			(#{code},#{name},#{text},#{author},#{type},0,#{date},now(),#{user},now(),#{user},#{status});
+	</insert>
+	
+	<insert id="addHelpType" parameterType="com.xinyue.manage.model.HelpType">
+		insert into 
+			m_help_type(name,order_num)
+		values (#{name},#{orderNum});
+	</insert>
+	
+	<select id="getTypes" resultMap="selectResault">
+		SELECT 
+		    id as skey, name as svalue
+		FROM
+		    moke.m_help_type
+		order by id;
+	</select>
+</mapper>

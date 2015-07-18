@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wenhai.you -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.ProductDao">
+
+	
+	<select id="findList" resultMap="product_list" parameterType="com.xinyue.manage.beans.ProductInfo">
+		select * from m_product_info i  
+			left join m_product_type t on i.type = t.id
+		 	left join m_bank_info b on i.bank = b.id
+		 	inner join m_select_info s on i.status = s.select_key
+		where i.deleted = 0 and s.type_code = 'product_status'
+		 <if test="productName != null and productName != ''">
+		 	and i.name = #{productName}
+		 </if>
+		 <if test="code != null and code != ''">
+		 	and i.code = #{code}
+		 </if>
+		 <if test="type != null and type != ''">
+		 	and i.type = #{type}
+		 </if>
+		 <if test="bank != null and bank != ''">
+		 	and i.bank = #{bank}
+		 </if>
+		 <if test="status != null and status != 0">
+		 	and i.status = #{status}
+		 </if>
+		 <if test="sort != null and sort == 1">
+		 	order by add_time asc
+		 </if>
+		 <if test="sort != null and sort == 2">
+		 	order by add_time desc
+		 </if>
+		order by i.created_time desc limit #{start} , #{pageSize}
+	</select>
+	
+	<resultMap type="com.xinyue.manage.model.Product" id="product_list">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="credit" column="credit"/>
+		<result property="content" column="content"/>
+		<result property="code" column="code"/>
+		<result property="area" column="area"/>
+		<result property="recommend" column="recommend"/>
+		<result property="downTime" column="down_time"/>
+		<result property="addTime" column="add_time"/>
+		<result property="deleted" column="deleted"/>
+		<result property="createdTime" column="created_time"/>
+		<result property="modifiedTime" column="modified_time"/>
+		<result property="createUser" column="created_id"/>
+		<result property="modifiedUser" column="modified_id"/>
+		<association property="type" column="type" javaType="com.xinyue.manage.model.ProductType" select="getProductTypeById"></association>
+		<association property="bank" column="bank" javaType="com.xinyue.manage.model.BankInfo" select="getBankById"></association>
+		<association property="status" column="status" javaType="com.xinyue.manage.model.Select" select="getSelectById"></association>
+	</resultMap>
+	<select id="getProductTypeById" resultType="com.xinyue.manage.model.ProductType">
+		select id id , name name from m_product_type where id = #{type} 
+	</select>
+	<select id="getBankById" resultType="com.xinyue.manage.model.BankInfo">
+		select id id , name name from m_bank_info where id = #{bank} 
+	</select>
+	<select id="getSelectById" resultType="com.xinyue.manage.model.Select">
+		select type_code dicCode , select_key dicKey , select_value dicVal from m_select_info where select_key = #{status} and type_code = 'product_status'
+	</select>
+	<select id="getCount" resultType="int" parameterType="com.xinyue.manage.beans.ProductInfo">
+		select
+			count(i.id) 
+		from m_product_info  i  
+			left join m_product_type t on i.type = t.id
+		 	left join m_bank_info b on i.bank = b.id
+		 	inner join m_select_info s on i.status = s.select_key
+		where i.deleted = 0 and s.type_code = 'product_status'
+		 <if test="productName != null and productName != ''">
+		 	and i.name = #{productName}
+		 </if>
+		 <if test="code != null and code != ''">
+		 	and i.code = #{code}
+		 </if>
+		 <if test="type != null and type != ''">
+		 	and i.type = #{type}
+		 </if>
+		 <if test="bank != null and bank != ''">
+		 	and i.bank = #{bank}
+		 </if>
+		 <if test="status != null and status != 0">
+		 	and i.status = #{status}
+		 </if>
+	</select>
+	
+	
+	<update id="updateShelve">
+		update m_product_info set status = 2 , modified_time = now() , modified_id = #{modifyUser} where id = 
+		<foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	
+	<update id="updateUnShelve">
+		update m_product_info set status = 3 , modified_time = now() , modified_id = #{modifyUser}  where id = 
+		<foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	
+	
+	<select id="getProductById" resultMap="pro_profile">
+		select * from m_product_info 
+		
+		where id = #{id} 
+	</select>
+	
+	<resultMap type="com.xinyue.manage.model.Product" id="pro_profile">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="credit" column="credit"/>
+		<result property="content" column="content"/>
+		<result property="code" column="code"/>
+		<result property="area" column="area"/>
+		<result property="recommend" column="recommend"/>
+		<result property="downTime" column="down_time"/>
+		<result property="addTime" column="add_time"/>
+		<result property="deleted" column="deleted"/>
+		<result property="createdTime" column="created_time"/>
+		<result property="modifiedTime" column="modified_time"/>
+		<result property="createUser" column="created_id"/>
+		<result property="modifiedUser" column="modified_id"/>
+		<association property="type" column="type" javaType="com.xinyue.manage.model.ProductType" select="getProductTypeById"></association>
+		<association property="bank" column="bank" javaType="com.xinyue.manage.model.BankInfo" select="getBankById"></association>
+		<association property="status" column="status" javaType="com.xinyue.manage.model.Select" select="getSelectById"></association>
+		<collection property="file" column="id" javaType="java.util.ArrayList" ofType="com.xinyue.manage.model.ProductFile" select="findProductFileList"></collection>
+	</resultMap>
+    <select id="findProductFileList" resultType="com.xinyue.manage.model.ProductFile">
+    	select 
+			 id id ,
+			 file_name fileName, 
+			 file_type fileType,
+			 created_time createdTime,
+			 modified_time modifiedTime,
+			 created_id createUser,
+			 modified_id modifyUser
+			  from m_product_file_type where product_id = #{id} and deleted = 0
+    </select>
+     
+     <insert id="addProduct"  parameterType="com.xinyue.manage.model.Product">
+     	<selectKey resultType="string" keyProperty="id" order="BEFORE" >
+	      SELECT uuid() id
+	    </selectKey>
+     	insert into m_product_info
+     	(id , name , type , bank , credit , area , code , recommend , content , add_time
+     	
+     	 <choose>
+				<when test="downTime">
+					, down_time
+				</when>
+			</choose> , created_id, created_time ,status, deleted)
+     	values(#{id},#{name},#{type.id},#{bank.id},#{credit},#{area},#{code},#{recommend},#{content}
+     	<choose>
+				<when test="addTime">
+					, #{addTime}
+				</when>
+				<otherwise>
+					, curdate()
+				</otherwise>
+			</choose>
+     	  <choose>
+				<when test="downTime">
+					, #{downTime}
+				</when>
+			</choose>,#{createUser},now(),#{state},0)
+	     
+     </insert>
+     
+     <update id="updateProduct" parameterType="com.xinyue.manage.model.Product">
+     	update m_product_info set 
+		name = #{name} , 
+		type=#{type.id} , 
+		bank=#{bank.id} , 
+		area = #{area}, 
+		code=#{code} , 
+		content=#{content} , 
+		<choose>
+			<when test="addTime">
+				add_time=#{addTime},
+			</when>
+			<otherwise>
+				add_time=curdate(),
+			</otherwise>
+		</choose> 
+		<choose>
+			<when test="downTime">
+				down_time=#{down_time},
+			</when>
+		</choose>
+		modified_id=#{modifiedUser}, 
+		modified_time=now() , 
+		status=#{state}
+		where id = #{id}
+     </update>
+     
+     <update id="updateStatus">
+     	<![CDATA[
+	     	update m_product_info set status= case 
+				when add_time>curdate() then 1 
+				when add_time<curdate() and down_time>curdate() then 2
+				when down_time<curdate() then 3  end 
+     	]]>
+     </update>
+     
+     
+<!--      add by lzc -->
+     <select id="getListByRecommend" resultType="com.xinyue.manage.model.Product">
+     	select * from m_product_info
+     	where deleted = 0 and recommend = #{recommend}
+     </select>
+</mapper>

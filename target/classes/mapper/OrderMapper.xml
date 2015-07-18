@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xinyue.manage.dao.OrderDAO">
+	<resultMap  id="order" type="com.xinyue.manage.model.Order" >
+		<result column="id" property="id"/>
+		<result column="member_id" property="memberId"/>
+		<result column="license_info" property="licenseInfo"/>
+		<result column="applicant" property="applicant"/>
+		<result column="bank" property="bank"/>
+		<result column="name" property="name"/>
+		<result column="link_user_name" property="linkUserName"/>
+		<result column="order_number" property="orderNumber"/>
+		<result column="debt_info" property="debtInfo"/>
+		<result column="real_estate" property="realEstate"/>
+		<result column="applicant_info" property="applicantInfo"/>
+		<result column="rating_info" property="ratingInfo"/>
+		<result column="credit" property="credit"/>
+		<result column="company_info" property="companyInfo"/>
+		<result column="link_phone" property="linkPhone"/>
+		<result column="code" property="code"/>
+		<result column="product_info" property="productInfo"/>
+		<result column="product_name" property="productName"/>
+		<result column="product_code" property="productCode"/>
+		<result column="commit_time" property="commitTime"/>
+		<result column="status" property="status"/>
+		<result column="audite_time" property="auditeTime"/>
+		<result column="audite_person" property="auditePerson"/>
+		<result column="credit_real" property="creditReal"/>
+		<result column="blank_audite_time" property="blankAuditeTime"/>
+		<result column="blank_audite_remark" property="blankAuditeRemark"/>
+		<result column="blank_audite_status" property="blankAuditeStatus"/>
+		<result column="tax_audite_time" property="taxAuditeTime"/>
+		<result column="tax_audite_remark" property="taxAuditeRemark"/>
+		<result column="tax_audite_status" property="taxAuditeStatus"/>
+		<result column="applicat_person" property="applicatPerson"/>
+		<result column="deleted" property="deleted"/>
+		<result column="remark" property="remark"/>
+		<result column="created_time" property="createdTime"/>
+		<result column="created_id" property="createdId"/>
+		<result column="modified_id" property="modifiedId"/>
+		<result column="modified_time" property="modifiedTime"/>
+		<result column="applicant_save" property="applicantSave"/>
+		<result column="business_save" property="businessSave"/>
+		<result column="company_save" property="companySave"/>
+		<result column="debt_save" property="debtSave"/>
+		<result column="province" property="province"/>
+		<result column="city" property="city"/>
+		<result column="zone" property="zone"/>
+		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association>
+		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
+		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
+		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association>
+		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association>
+	</resultMap>
+	
+	<select id="getMemberStatus">
+		select select_value from m_select_info where select_key =#{member_status} and type_code = 'order_member_status'
+	</select>
+	<select id="getOrderStatus" resultType="String">
+		select select_value from m_select_info where select_key = #{order_status} and type_code = 'order_get_status'
+	</select>
+	
+	<select id="getOrderType" resultType="String">
+		select select_value from m_select_info where select_key = #{order_type} and type_code = 'order_type'
+	</select>
+	
+	<select id="getBlankAuditePersonName" resultType="String">
+		select name from m_user_info where id = #{blank_audite_person}
+	</select>
+	
+	<select id="getTaxAuditePersonName" resultType="String">
+		select name from m_user_info where id = #{tax_audite_person}
+	</select>
+	
+	<resultMap id="selectInfo" type="com.xinyue.manage.beans.SelectInfo">
+		<result column="key" property="key" />
+		<result column="value" property="value" />
+	</resultMap>
+	
+	
+	<select id="getOrder" resultMap="order">
+			SELECT
+				o.id,
+				applicant,
+				member_id,
+				b.name as bank,
+				d.`name` as product_name,
+				o.name,
+				link_user_name,
+				order_number,
+				o.order_type,
+				o.order_status,
+				o.credit,
+				o.credit_real,
+				link_phone,
+				d.code as product_code,
+				o.code,
+				commit_time,
+				s.select_value AS status,
+				audite_time,
+				audite_person,
+				applicat_person,
+				company_info,
+				blank_audite_time,
+				blank_audite_remark,
+				blank_audite_status,
+				blank_audite_person,
+				tax_audite_remark,
+				tax_audite_time,
+				tax_audite_status,
+				tax_audite_person,
+				o.created_time
+			FROM
+				m_order_info o
+			LEFT JOIN m_select_info    s ON o.status = s.select_key AND s.type_code = #{typeCode}
+			LEFT JOIN m_bank_info b ON o.bank = b.id
+			LEFT JOIN m_product_info   d ON d.id = o.product_info
+			where o.id = #{id}
+	</select>
+	
+	<select id="getListByPage" resultMap="order">
+		SELECT
+			o.id,
+			applicant,
+			b.name as bank,
+			d.`name` as product_name,
+			o.name,
+			link_user_name,
+			order_number,
+			o.credit,
+			o.order_type,
+			o.order_status,
+			link_phone,
+			d.code as product_code,
+			o.code,
+			commit_time,
+			s.select_value as status,
+			audite_time,
+			audite_person,
+			applicat_person,
+			company_info,
+			blank_audite_time,
+			blank_audite_remark,
+			blank_audite_status,
+			blank_audite_person,
+			tax_audite_remark,
+			tax_audite_time,
+			tax_audite_status,
+			tax_audite_person,
+			o.created_time,
+			p.`name` AS province,
+			c.`name` AS city,
+			z.`name` AS zone
+		FROM
+			m_order_info o
+		LEFT JOIN m_applicant_info m ON o.applicant_info = m.id
+		LEFT JOIN m_area_province  p ON m.area_province = p.id
+		LEFT JOIN m_area_city      c ON m.area_city = c.id
+		LEFT JOIN m_area_zone      z ON m.area_zone = z.id
+		LEFT JOIN m_select_info    s ON s.select_key = o.`status` AND s.type_code = #{typeCode}
+		LEFT JOIN m_bank_info      b ON o.bank = b.id
+		LEFT JOIN m_product_info   d ON d.id = o.product_info
+		where o.deleted = 0
+		<if test="order.code != null and order.code != ''">
+			and o.code like '%' #{order.code} '%'
+		</if>
+		<if test="order.companyInfo != null and order.companyInfo != ''">
+			and company_info like '%' #{order.companyInfo} '%'
+		</if>
+		<if test="order.applicatPerson != null and order.applicatPerson != ''">
+			and applicat_person like '%' #{order.applicatPerson} '%'
+		</if>
+		<if test="order.linkPhone != null and order.linkPhone != ''">
+			and link_phone like '%' #{order.linkPhone} '%'
+		</if>
+		<if test="order.status != '' and order.status != null ">
+			and o.status = #{order.status}
+		</if>
+		<if test="order.orderType != '' and order.orderType != null ">
+			and o.order_type = #{order.orderType}
+		</if>
+		<if test="order.orderStatus != '' and order.orderStatus != null ">
+			and o.order_status = #{order.orderStatus}
+		</if>
+		limit #{pageNo}, #{pageSize}
+	</select>
+<!-- 	orderride-> getListByPage -->
+	<select id="getListByStatus" resultMap="order">
+		SELECT
+			o.id,
+			applicant,
+			b.name as bank,
+			d.`name` as product_name,
+			o.name,
+			link_user_name,
+			order_number,
+			o.credit,
+			o.order_type,
+			o.order_status,
+			link_phone,
+			d.code as product_code,
+			o.code,
+			commit_time,
+			s.select_value as status,
+			audite_time,
+			audite_person,
+			applicat_person,
+			company_info,
+			blank_audite_time,
+			blank_audite_remark,
+			blank_audite_status,
+			blank_audite_person,
+			tax_audite_remark,
+			tax_audite_time,
+			tax_audite_status,
+			tax_audite_person,
+			o.created_time,
+			p.`name` AS province,
+			c.`name` AS city,
+			z.`name` AS zone
+		FROM
+			m_order_info o
+		LEFT JOIN m_applicant_info m ON o.applicant_info = m.id
+		LEFT JOIN m_area_province  p ON m.area_province = p.id
+		LEFT JOIN m_area_city      c ON m.area_city = c.id
+		LEFT JOIN m_area_zone      z ON m.area_zone = z.id
+		LEFT JOIN m_select_info    s ON s.select_key = o.`status` AND s.type_code = #{typeCode}
+		LEFT JOIN m_bank_info      b ON o.bank = b.id
+		LEFT JOIN m_product_info   d ON d.id = o.product_info
+		where o.deleted = 0
+		<if test="order.code != null and order.code != ''">
+			and o.code like '%' #{order.code} '%'
+		</if>
+		<if test="order.companyInfo != null and order.companyInfo != ''">
+			and company_info like '%' #{order.companyInfo} '%'
+		</if>
+		<if test="order.applicatPerson != null and order.applicatPerson != ''">
+			and applicat_person like '%' #{order.applicatPerson} '%'
+		</if>
+		<if test="order.linkPhone != null and order.linkPhone != ''">
+			and link_phone like '%' #{order.linkPhone} '%'
+		</if>
+		<if test="order.status != '' and order.status != null ">
+			and o.status = #{order.status}
+		</if>
+		<if test="order.orderType != '' and order.orderType != null ">
+			and o.order_type = #{order.orderType}
+		</if>
+		<if test="list != null">
+			and o.status in 
+		<foreach collection="list" item="id" index="index" separator="," open="(" close=")">#{id}</foreach>
+		</if>
+		limit #{pageNo}, #{pageSize}
+	</select>
+	
+	<select id="getListByMemberId" resultMap="order">
+		select o.id,
+			   o.code,
+			   d.`name` as product_name,
+			   b.name as bank,
+			   o.created_time,
+			   o.credit,
+			   s.select_value as status
+			 
+		from m_order_info o
+		LEFT JOIN m_select_info    s ON s.select_key = o.`status` AND s.type_code = #{typeCode}
+		LEFT JOIN m_bank_info      b ON o.bank = b.id
+		LEFT JOIN m_product_info   d ON d.id = o.product_info
+		where o.deleted != 1 and o.member_id = #{id}
+		
+		<if test="order.status != '' and order.status != null">
+			<choose>
+				<when test="order.status == 2">
+					and o.status in (1,2)
+				</when>
+				
+				<when test="order.status == 3">
+					and o.status in (3,4)
+				</when>
+				<when test="order.status == 7">
+					and o.status in (6,7)
+				</when>
+				<otherwise>
+					and o.status = #{order.status}
+				</otherwise>
+			</choose>
+		</if>	   
+		
+		<if test="order.startTime != '' and order.startTime != null">
+			and o.created_time >= #{order.startTime}
+		</if>
+		<if test="order.endTime != '' and order.endTime != null">
+		<![CDATA[
+	     	and o.created_time <= #{order.endTime}
+     	]]>
+		</if>
+		<if test="order.sort != '' and order.sort != null">
+			order by o.created_time desc
+		</if>
+		limit #{pageNo}, #{pageSize} 
+	</select>
+	
+	
+	<select id="getStatus" resultMap="selectInfo">
+		select 
+			   select_key as  'key',
+			   select_value as 'value'
+			from m_select_info
+		where type_code = #{typeCode}  
+	
+	</select>
+
+	<select id="getCount" resultType="int">
+		select count(*) from m_order_info
+		where deleted = 0
+		<if test="order.id != null and order.id != ''">
+			and id like '%' #{order.id} '%'
+		</if>
+		<if test="order.companyInfo != null and order.companyInfo != ''">
+			and company_info like '%' #{order.companyInfo} '%'
+		</if>
+		<if test="order.applicatPerson != null and order.applicatPerson != ''">
+			and applicat_person like '%' #{order.applicatPerson} '%'
+		</if>
+		<if test="order.linkPhone != null and order.linkPhone != ''">
+			and link_phone like '%' #{order.linkPhone} '%'
+		</if>
+		<if test="order.status != '' and order.status != null">
+			and status = #{order.status}
+		</if>
+	</select>
+	
+	<select id="getCountByStatus" resultType="int">
+		select count(*) from m_order_info
+		where deleted = 0
+		<if test="order.id != null and order.id != ''">
+			and id like '%' #{order.id} '%'
+		</if>
+		<if test="order.companyInfo != null and order.companyInfo != ''">
+			and company_info like '%' #{order.companyInfo} '%'
+		</if>
+		<if test="order.applicatPerson != null and order.applicatPerson != ''">
+			and applicat_person like '%' #{order.applicatPerson} '%'
+		</if>
+		<if test="order.linkPhone != null and order.linkPhone != ''">
+			and link_phone like '%' #{order.linkPhone} '%'
+		</if>
+		<if test="order.status != '' and order.status != null">
+			and status = #{order.status}
+		</if>
+		<if test="list != null">
+				and status in
+				<foreach collection="list" item="status" index="index" open="(" close=")" separator=",">
+					#{status}
+				</foreach>
+		</if>
+	</select>
+	
+	<select id="getDocumentInfoById" parameterType="string" resultType="com.xinyue.manage.model.Document">
+		select 
+		    d.id as documentId, 
+		    d.file_name as documentName, 
+		    d.file_dir as documentDir, 
+		    t.name as documentType
+		from
+		    m_document_info d
+		        left join
+		    m_document_type t ON d.file_type = t.type_id
+		where
+		    d.member_id in (select document_id from m_order_document where order_id = #{id})
+	</select>
+	
+	
+	
+	<update id="updateOrder">
+		update
+			m_order_info
+		set 
+			status = #{order.status},
+			modified_time = now(),
+			modified_id = #{order.modifiedId}
+		<if test="order.status == 2 || order.status == 3 || order.status == 5">
+		   ,tax_audite_time = now(),
+			tax_audite_person = #{order.taxAuditePerson},
+			tax_audite_remark = #{order.taxAuditeRemark}
+			<if test="order.status == 3">
+				,tax_audite_status = 1
+			</if>
+			<if test="order.status == 5">
+				,tax_audite_status = 0
+			</if>
+		</if>
+		<if test="order.status == 7 || order.status == 8 || order.status == 9">
+			,blank_audite_time = now(),
+			blank_audite_person = #{order.blankAuditePerson},
+			blank_audite_remark = #{order.blankAuditeRemark}
+			<if test="order.status == 8">
+				,blank_audite_status = 1
+			</if>
+			<if test="order.status == 9">
+				,blank_audite_status = 0
+			</if>
+		</if>
+		<if test="order.status == 10">
+			,credit_real = #{order.creditReal},
+			audite_time =now(),
+			remark= #{order.remark}
+		
+		</if>
+		where id = #{order.id}
+	</update>
+	
+	<update id="updateOrderTypeList">
+		update m_order_info
+			set modified_time = now(),
+				modified_id = #{modifiedId},
+				status = #{status}
+		where id = 
+		<foreach collection="list" index="index" item="id" separator=" or id =">
+			#{id}
+		</foreach>
+	</update>
+	
+	
+	
+	
+
+</mapper>

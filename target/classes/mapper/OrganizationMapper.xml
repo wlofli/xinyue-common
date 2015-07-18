@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wenhai.you -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.OrganizationDao">
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="selectResult">
+		<result column="skey" property="key" />
+		<result column="svalue" property="value" />
+	</resultMap>
+
+	<select id="findPageData" resultType="com.xinyue.manage.model.Organization" 
+		parameterType="com.xinyue.manage.beans.OrganizationInfo">
+		select o.id id,
+			o.name name,
+			s.name genre,
+			o.number number,
+			site site,
+			postcode postcode,
+			linkman linkman,
+			i.select_value sex ,
+			position position,
+			telphone telphone,
+			fixed fixed ,
+			fax fax,
+			mail mail,
+			o.status status,
+			o.deleted deleted 
+		from m_organization_info o 
+		inner join  (select min(created_time) mintime , number from m_organization_info group by number) b on o.number = b.number and o.created_time = b.mintime 
+		left join m_organization_type s on o.genre = s.otypeid 
+		inner join m_select_info i on o.sex = i.select_key
+		where o.deleted = 0 and i.type_code = 'sex' 
+			<if test="name != null and name != ''"> and o.name like concat(#{name},'%')</if>
+			<if test="genre != null and genre != 0 "> and o.genre = #{genre}</if>
+			<if test="linkman != null and linkman != ''"> and o.linkman like concat(#{linkman} , '%')</if>
+			<if test="telphone != null and telphone != ''"> and o.telphone like concat(#{telphone},'%')</if>
+			<if test="status != null and status != ''"> and o.status = #{status}</if>
+		 limit #{start} , #{pageSize}
+	
+	</select>
+
+	<select id="getOrganizationCount" resultType="int"
+		parameterType="com.xinyue.manage.beans.OrganizationInfo">
+		select count(*)
+			from m_organization_info o 
+			inner join  (select min(created_time) mintime , number from m_organization_info group by number) b on o.number = b.number and o.created_time = b.mintime 
+			left join m_organization_type s on o.genre = s.otypeid 
+			inner join m_select_info i on o.sex = i.select_key
+			where o.deleted = 0 and i.type_code = 'sex' 
+			<if test="name != null and name != ''"> and o.name like concat(#{name},'%')</if>
+			<if test="genre != null and genre != 0 "> and o.genre = #{genre}</if>
+			<if test="linkman != null and linkman != ''"> and o.linkman like concat(#{linkman} , '%')</if>
+			<if test="telphone != null and telphone != ''"> and o.telphone like concat(#{telphone},'%')</if>
+			<if test="status != null and status != ''"> and o.status = #{status}</if>
+	</select>
+
+	<update id="updateEnable">
+		update m_organization_info set status = 0 , modified_time=now() , modified_id = #{modifyUser}
+		where number = 
+		<foreach collection="list" item="item" index="index" separator=" or number = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	
+	<update id="updateDisable">
+		update m_organization_info set status = 1 , modified_time=now() , modified_id = #{modifyUser}
+		where number = 
+		<foreach collection="list" item="item" index="index" separator=" or number = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	
+	<update id="updateMarker">
+		update m_organization_info set deleted = 1 , modified_time=now() , modified_id = #{modifyUser}
+		where number = 
+		<foreach collection="list" item="item" index="index" separator=" or number = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	
+
+	
+	<insert id="addOrganization">
+		insert into m_organization_info
+		 (`id`, `name`, `genre`, `number`, `site`, `postcode`, `linkman`, `sex`, `position`, `telphone`, `fixed`, `fax`, `mail` , pinying , created_time , created_id , deleted)
+		VALUES 
+		 (uuid() , #{org.name} , #{org.genre} , #{org.number} , #{org.site} , #{org.postcode} , #{org.linkman} , #{org.sex} , #{org.position} , #{org.telphone} , #{org.fixed} , #{org.fax} , #{org.mail} , #{org.pinyin},now() , #{createUser} , 0);
+		
+	</insert>
+	
+	<update id="updateOrganization">
+		update m_organization_info set 
+			name = #{org.name}, 
+			genre = #{org.genre}, 
+			number =#{org.number} , 
+			site = #{org.site}, 
+			postcode = #{org.postcode},
+			linkman =  #{org.linkman}, 
+			sex = #{org.sex}, 
+			position = #{org.position}, 
+			telphone = #{org.telphone}, 
+			fixed = #{org.fixed}, 
+			fax = #{org.fax}, 
+			mail =#{org.mail} ,
+			pinying=#{org.pinyin},
+			modified_time = now(),
+			modified_id = #{modifyUser}
+		where id = #{org.id}
+	</update>
+	
+	<select id="findListByNumber" resultType="com.xinyue.manage.model.Organization">
+		select
+			o.id id,
+			o.name name,
+			s.name genre,
+			o.number number,
+			site site,
+			postcode postcode,
+			linkman linkman,
+			i.select_Value sex ,
+			position position,
+			telphone telphone,
+			fixed fixed ,
+			fax fax,
+			mail mail,
+			status status,
+			o.deleted deleted
+		from m_organization_info o 
+			left join m_organization_type s on o.genre = s.otypeid 
+			inner join m_select_info i on o.sex = i.select_key 
+		where o.deleted = 0  and i.type_code = 'sex' and 
+		o.number = #{number} 
+	</select>
+	
+	<select id="editListByNumber" resultType="com.xinyue.manage.model.Organization">
+		select
+			o.id id,
+			o.name name,
+			o.genre genre,
+			o.number number,
+			site site,
+			postcode postcode,
+			linkman linkman,
+			i.select_key sex ,
+			position position,
+			telphone telphone,
+			fixed fixed ,
+			fax fax,
+			mail mail,
+			status status,
+			o.deleted deleted
+		from m_organization_info o 
+			left join m_organization_type s on o.genre = s.otypeid 
+			inner join m_select_info i on o.sex = i.select_key 
+		where o.deleted = 0  and i.type_code = 'sex' and 
+		o.number = #{number} 
+	</select>
+	
+	<select id="findOrgNameByPinying" resultType="com.xinyue.manage.model.Organization">
+		select * from m_organization_info where deleted = 0 and status = 0 and pinying like concat(#{pinying} , '%') or name like concat(#{pinying} , '%') group by number
+	</select>
+	
+	<select id="getOrganizations" resultMap="selectResult">
+		SELECT 
+		    number as skey, name as svalue
+		FROM
+		    m_organization_info
+		where
+		    deleted = 0
+		order by number;
+	</select>
+</mapper>

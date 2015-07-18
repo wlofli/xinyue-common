@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xinyue.manage.dao.FastProductDAO">
+	<resultMap type="com.xinyue.manage.model.FastProduct" id="fspdt">
+		<result column="id" property="id" />
+		<result column="company" property="company" />
+		<result column="code" property="code" />
+		<result column="receiver" property="receiver" />
+		<result column="area_province" property="areaProvince" />
+		<result column="area_city" property="areaCity" />
+		<result column="area_zone" property="areaZone" />
+		<result column="contact_name" property="contactName" />
+		<result column="deleted" property="deleted" />
+		<result column="status" property="status" />
+		<result column="value" property="statusValue" />
+		<result column="credit" property="credit" />
+		<result column="contact_phone" property="contactPhone" />
+		<result column="created_id" property="createdId" />
+		<result column="created_time" property="createdTime" />
+		<result column="modified_id" property="modifiedId" />
+		<result column="modified_time" property="modifiedTime" />
+<!-- 		<result column="order_status" property="orderStatus" /> -->
+<!-- 		<result column="order_type" property="orderType" /> -->
+		<result column="credit_real" property="creditReal"/>
+		<result column="blank_audite_time" property="blankAuditeTime"/>
+		<result column="blank_audite_remark" property="blankAuditeRemark"/>
+		<result column="blank_audite_status" property="blankAuditeStatus"/>
+		<result column="tax_audite_time" property="taxAuditeTime"/>
+		<result column="tax_audite_remark" property="taxAuditeRemark"/>
+		<result column="tax_audite_status" property="taxAuditeStatus"/>
+		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
+		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
+		
+		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association>
+		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association>
+	</resultMap>
+	
+	<select id="getOrderStatus" resultType="String">
+		select select_value from m_select_info where select_key = #{order_status} and type_code = 'order_get_status'
+	</select>
+	
+	<select id="getOrderType" resultType="String">
+		select select_value from m_select_info where select_key = #{order_type} and type_code = 'order_type'
+	</select>
+	<select id="getBlankAuditePersonName" resultType="String">
+		select name from m_user_info where id = #{blank_audite_person}
+	</select>
+	
+	<select id="getTaxAuditePersonName" resultType="String">
+		select name from m_user_info where id = #{tax_audite_person}
+	</select>
+	<resultMap id="selectInfo" type="com.xinyue.manage.beans.SelectInfo">
+		<result column="key" property="key" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	
+	<select id="getListByPage" resultMap="fspdt">
+		select m.id,
+			   m.company,
+			   m.code,
+			   u.name receiver,
+			   p.name area_province,
+			   c.name area_city,
+			   z.name area_zone,
+			   m.contact_name,
+			   m.order_type,
+			   m.order_status,
+			   m.deleted,
+			   s.select_value as `status`,
+			   m.credit,
+			   m.contact_phone,
+			   m.created_id,
+			   m.created_time,
+			   m.modified_id,
+			   m.modified_time,
+			   m.remark
+			 from m_product_fast_info  m
+			 left join m_area_province p on  m.area_province = p.id
+			 left join m_area_city     c on m.area_city = c.id
+			 left join m_area_zone     z on m.area_zone = z.id
+			 left join m_select_info   s on s.select_key = m.status and type_code = #{typeCode}
+			 left join m_user_info     u on u.id = m.receiver
+			 where
+			 m.deleted = 0
+			 <if test="fspdt.code != null and fspdt.code !=''">
+			 	and m.code like '%' #{fspdt.code} '%'
+			 </if>
+			 <if test="fspdt.company != null and fspdt.company !=''">
+			 	and company like '%' #{fspdt.company} '%'
+			 </if>
+			 <if test="fspdt.contactName != null and fspdt.contactName !=''">
+			 	and contact_name like '%'	#{fspdt.contactName} '%'
+			 </if>
+			 <if test="fspdt.contactPhone != null and fspdt.contactPhone !=''">
+			 	and contact_phone like '%' #{fspdt.contactPhone} '%'
+			 </if>
+			 <if test="fspdt.status != '' and fspdt.status != null">
+			 	and m.status = #{fspdt.status}
+			 </if>
+			 <if test="fspdt.orderType != '' and fspdt.orderType != null">
+			 	and m.order_type = #{fspdt.orderType}
+			 </if>
+			 <if test="fspdt.orderStatus != '' and fspdt.orderStatus != null">
+			 	and m.order_status = #{fspdt.orderStatus}
+			 </if>
+			 
+			 limit #{pageNo},#{pageSize}
+	</select>
+	
+	
+	<select id="countFastProduct" resultType="int">
+		select count(*)
+			 from m_product_fast_info 
+			 where
+			 deleted = 0
+			 <if test="fspdt.id != null and fspdt.id !=''">
+			 	and id like '%' #{fspdt.id} '%'
+			 </if>
+			 <if test="fspdt.company != null and fspdt.company !=''">
+			 	and company like '%' #{fspdt.company} '%'
+			 </if>
+			 <if test="fspdt.contactName != null and fspdt.contactName !=''">
+			 	and contact_name like '%'	#{fspdt.contactName} '%'
+			 </if>
+			 <if test="fspdt.contactPhone != null and fspdt.contactPhone !=''">
+			 	and contact_phone like '%' #{fspdt.contactPhone} '%'
+			 </if>
+			  <if test="fspdt.status != '' and fspdt.status != null">
+			 	and status = #{fspdt.status}
+			 </if>
+	</select>
+	
+	
+	
+	<select id="getFastProduct" resultMap="fspdt">
+		select m.id,
+			   m.company,
+			   m.code,
+			   u.name receiver,
+			   p.name area_province,
+			   c.name area_city,
+			   z.name area_zone,
+			   m.contact_name,
+			   m.order_type,
+			   m.order_status,
+			   m.deleted,
+			   m.tax_audite_time,
+			   m.tax_audite_person,
+			   m.tax_audite_status,
+			   m.tax_audite_remark,
+			   m.blank_audite_time,
+			   m.blank_audite_person,
+			   m.blank_audite_status,
+			   m.blank_audite_remark,
+			   s.select_value as `status`,
+			   m.credit,
+			   m.credit_real,
+			   m.contact_phone,
+			   m.created_id,
+			   m.created_time,
+			   m.modified_id,
+			   m.modified_time,
+			   m.remark
+			 from m_product_fast_info  m
+			 left join m_area_province p on  m.area_province = p.id
+			 left join m_area_city     c on m.area_city = c.id
+			 left join m_area_zone     z on m.area_zone = z.id
+			 left join m_select_info   s on s.select_key = m.status and type_code = #{typeCode} 
+			 left join m_user_info     u on u.id = m.receiver
+		where m.id= #{id}
+	</select>
+	
+	<select id="getStatus" resultMap="selectInfo">
+		select 
+			   select_key as  'key',
+			   select_value as 'value'
+			from m_select_info
+		where type_code = #{typeCode}
+	</select>
+	<update id="modifiedFastProductStatus">
+		update m_product_fast_info
+			set `status` = #{fspdt.status},
+				modified_id = #{name},
+				modified_time = now()
+				<if test="fspdt.status == 2 || fspdt.status == 3 || fspdt.status == 5">
+					,tax_audite_time = now(),
+					tax_audite_person = #{fspdt.taxAuditePerson},
+					tax_audite_remark = #{fspdt.taxAuditeRemark}
+					<if test="fspdt.status == 3">
+						,tax_audite_status = 1
+					</if>
+					<if test="fspdt.status == 5">
+						,tax_audite_status = 0
+					</if>
+				</if>
+				<if test="fspdt.status == 7 || fspdt.status == 8 || fspdt.status == 9">
+					,blank_audite_time = now(),
+					blank_audite_person = #{fspdt.blankAuditePerson},
+					blank_audite_remark = #{fspdt.blankAuditeRemark}
+					<if test="fspdt.status == 8">
+						,blank_audite_status = 1
+					</if>
+					<if test="fspdt.status == 9">
+						,blank_audite_status = 0
+					</if>
+				</if>
+				<if test="fspdt.status == 10">
+					,credit_real = #{fspdt.creditReal},
+					receive_time =now(),
+					remark= #{fspdt.remark},
+					receiver = #{name}
+				</if>
+			where
+				id = #{fspdt.id}
+	</update>
+	
+	<update id="updateFastProductStatusList">
+		update m_product_fast_info
+		  set `status` = #{status},
+		  	 modified_time = now(),
+		  	 modified_id = #{modifiedId}
+		  where
+		    id in 
+		    <foreach collection="list" item="id" index="index" separator="," open="(" close=")">#{id}</foreach>
+	</update>
+</mapper>

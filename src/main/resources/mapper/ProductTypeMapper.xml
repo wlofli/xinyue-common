@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wenhai.you -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.ProductTypeDao">
+	<select id="findProductTypeList" resultType="com.xinyue.manage.model.ProductType">
+		select 
+			id id , 
+			name name
+		from m_product_type where deleted = 0 
+	</select>
+	
+	<select id="findTypeFirst" resultType="com.xinyue.manage.model.ProductType" parameterType="com.xinyue.manage.beans.ProductTypeInfo">
+		select 
+			id id,
+			name name,
+			status status,
+			deleted deleted,
+			created_time createdTime,
+			modified_time modifiedTime,
+			created_id createUser,
+			modified_id modifyUser 
+		from m_product_type where parent_id is null and deleted = 0 
+		order by created_time desc 
+		limit #{fstart} , #{pageSize}
+	</select>
+	
+	<select id="getTypeFirstCount" resultType="int">
+		select 
+			count(id)
+		from m_product_type where parent_id is null and deleted = 0 
+	</select>
+	
+	<select id="findTypeSecond" resultType="com.xinyue.manage.model.ProductType" parameterType="com.xinyue.manage.beans.ProductTypeInfo">
+		select 
+			id id,
+			name name,
+			status status,
+			deleted deleted,
+			created_time createdTime,
+			modified_time modifiedTime,
+			created_id createUser,
+			modified_id modifyUser 
+		from m_product_type where parent_id is not null and deleted = 0 
+		order by created_time desc 
+		limit #{sstart} , #{pageSize}
+	</select>
+	
+	<select id="getTypeSecondCount" resultType="int">
+		select 
+			count(id)
+		from m_product_type where parent_id is not null and deleted = 0 
+		
+	</select>
+	
+	<insert id="addTypeFirst" parameterType="com.xinyue.manage.model.ProductType">
+		insert into m_product_type(id , name , status , created_time , created_id , parent_id)
+		 values(uuid() , #{name} , #{status} , now() , #{createUser} , #{parentid})
+	</insert>
+	
+	
+	<update id="updateProductType" parameterType="com.xinyue.manage.model.ProductType">
+		update m_product_type set name = #{name} , status=#{status} , modified_time=now() , modified_id = #{modifyUser}
+		 where id = #{id}
+	</update>
+	
+	<update id="delProductType">
+		update m_product_type set deleted = 1 , modified_time = now() , modified_id = #{modifyUser}  where id = #{id}
+	</update>
+	<update id="updateProductByType">
+		update m_product_info set type = null, modified_time = now() , modified_id = #{modifyUser} where type = #{id}
+	</update>
+	
+	<update id="enableProductType">
+		update m_product_type set status = 1, modified_time = now() , modified_id = #{modifyUser} where id = #{id}
+	</update>
+	
+	<update id="unenableProductType">
+		update m_product_type set status = 0, modified_time = now() , modified_id = #{modifyUser} where id = #{id}
+	</update>
+	
+	<select id="findTypeById" resultType="com.xinyue.manage.model.ProductType">
+		select 
+			id id,
+			name name,
+			status status 
+		from m_product_type where id = #{id}
+	</select>
+	
+	<select id="findTypeFirstList" resultType="com.xinyue.manage.model.ProductType">
+		select 
+			id id,
+			name name
+		from m_product_type where parent_id is null and deleted = 0 
+	</select>
+</mapper>

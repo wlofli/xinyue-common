@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.LinkInfoDAO">
+	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="linkType">
+		<result column="select_key" property="key"/>
+		<result column="select_value" property="value"/>
+	</resultMap>
+	<resultMap type="com.xinyue.manage.model.LinkFriendShip" id="friendShipResault">
+		<result column="code" property="code"/>
+		<result column="name" property="name"/>
+		<result column="imagepath" property="logoPath"/>
+		<result column="text" property="linkText"/>
+		<result column="linkurl" property="linkUrl"/>
+		<result column="city" property="linkCity"/>
+		<result column="province" property="linkProvince"/>
+		<result column="zone" property="linkZone"/>
+		<result column="type" property="linkType"/>
+		<result column="status" property="linkStatus"/>
+		<result column="publish" property="linkPublish"/>
+		<result column="deadline" property="deadLine"/>
+		<result column="lindex" property="linkIndex"/>
+	</resultMap>
+	
+	<select id="getLinkTypeList" resultMap="linkType">
+		SELECT select_key,select_value FROM m_select_info WHERE type_code=#{code} ORDER BY select_key
+	</select>
+	
+	<insert id="addFriendShipLinkInfo" parameterType="hashmap">
+		INSERT INTO m_friendship_info (code,link_name,image_path,link_text,
+					link_url,link_location,link_type,link_status,dead_line,
+					created_time,modified_time,created_id,modified_id)
+		VALUES
+			(#{code},#{name},#{imagePath},#{text},#{url},#{location},#{type},#{status},
+			 #{deadLine},now(),now(),#{user},#{user})
+	</insert>
+	
+	<select id="getList" parameterType="hashmap" resultMap="friendShipResault">
+		SELECT 
+		    f.code as code,
+		    f.link_name as name,
+		    f.image_path as imagepath,
+		    f.link_text as text,
+		    f.link_url as linkurl,
+		    p.name as province,
+		    c.name as city,
+		    z.name as zone,
+		    s.select_value as type,
+		    f.link_status as status,
+		    date_format(f.dead_line, '%Y-%m-%d') as deadline,
+		    f.link_publish as publish,
+		    f.link_index as lindex
+		FROM
+		    m_friendship_info f
+		        LEFT JOIN
+		    m_area_zone z ON f.link_location = z.code
+		        LEFT JOIN
+		    m_area_city c ON substring(c.code,1,4) = substring(f.link_location,1,4)
+		        LEFT JOIN
+		    m_area_province p ON substring(p.code,1,2) = substring(f.link_location,1,2)
+		        LEFT JOIN
+		    m_select_info s ON f.link_type = s.select_key
+		WHERE
+		    f.deleted = 0
+		        AND s.type_code = 'link_type'
+		<if test="linkName != ''">
+			AND f.link_name LIKE '%' #{linkName} '%'
+		</if>
+		<if test="linkType != ''">
+			AND f.link_type=#{linkType}
+		</if>
+		<if test="linkPublish != '' and linkPublish != 0">
+			AND f.link_publish=#{linkPublish}
+		</if>
+		<if test="location !='' and location != 0">
+			AND f.link_location LIKE #{location} '%'
+		</if>
+		LIMIT #{index},10
+	</select>
+	
+	<update id="deleteFriendShipLinkByCode">
+		UPDATE m_friendship_info SET
+			modified_time=now(),modified_id=#{user},deleted=1
+		WHERE code=#{code}
+	</update>
+	
+	<select id="getFriendShipInfoByCode" resultMap="friendShipResault">
+		SELECT f.code as code,f.link_name as name,f.link_url as linkurl,
+			   f.image_path as imagepath,f.link_text as text,
+			   f.link_type as type,f.link_location as city,date_format(f.dead_line,'%Y-%m-%d') as deadline 
+		FROM m_friendship_info f
+		WHERE f.code=#{code}
+	</select>
+	
+	<update id="updateFriendShipLinkInfo" parameterType="hashmap">
+		UPDATE m_friendship_info SET
+			link_name=#{name},image_path=#{imagePath},link_text=#{text},
+			link_url=#{url},link_location=#{location},link_type=#{type},
+			link_status=#{status},dead_line= #{deadLine},modified_time=now(),
+			modified_id=#{user}
+		WHERE code=#{code}
+	</update>
+	
+	<select id="getLinkStatusList" resultMap="linkType">
+		SELECT select_key,select_value FROM m_select_info WHERE type_code=#{code} ORDER BY select_key
+	</select>
+	
+	<select id="getOverdueData" resultType="string">
+		SELECT code FROM m_friendship_info WHERE to_days(now())-to_days(dead_line) > 0;
+	</select>
+	
+	<update id="updateStatus" parameterType="list">
+		<foreach collection="code" item="item" index="index" separator=";">
+			UPDATE m_friendship_info SET
+				link_publish=4
+			WHERE code=#{item}
+		</foreach>
+	</update>
+	
+	<update id="publishLinkByCode" parameterType="list">
+		<foreach collection="code" item="item" index="index" separator=";">
+			UPDATE m_friendship_info SET
+				link_publish=2,modified_time=now(),modified_id=#{user} 
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<update id="forbidLinkByCode" parameterType="list">
+		<foreach collection="code" item="item" index="index" separator=";">
+			UPDATE m_friendship_info SET
+				link_publish=3,modified_time=now(),modified_id=#{user} 
+			WHERE id=#{item}
+		</foreach>
+	</update>
+	
+	<select id="checkIndexByIndex" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM m_friendship_info
+		WHERE link_index=#{index}
+	</select>
+	
+	<update id="updateSortIndex">
+		UPDATE m_cooperation_info SET
+			link_index=#{index},modified_time=now(),modified_id=#{user} 
+		WHERE id=#{code}
+	</update>
+	
+	<select id="getCount" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*) FROM m_friendship_info WHERE deleted=0
+		<if test="linkName != ''">
+			AND link_name LIKE '%' #{linkName} '%'
+		</if>
+		<if test="linkType != ''">
+			AND link_type=#{linkType}
+		</if>
+		<if test="linkPublish != '' and linkPublish != 0">
+			AND link_publish=#{linkPublish}
+		</if>
+		<if test="location !='' and location != 0">
+			AND link_location LIKE #{location} '%'
+		</if>
+	</select>
+</mapper>
