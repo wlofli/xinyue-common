@@ -28,6 +28,8 @@ public interface OrderDAO {
 	
 	public int getCountByStatus(@Param("order")Order order, @Param("list")List<String> statusList);
 	
+	public int getCountByMemeberId(@Param("id")String string, @Param("order")SearchOrder order);
+	
 	public Order getOrder(@Param("id")String id, @Param("typeCode")String typeCode);
 	
 	/**

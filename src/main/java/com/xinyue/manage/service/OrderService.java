@@ -43,6 +43,8 @@ public interface OrderService {
 	
 	public int getCountByStatus(Order order, List<String> status);
 	
+	public int getCountByMemberId(String id, SearchOrder order);
+	
 	
 	public Order getOrder(String id);
 	

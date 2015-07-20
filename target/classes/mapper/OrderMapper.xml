@@ -357,6 +357,42 @@
 		</if>
 	</select>
 	
+	<select id="getCountByMemeberId">
+		select count(*)
+			from m_order_info o
+		where delete != 1 and member_id = #{id}
+		
+		<if test="order.status != '' and order.status != null">
+			<choose>
+				<when test="order.status == 2">
+					and o.status in (1,2)
+				</when>
+				
+				<when test="order.status == 3">
+					and o.status in (3,4)
+				</when>
+				<when test="order.status == 7">
+					and o.status in (6,7)
+				</when>
+				<otherwise>
+					and o.status = #{order.status}
+				</otherwise>
+			</choose>
+		</if>	   
+		
+		<if test="order.startTime != '' and order.startTime != null">
+			and o.created_time >= #{order.startTime}
+		</if>
+		<if test="order.endTime != '' and order.endTime != null">
+		<![CDATA[
+	     	and o.created_time <= #{order.endTime}
+     	]]>
+		</if>
+		<if test="order.sort != '' and order.sort != null">
+			order by o.created_time desc
+		</if>
+	</select>
+	
 	<select id="getDocumentInfoById" parameterType="string" resultType="com.xinyue.manage.model.Document">
 		select 
 		    d.id as documentId, 

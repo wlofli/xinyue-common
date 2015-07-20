@@ -121,6 +121,13 @@ public class OrderServiceImpl implements OrderService{
 		return orderDAO.getListByMemberId(memberId, order, GlobalConstant.ORDER_MEMBER_STATUS, pageSize, PageNo * pageSize);
 	}
 
+
+	@Override
+	public int getCountByMemberId(String id, SearchOrder order) {
+		// TODO Auto-generated method stub
+		return orderDAO.getCountByMemeberId(id, order);
+	}
+
 	
 
 
