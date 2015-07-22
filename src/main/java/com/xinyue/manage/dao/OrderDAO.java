@@ -33,7 +33,13 @@ public interface OrderDAO {
 
 	public int getCountByMemeberId(@Param("id")String string, @Param("order")SearchOrder order);
 	
-
+	/** 获取订单详细信息
+	 * add by lzc     date: 2015年7月22日
+	 * @return
+	 */
+	public Order getOrderInfo(@Param("id")String id, @Param("typeCode")String typeCode);
+	
+	
 	public Order getOrder(@Param("id")String id, @Param("typeCode")String typeCode);
 	
 	/**

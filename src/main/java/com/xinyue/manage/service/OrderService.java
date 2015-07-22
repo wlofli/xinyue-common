@@ -48,7 +48,7 @@ public interface OrderService {
 
 	public int getCountByMemberId(String id, SearchOrder order);
 	
-
+	public Order getOrderInfo(String id);
 	
 	public Order getOrder(String id);
 	

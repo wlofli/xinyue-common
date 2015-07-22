@@ -47,16 +47,16 @@
 		<result column="province" property="province"/>
 		<result column="city" property="city"/>
 		<result column="zone" property="zone"/>
-		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association>
+<!-- 		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association> -->
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
 		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
 		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association>
 		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association>
 	</resultMap>
 	
-	<select id="getMemberStatus">
-		select select_value from m_select_info where select_key =#{member_status} and type_code = 'order_member_status'
-	</select>
+<!-- 	<select id="getMemberStatus"> -->
+<!-- 		select select_value from m_select_info where select_key =#{member_status} and type_code = 'order_member_status' -->
+<!-- 	</select> -->
 	<select id="getOrderStatus" resultType="String">
 		select select_value from m_select_info where select_key = #{order_status} and type_code = 'order_get_status'
 	</select>
@@ -112,6 +112,20 @@
 				tax_audite_person,
 				o.created_time
 			FROM
+				m_order_info o
+			LEFT JOIN m_select_info    s ON o.status = s.select_key AND s.type_code = #{typeCode}
+			LEFT JOIN m_bank_info b ON o.bank = b.id
+			LEFT JOIN m_product_info   d ON d.id = o.product_info
+			where o.id = #{id}
+	</select>
+	
+	<select id="getOrderInfo">
+		SELECT
+			b.name as bank,
+			d.`name` as product_name,
+			d.code as product_code,
+			s.select_value AS status,
+		FROM
 				m_order_info o
 			LEFT JOIN m_select_info    s ON o.status = s.select_key AND s.type_code = #{typeCode}
 			LEFT JOIN m_bank_info b ON o.bank = b.id

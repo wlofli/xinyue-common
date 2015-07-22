@@ -49,6 +49,12 @@ public class OrderServiceImpl implements OrderService{
 		// TODO Auto-generated method stub
 		return orderDAO.getCount(order);
 	}
+	@Override
+	public Order getOrderInfo(String id) {
+		// TODO Auto-generated method stub
+		return orderDAO.getOrderInfo(id,GlobalConstant.ORDER_STATUS);
+	}
+
 
 	@Override
 	public Order getOrder(String id) {
