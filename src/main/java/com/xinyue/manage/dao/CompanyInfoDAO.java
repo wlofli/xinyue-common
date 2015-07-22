@@ -37,6 +37,17 @@ public interface CompanyInfoDAO {
 
 	List<Hold> getHoldInfoById(String id);
 
+	
+	/**
+	 * 
+	 * add by lzc
+	 * date: 2015年7月21日
+	 * @param id  orderId
+	 * @return
+	 */
+	List<Hold> getHoldInfoByOrderId(String id);
+
+
 	Control getControlInfoById(String id);
 
 	List<Business> getBusinessInfoById(String id);

@@ -49,6 +49,12 @@ public class OrderServiceImpl implements OrderService{
 		// TODO Auto-generated method stub
 		return orderDAO.getCount(order);
 	}
+	@Override
+	public Order getOrderInfo(String id) {
+		// TODO Auto-generated method stub
+		return orderDAO.getOrderInfo(id,GlobalConstant.ORDER_STATUS);
+	}
+
 
 	@Override
 	public Order getOrder(String id) {
@@ -116,9 +122,31 @@ public class OrderServiceImpl implements OrderService{
 
 
 	@Override
-	public List<Order> getListByMemberId(String memberId, SearchOrder order) {
+	public List<Order> getListByMemberId(String memberId, SearchOrder order, int pageSize, int PageNo) {
 		// TODO Auto-generated method stub
-		return orderDAO.getListByMemberId(memberId, order, GlobalConstant.ORDER_INIT);
+		return orderDAO.getListByMemberId(memberId, order, GlobalConstant.ORDER_MEMBER_STATUS, pageSize, PageNo * pageSize);
+	}
+
+
+	@Override
+	public int getCountByMemberId(String id, SearchOrder order) {
+		// TODO Auto-generated method stub
+		return orderDAO.getCountByMemeberId(id, order);
+	}
+
+
+	@Override
+	public boolean deleteOrderList(List<String> idList, String modifiedId) {
+		// TODO Auto-generated method stub
+		try {
+			if(idList != null && idList.size() == 0 )
+				idList = null;
+			orderDAO.deleteOrderList(idList, modifiedId);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RuntimeException();
+		}
 	}
 
 	

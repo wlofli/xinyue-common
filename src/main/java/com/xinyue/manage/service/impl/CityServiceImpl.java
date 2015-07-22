@@ -184,4 +184,20 @@ public class CityServiceImpl implements CityService {
 		return cityInfoDAO.getCountBySearchConditions(searchCity);
 	}
 
+	@Override
+	public boolean findZoneByCode(String code) {
+		
+		try {
+			int result = cityInfoDAO.findZoneByCode(code);
+			
+			if (result > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return false;
+	}
+
 }

@@ -66,7 +66,7 @@ public class AutheManage {
 //		
 //		if (!rCode.equalsIgnoreCase(code))
 //			throw new Exception("验证码错误");
-		
+//		
 		UserInfo userInfo = UserInfo.getUserInfo(userName);
 		
 		String ip = request.getRemoteAddr();

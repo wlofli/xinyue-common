@@ -39,7 +39,7 @@ public class Order {
 	private String linkUserName;//用户名
 	
 	private String applicatPerson;//申请人
-	private String orderNumber;
+	private String orderNumber;//useless
 	private Double credit;//贷款额度
 	private String linkPhone;//手机号
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
@@ -49,6 +49,8 @@ public class Order {
 	private Date auditeTime;//放款实际
 	private String auditePerson;
 	private String remark;//放款备注
+	
+	private String memberStatus;//会员订单状态
 	
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
@@ -74,6 +76,9 @@ public class Order {
 	private String orderStatus;//指定客户状态1.领取未开始2.未领取3.无人领取4.已领取
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5人员主动操作
 	private Double creditReal;//实际贷款
+	
+	
+	
 	
 	public Double getCreditReal() {
 		return creditReal;

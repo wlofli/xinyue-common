@@ -10,7 +10,7 @@ public class GlobalConstant {
 	
 	public static final String SESSION_MEMBER_INFO = "session_member_info";
 	public static final String SESSION_CHECK_CODE = "session_check_code";
-	
+	public static final String SESSION_COMMON_CODE = "session_common_code";
 	public static final String USER = "admin";
 
 	public static final String TYPE_CITY = "tc";
@@ -34,6 +34,9 @@ public class GlobalConstant {
 	
 	//wenhai.you 2015-05-08 下午
 	public static final int PAGE_SIZE = 10;
+	
+	//add by lzc 2015年7月22日11:21:02
+	public static final int PAGE_SIZE_ONE = 1;
 	
 	/**wenhai.you 2015-05-08 下午
 	 * 判断对象是否为空或者为空串
@@ -167,8 +170,10 @@ public class GlobalConstant {
 	public static final String ORDER_STATUS_PASS_CHINESE = "新越网审核通过";//新越网审核通过
 	public static final String ORDER_STATUS_PASS_SET = "4";//新越网审核通过设为推荐
 	public static final String ORDER_STATUS_PASS_SET_CHINESE = "新越网审核通过设为推荐";//新越网审核通过设为推荐
-	public static final String ORDER_INIT = "order_inti";//会员订单状态typecode
+	public static final String ORDER_MEMBER_STATUS = "order_member_status";//会员订单状态typecode
+	public static final String ORDER_INIT = "order_init";//会员订单状态搜索条件
 	public static final String ORDER_INIT_NUMBER = "2";//订单初始化
+//	public static final String ORDER_SEARCH_TIME = "order_search_time";//订单排序,升序,降序
 	
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info

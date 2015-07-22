@@ -30,4 +30,12 @@ public interface AuthenticationService {
 
 	boolean updateAuthenticationStatusByCode(Authentication authentication,String user);
 
+	/**
+	 * 前台普通会员实名认证
+	 * @param authInfo
+	 * @param imgPath
+	 * @return
+	 */
+	boolean saveMemberAuth(Authentication authInfo, String imgPath,String loginName);
+
 }

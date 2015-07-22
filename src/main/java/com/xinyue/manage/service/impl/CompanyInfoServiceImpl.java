@@ -312,6 +312,19 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		}
 		return null;
 	}
+	
+	@Override
+	public List<Hold> getHoldInfoByOrderId(String orderId) {
+		
+		try {
+			List<Hold> list = companyInfoDAO.getHoldInfoByOrderId(orderId);
+			
+			return list;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return null;
+	}
 
 	@Override
 	public Control getControlInfoById(String controlId) {
