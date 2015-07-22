@@ -1,8 +1,13 @@
 *.class
+<<<<<<< HEAD
 
 .svn/
 
 
+=======
+*.svn
+.settings/
+>>>>>>> 50bb6c0016247a45689472e07940e0ec5afc428a
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
