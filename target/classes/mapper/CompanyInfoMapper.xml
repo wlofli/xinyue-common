@@ -387,6 +387,58 @@
 		order by h.order_num;
 	</select>
 	
+	
+<!-- 	@override ->getHoldInfoById -->
+<!-- 	add by lzc -->
+	<select id="getHoleInfoByOrderId" parameterType="string" resultType="com.xinyue.manage.model.Hold">
+		select 
+		    s1.select_value as holdType,
+		    h.hold_person as controlPerson,
+		    s2.select_value as paperType,
+		    h.credential_number as paperNumber,
+		    h.work_year as workYear,
+		    s3.select_value as education,
+		    s4.select_value as marriage
+		from
+		    m_hold_info h
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'hold_type') s1 ON h.hold_type = s1.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'idcard_type') s2 ON h.credential_type = s2.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'education_type') s3 ON h.educational = s3.select_key
+		        left join
+		    (select 
+		        select_key, select_value
+		    from
+		        m_select_info
+		    where
+		        type_code = 'marriage_type') s4 ON h.marriage = s4.select_key
+		where
+		    id in (select 
+		            hold_id
+		        from
+		            m_order_hold
+		        where
+		            orid_id = #{id})
+		order by h.order_num;
+	</select>
+	
 	<select id="getControlInfoById" parameterType="string" resultType="com.xinyue.manage.model.Control">
 		select 
 		    t.name as industry,

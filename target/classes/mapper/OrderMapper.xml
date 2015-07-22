@@ -271,9 +271,9 @@
 		
 		<if test="order.status != '' and order.status != null">
 			<choose>
-				<when test="order.status == 2">
-					and o.status in (1,2)
-				</when>
+<!-- 				<when test="order.status == 2"> -->
+<!-- 					and o.status in (1,2) -->
+<!-- 				</when> -->
 				
 				<when test="order.status == 3">
 					and o.status in (3,4)
@@ -296,7 +296,13 @@
      	]]>
 		</if>
 		<if test="order.sort != '' and order.sort != null">
-			order by o.created_time desc
+			<if test="order.sort == 1">
+				order by o.created_time desc
+			</if>
+			<if test="order.sort == 0">
+				order by o.created_time asc
+			</if>
+			
 		</if>
 		limit #{pageNo}, #{pageSize} 
 	</select>
@@ -357,10 +363,10 @@
 		</if>
 	</select>
 	
-	<select id="getCountByMemeberId">
+	<select id="getCountByMemeberId" resultType="int">
 		select count(*)
 			from m_order_info o
-		where delete != 1 and member_id = #{id}
+		where deleted != 1 and member_id = #{id}
 		
 		<if test="order.status != '' and order.status != null">
 			<choose>
@@ -454,6 +460,16 @@
 				status = #{status}
 		where id = 
 		<foreach collection="list" index="index" item="id" separator=" or id =">
+			#{id}
+		</foreach>
+	</update>
+	<update id="deleteOrderList">
+		update m_order_info
+		 set modified_time = now(),
+		     modified_id = #{modifiedId},
+		     deleted = 1
+	    where id = 
+	 	<foreach collection="list" index="index" item="id" separator=" or id =">
 			#{id}
 		</foreach>
 	</update>

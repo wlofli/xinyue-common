@@ -53,6 +53,12 @@ public interface CompanyInfoService {
 	CompanyBase getCompanyBaseInfoById(String licenseId);
 
 	List<Hold> getHoldInfoById(String memberId);
+	/**
+	 * add by lzc     date: 2015年7月21日
+	 * @param orderId
+	 * @return
+	 */
+	List<Hold> getHoldInfoByOrderId(String orderId);
 
 	Control getControlInfoById(String controlId);
 

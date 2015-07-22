@@ -128,6 +128,21 @@ public class OrderServiceImpl implements OrderService{
 		return orderDAO.getCountByMemeberId(id, order);
 	}
 
+
+	@Override
+	public boolean deleteOrderList(List<String> idList, String modifiedId) {
+		// TODO Auto-generated method stub
+		try {
+			if(idList != null && idList.size() == 0 )
+				idList = null;
+			orderDAO.deleteOrderList(idList, modifiedId);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RuntimeException();
+		}
+	}
+
 	
 
 

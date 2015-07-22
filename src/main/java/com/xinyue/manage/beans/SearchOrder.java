@@ -2,6 +2,8 @@ package com.xinyue.manage.beans;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 /**
  * author lzc
  * 2015年7月16日下午2:39:46
@@ -9,7 +11,9 @@ import java.util.Date;
 public class SearchOrder {
 	
 	private String sort;//排序 1.升序 2.降序
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date startTime;
+	@DateTimeFormat(pattern = "yyyy-MM-dd" )  
 	private Date endTime;
 	private String status;//订单状态
 	public String getSort() {

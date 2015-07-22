@@ -82,7 +82,7 @@ public interface OrderService {
 //	public void downLoadOrder(HttpServletResponse response, Order order);
 	
 	
-	
+	public boolean deleteOrderList(List<String> idList, String modifiedId);
 	
 	
 	

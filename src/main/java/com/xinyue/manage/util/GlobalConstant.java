@@ -34,6 +34,8 @@ public class GlobalConstant {
 	
 	//wenhai.you 2015-05-08 下午
 	public static final int PAGE_SIZE = 10;
+	//lzc 2015-7-22 09:11:08
+	public static final int PAGE_SIZE_ONE = 1;
 	
 	/**wenhai.you 2015-05-08 下午
 	 * 判断对象是否为空或者为空串
@@ -170,6 +172,7 @@ public class GlobalConstant {
 	public static final String ORDER_MEMBER_STATUS = "order_member_status";//会员订单状态typecode
 	public static final String ORDER_INIT = "order_init";//会员订单状态搜索条件
 	public static final String ORDER_INIT_NUMBER = "2";//订单初始化
+//	public static final String ORDER_SEARCH_TIME = "order_search_time";//订单排序,升序,降序
 	
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info

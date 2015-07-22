@@ -70,9 +70,8 @@ public interface OrderDAO {
     public void updateOrderTypeList(@Param("list")List<String> idList, @Param("status")String status,
 		@Param("modifiedId")String modifiedId);
     
+    public void deleteOrderList(@Param("list")List<String> idList, @Param("modifiedId")String modifiedId);
     
-    
-
 	
 
 }
