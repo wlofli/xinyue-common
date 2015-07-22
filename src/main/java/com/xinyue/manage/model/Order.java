@@ -79,12 +79,7 @@ public class Order {
 	
 	
 	
-	public String getMemberStatus() {
-		return memberStatus;
-	}
-	public void setMemberStatus(String memberStatus) {
-		this.memberStatus = memberStatus;
-	}
+	
 	public Double getCreditReal() {
 		return creditReal;
 	}

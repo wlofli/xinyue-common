@@ -34,7 +34,8 @@ public class GlobalConstant {
 	
 	//wenhai.you 2015-05-08 下午
 	public static final int PAGE_SIZE = 10;
-	//lzc 2015-7-22 09:11:08
+	
+	//add by lzc 2015年7月22日11:21:02
 	public static final int PAGE_SIZE_ONE = 1;
 	
 	/**wenhai.you 2015-05-08 下午

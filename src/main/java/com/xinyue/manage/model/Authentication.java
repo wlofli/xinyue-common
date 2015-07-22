@@ -14,6 +14,9 @@ public class Authentication {
 
 	private String companyName = "";
 
+	/**
+	 * 营业执照注册号
+	 */
 	private String zone = "";
 
 	private String companyRegDate = "";
@@ -32,7 +35,7 @@ public class Authentication {
 
 	private String contactPerson = "";
 
-	private int contactSex ;
+	private int contactSex =3;
 	
 	private String contactTel = "";
 	
@@ -63,7 +66,9 @@ public class Authentication {
 	private String authenticationType = "";
 	
 	private String messages ="";
-
+	
+	private String contactEmail ="";
+	
 	/**
 	 * @return the code
 	 */
@@ -469,6 +474,20 @@ public class Authentication {
 	 */
 	public void setMessages(String messages) {
 		this.messages = messages;
+	}
+
+	/**
+	 * @return the contactEmail
+	 */
+	public String getContactEmail() {
+		return contactEmail;
+	}
+
+	/**
+	 * @param contactEmail the contactEmail to set
+	 */
+	public void setContactEmail(String contactEmail) {
+		this.contactEmail = contactEmail;
 	}
 
 }

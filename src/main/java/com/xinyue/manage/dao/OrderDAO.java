@@ -21,15 +21,19 @@ public interface OrderDAO {
 	public List<Order> getListByStatus(@Param("order")Order order,@Param("pageSize")int pageSize, 
 			@Param("pageNo")int pageNo,@Param("list")List<String> idList, @Param("typeCode")String typeCode);
 	
+
 	public List<Order> getListByMemberId(@Param("id")String id, @Param("order")SearchOrder order, @Param("typeCode")String typeCode,
 			@Param("pageSize")int pageSize, @Param("pageNo")int pageNo);
+
 	
 	public int getCount(@Param("order")Order order);
 	
 	public int getCountByStatus(@Param("order")Order order, @Param("list")List<String> statusList);
 	
+
 	public int getCountByMemeberId(@Param("id")String string, @Param("order")SearchOrder order);
 	
+
 	public Order getOrder(@Param("id")String id, @Param("typeCode")String typeCode);
 	
 	/**
@@ -70,8 +74,10 @@ public interface OrderDAO {
     public void updateOrderTypeList(@Param("list")List<String> idList, @Param("status")String status,
 		@Param("modifiedId")String modifiedId);
     
+
     public void deleteOrderList(@Param("list")List<String> idList, @Param("modifiedId")String modifiedId);
     
+
 	
 
 }

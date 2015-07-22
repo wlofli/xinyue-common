@@ -36,6 +36,7 @@ public interface CompanyInfoDAO {
 	CompanyBase getCompanyBaseInfoById(String id);
 
 	List<Hold> getHoldInfoById(String id);
+
 	
 	/**
 	 * 
@@ -45,6 +46,7 @@ public interface CompanyInfoDAO {
 	 * @return
 	 */
 	List<Hold> getHoldInfoByOrderId(String id);
+
 
 	Control getControlInfoById(String id);
 

@@ -37,4 +37,6 @@ public interface CityInfoDAO {
 	List<CityInfo> getCityInfoBySearchConditions(SearchCity searchCity);
 	
 	int getCountBySearchConditions(SearchCity searchCity);
+
+	int findZoneByCode(String code);
 }

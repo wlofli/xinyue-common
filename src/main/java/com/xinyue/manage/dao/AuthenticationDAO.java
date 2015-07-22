@@ -18,4 +18,7 @@ public interface AuthenticationDAO {
 
 	int updateAuthenticationStatusByCode(HashMap<String, Object> map);
 
+	int saveMemberAuth(HashMap<String, Object> map);
+
+
 }

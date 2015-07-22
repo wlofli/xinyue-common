@@ -387,6 +387,7 @@
 		order by h.order_num;
 	</select>
 	
+
 	
 <!-- 	@override ->getHoldInfoById -->
 <!-- 	add by lzc -->
@@ -439,6 +440,7 @@
 		order by h.order_num;
 	</select>
 	
+
 	<select id="getControlInfoById" parameterType="string" resultType="com.xinyue.manage.model.Control">
 		select 
 		    t.name as industry,

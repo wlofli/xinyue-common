@@ -1,14 +1,17 @@
 package com.xinyue.manage.service.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 
 import com.xinyue.manage.beans.SearchAuthentication;
 import com.xinyue.manage.beans.SelectInfo;
@@ -190,6 +193,99 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			log.error(e.getMessage());
 		}
 		return ret;
+	}
+
+	@Override
+	public boolean saveMemberAuth(Authentication authInfo, String imgPath,String loginName) {
+		
+		//图片实际存放路径
+		String realFilePath = CommonFunction.getValue("upload.path")+imgPath;
+		File dirPath = new File(realFilePath);
+		if (!dirPath.exists()) {
+			dirPath.mkdirs();
+		}
+		
+		try {
+			//数据整理
+			HashMap<String, Object> map = new HashMap<>();
+			map.put("id", UUID.randomUUID().toString().replace("-", ""));
+			map.put("companyName", authInfo.getCompanyName());
+			map.put("blCode", authInfo.getZone());
+			map.put("legalPersonName", authInfo.getLegalPersonName());
+			map.put("legalPersonID", authInfo.getLegalPersonID());
+			map.put("legalPersonTel", authInfo.getLegalPersonTel());
+			map.put("registerAddress", authInfo.getRegisterAddress());
+			map.put("companyRegDate", authInfo.getCompanyRegDate());
+			map.put("regFund", authInfo.getRegFund());
+			map.put("contactPerson", authInfo.getContactPerson());
+			map.put("contactSex", authInfo.getContactSex());
+			map.put("contactTel", authInfo.getContactTel());
+			map.put("contactEmail", authInfo.getContactEmail());
+			map.put("contactAddress", authInfo.getContactAddress());
+			map.put("blImg", imgPath+authInfo.getBusinessLicense().split("/")[3]);
+			map.put("ozImg", imgPath+authInfo.getOrganizationCode().split("/")[3]);
+			map.put("trImg", imgPath+authInfo.getTaxRegistration().split("/")[3]);
+			map.put("idaImg", imgPath+authInfo.getIdentityCarda().split("/")[3]);
+			map.put("idnImg", imgPath+authInfo.getIdentityCardn().split("/")[3]);
+			map.put("idpImg", imgPath+authInfo.getIdentityCardp().split("/")[3]);
+			map.put("loginName", loginName);
+			map.put("postCode", authInfo.getPostCode());
+			
+			//持久化
+			int result = authenticationDAO.saveMemberAuth(map);
+			
+			if (result > 0) {
+				
+				//图片从临时文件夹移出
+				for (int i = 0; i < 6; i++) {
+					String tempImg = "";
+					String realImg = "";
+					
+					switch (i) {
+					case 0:
+						tempImg = authInfo.getBusinessLicense();
+						realImg = imgPath+authInfo.getBusinessLicense().split("/")[3];
+						break;
+					case 1:
+						tempImg = authInfo.getOrganizationCode();
+						realImg = imgPath+authInfo.getOrganizationCode().split("/")[3];
+						break;
+					case 2:
+						tempImg = authInfo.getTaxRegistration();
+						realImg = imgPath+authInfo.getTaxRegistration().split("/")[3];
+						break;
+					case 3:
+						tempImg = authInfo.getIdentityCarda();
+						realImg = imgPath+authInfo.getIdentityCarda().split("/")[3];
+						break;
+					case 4:
+						tempImg = authInfo.getIdentityCardn();
+						realImg = imgPath+authInfo.getIdentityCardn().split("/")[3];
+						break;
+					case 5:
+						tempImg = authInfo.getIdentityCardp();
+						realImg = imgPath+authInfo.getIdentityCardp().split("/")[3];
+						break;
+					default:
+						break;
+					}
+					
+					if (!tempImg.equals("") && !realImg.equals("")) {
+						File tempFile =  new File(tempImg);
+						File realFile =  new File(realImg);
+						
+						FileCopyUtils.copy(tempFile, realFile);
+						tempFile.delete();
+					}
+				}
+				
+				return true;
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return false;
 	}
 
 }

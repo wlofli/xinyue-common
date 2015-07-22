@@ -140,4 +140,8 @@
 			AND s.zone_id = #{searchZone}
 		</if>
 	</select>
+	
+	<select id="findZoneByCode" parameterType="String" resultType="int">
+		select COUNT(*) from m_area_zone where code=#{code};
+	</select>
 </mapper>

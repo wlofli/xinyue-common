@@ -54,18 +54,20 @@ public class AutheManage {
 	public static boolean login(HttpServletRequest request,HttpServletResponse response)throws Exception{
 		String userName = request.getParameter("name");
 		String password = request.getParameter("password");
-		HttpSession hSession = request.getSession();
-		if (hSession==null || hSession.getAttribute("randcode")==null)
-			throw new Exception("验证码错误，请刷新网页");
-		
-		String code = request.getParameter("imgcode");
-		if (code.equals(""))
-			throw new Exception("验证码为空");
-		
-		String rCode = hSession.getAttribute("randcode").toString();
-		
-		if (!rCode.equalsIgnoreCase(code))
-			throw new Exception("验证码错误");
+
+//		HttpSession hSession = request.getSession();
+//		if (hSession==null || hSession.getAttribute("randcode")==null)
+//			throw new Exception("验证码错误，请刷新网页");
+//		
+//		String code = request.getParameter("imgcode");
+//		if (code.equals(""))
+//			throw new Exception("验证码为空");
+//		
+//		String rCode = hSession.getAttribute("randcode").toString();
+//		
+//		if (!rCode.equalsIgnoreCase(code))
+//			throw new Exception("验证码错误");
+
 		
 		UserInfo userInfo = UserInfo.getUserInfo(userName);
 		

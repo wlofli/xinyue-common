@@ -31,4 +31,6 @@ public interface CityService {
 	List<CityInfo> getCityInfoBySearchConditions(SearchCity searchCity);
 	
 	int getCountBySearchConditions(SearchCity searchCity);
+
+	boolean findZoneByCode(String code);
 }

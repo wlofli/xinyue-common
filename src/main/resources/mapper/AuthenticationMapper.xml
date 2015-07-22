@@ -169,4 +169,64 @@
 			SET success_flag=#{status},modified_id=#{user},modified_time=now()
 		WHERE id=#{code}
 	</update>
+	
+	<insert id="saveMemberAuth" parameterType="hashmap">
+		insert into 
+			m_authentication_info(
+				id,
+				business_license_code,
+				company_name,
+				legal_person_name,
+				legal_personidnumber,
+				legal_person_tel,
+				registration_address,
+				registration_date,
+				registration_fund,
+				contact_name,
+				contact_sex,
+				contact_tel,
+				contact_email,
+				contact_address,
+				post_code,
+				business_license_name,
+				organization_code_name,
+				tax_registration_name,
+				identity_carda,
+				identity_cardn,
+				identity_cardp,
+				success_flag,
+				created_time,
+				modified_time,
+				created_id,
+				modified_id
+			)
+		values(
+			#{id},
+			#{blCode},
+			#{companyName},
+			#{legalPersonName},
+			#{legalPersonID},
+			#{legalPersonTel},
+			#{registerAddress},
+			#{companyRegDate},
+			#{regFund},
+			#{contactPerson},
+			#{contactSex},
+			#{contactTel},
+			#{contactEmail},
+			#{contactAddress},
+			#{postCode},
+			#{blImg},
+			#{ozImg},
+			#{trImg},
+			#{idaImg},
+			#{idnImg},
+			#{idpImg},
+			1,
+			now(),
+			now(),
+			#{loginName},
+			#{loginName}
+		);
+	</insert>
 </mapper>

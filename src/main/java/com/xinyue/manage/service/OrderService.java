@@ -36,15 +36,19 @@ public interface OrderService {
 	public List<Order> getListByStatus(Order order ,int pageSize, int pageNo, List<String> statusList);
 	
 	
+
 	public List<Order> getListByMemberId(String memberId,SearchOrder order, int pageSize, int pageNo);
+
 	
 	
 	public int getCount(Order order);
 	
 	public int getCountByStatus(Order order, List<String> status);
 	
+
 	public int getCountByMemberId(String id, SearchOrder order);
 	
+
 	
 	public Order getOrder(String id);
 	
@@ -82,7 +86,9 @@ public interface OrderService {
 //	public void downLoadOrder(HttpServletResponse response, Order order);
 	
 	
+
 	public boolean deleteOrderList(List<String> idList, String modifiedId);
+
 	
 	
 	
