@@ -10,6 +10,7 @@ public class Business {
 	private String monthElectricMoney = "";
 	private String totalVAT = "";
 	private String totalIncomeTax = "";
+	private String targetId = "";
 	/**
 	 * @return the year
 	 */
@@ -105,6 +106,18 @@ public class Business {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+	/**
+	 * @return the targetId
+	 */
+	public String getTargetId() {
+		return targetId;
+	}
+	/**
+	 * @param targetId the targetId to set
+	 */
+	public void setTargetId(String targetId) {
+		this.targetId = targetId;
 	}
 	
 }

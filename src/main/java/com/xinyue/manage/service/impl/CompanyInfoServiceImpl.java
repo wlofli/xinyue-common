@@ -312,7 +312,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<Hold> getHoldInfoByOrderId(String orderId) {
 		
@@ -325,7 +325,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		}
 		return null;
 	}
-
+	
 	@Override
 	public Control getControlInfoById(String controlId) {
 
@@ -570,14 +570,39 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 				for (int i = 0; i < count; i++) {
 					ids[i] = list.get(i).getId();
 					years[i] = list.get(i).getYear();
-					totalSales[i] = df.format(Double.parseDouble(list.get(i).getTotalSales()));
-					monthWaterMoneys[i] = df.format(Double.parseDouble(list.get(i).getMonthWaterMoney()));
-					monthOrderMoneys[i] = df.format(Double.parseDouble(list.get(i).getMonthOrderMoney()));
-					monthElectricMoneys[i] = df.format(Double.parseDouble(list.get(i).getMonthElectricMoney()));
-					totalVATs[i] = df.format(Double.parseDouble(list.get(i).getTotalVAT()));
-					totalIncomeTaxs[i] = df.format(Double.parseDouble(list.get(i).getTotalIncomeTax()));
+					if (list.get(i).getTotalSales() != null && !list.get(i).getTotalSales().equals("")) {
+						totalSales[i] = df.format(Double.parseDouble(list.get(i).getTotalSales()));
+					}else {
+						totalSales[i] = "";
+					}
+					if (list.get(i).getMonthWaterMoney() != null && !list.get(i).getMonthWaterMoney().equals("")) {
+						monthWaterMoneys[i] = df.format(Double.parseDouble(list.get(i).getMonthWaterMoney()));
+					} else {
+						monthWaterMoneys[i] = "";
+					}
+					if (list.get(i).getMonthOrderMoney() != null && !list.get(i).getMonthOrderMoney().equals("")) {
+						monthOrderMoneys[i] = df.format(Double.parseDouble(list.get(i).getMonthOrderMoney()));
+					} else {
+						monthOrderMoneys[i] = "";
+					}
+					if (list.get(i).getMonthElectricMoney() != null && !list.get(i).getMonthElectricMoney().equals("")) {
+						monthElectricMoneys[i] = df.format(Double.parseDouble(list.get(i).getMonthElectricMoney()));
+					} else {
+						monthElectricMoneys[i] = "";
+					}
+					if (list.get(i).getTotalVAT() != null && !list.get(i).getTotalVAT().equals("")) {
+						totalVATs[i] = df.format(Double.parseDouble(list.get(i).getTotalVAT()));
+					} else {
+						totalVATs[i] = "";
+					}
+					if (list.get(i).getTotalIncomeTax() != null && !list.get(i).getTotalIncomeTax().equals("")) {
+						totalIncomeTaxs[i] = df.format(Double.parseDouble(list.get(i).getTotalIncomeTax()));
+					} else {
+						totalIncomeTaxs[i] = "";
+					}
 				}
 			}else {
+				ids = new String[3];
 				years = new String[3];
 				totalSales = new String[3];
 				monthWaterMoneys = new String[3];
@@ -590,6 +615,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 				int yearNow = cal.get(Calendar.YEAR);
 				
 				for (int i = 0; i < 3; i++) {
+					ids[i] = "";
 					years[i] = String.valueOf(yearNow);
 					totalSales[i] = "";
 					monthWaterMoneys[i] = "";
@@ -601,7 +627,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 					yearNow--;
 				}
 			}
-			
+			businessInfos.setIds(ids);
 			businessInfos.setYears(years);
 			businessInfos.setTotalSales(totalSales);
 			businessInfos.setMonthWaterMoneys(monthWaterMoneys);
@@ -716,17 +742,17 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			}else {
 				map.put("guaranteeMoney", applicant.getGuaranteeMoney());
 			}
-			if (applicant.getGuaranteeProvince().equals("0")) {
+			if (applicant.getGuaranteeProvince().equals("0") || applicant.getGuaranteeProvince().equals("")) {
 				map.put("guaranteeProvince", null);
 			}else {
 				map.put("guaranteeProvince", applicant.getGuaranteeProvince());
 			}
-			if (applicant.getGuaranteeCity().equals("0")) {
+			if (applicant.getGuaranteeCity().equals("0") || applicant.getGuaranteeCity().equals("")) {
 				map.put("guaranteeCity", null);
 			}else {
 				map.put("guaranteeCity", applicant.getGuaranteeCity());
 			}
-			if (applicant.getGuaranteeZone().equals("0")) {
+			if (applicant.getGuaranteeZone().equals("0") || applicant.getGuaranteeZone().equals("")) {
 				map.put("guaranteeZone", null);
 			}else {
 				map.put("guaranteeZone", applicant.getGuaranteeZone());
@@ -975,16 +1001,23 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 	}
 
 	@Override
-	public boolean saveBusiness(BusinessInfos businessInfos, String memberId,
-			String user) {
+	public boolean saveBusiness(BusinessInfos businessInfos, String memberId, String user) {
 		
 		List<Business> businesses = new ArrayList<>();
+		
+		String type = "add";
 		
 		try {
 			for (int i = 0; i < 3; i++) {
 				Business temp = new Business();
 				
-				temp.setId(businessInfos.getIds()[i]);
+				if (businessInfos.getIds()[i].equals("")) {
+					temp.setId(UUID.randomUUID().toString().replace("-", ""));
+					type = "add";
+				}else {
+					temp.setId(businessInfos.getIds()[i]);
+					type = "update";
+				}
 				temp.setYear(businessInfos.getYears()[i]);
 				if (businessInfos.getTotalSales()[i].equals("")) {
 					temp.setTotalSales(null);
@@ -1017,13 +1050,20 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 					temp.setTotalIncomeTax(businessInfos.getTotalIncomeTaxs()[i]);
 				}
 				
+				temp.setTargetId(memberId);
+				
 				businesses.add(temp);
 			}
 			
-			int count = companyInfoDAO.updateBusiness(businesses);
+			int count = 0;
+			if (type.equals("add")) {
+				count = companyInfoDAO.saveBusiness(businesses,user);
+			}else {
+				count = companyInfoDAO.updateBusiness(businesses,user);
+			}
 			
 			if (count > 0) {
-				return false;
+				return true;
 			}
 			
 		} catch (Exception e) {
@@ -1152,6 +1192,23 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			throw new RuntimeException(e.getMessage());
 		}
 		return false;
+	}
+
+	@Override
+	public BusinessInfos initBusinessInfo() {
+		
+		String[] years = new String[3];
+		
+		Calendar calendar = Calendar.getInstance();
+		int nowYear = calendar.get(Calendar.YEAR);
+		
+		BusinessInfos businessInfos = new BusinessInfos();
+		for (int i = 0; i < 3; i++) {
+			years[i] = String.valueOf(nowYear-i);
+		}
+		businessInfos.setYears(years);
+		
+		return businessInfos;
 	}
 
 }

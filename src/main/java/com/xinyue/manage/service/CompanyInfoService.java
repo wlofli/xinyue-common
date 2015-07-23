@@ -59,7 +59,7 @@ public interface CompanyInfoService {
 	 * @return
 	 */
 	List<Hold> getHoldInfoByOrderId(String orderId);
-
+	
 	Control getControlInfoById(String controlId);
 
 	List<Business> getBusinessInfoById(String memberId);
@@ -111,4 +111,6 @@ public interface CompanyInfoService {
 	boolean saveEstate(RealEstate estate, String memberId, String user);
 
 	boolean saveDebt(Debt debt, String memberId, String user);
+
+	BusinessInfos initBusinessInfo();
 }

@@ -197,11 +197,11 @@
 		    m.rating_info as rating_id,
 		    m.realname_info as realname_id
 		FROM
-		    m_member_info m,
-		    m_license_info l
+		    m_member_info m
+		        left join
+		    m_license_info l ON m.license_info = l.id
 		WHERE
-		    m.license_info = l.id AND m.id = #{code};
-		
+		    m.id = #{code};
 	</select>
 	
 	<select id="getApplicantInfoById" parameterType="string" resultType="com.xinyue.manage.model.Applicant">
@@ -387,7 +387,7 @@
 		order by h.order_num;
 	</select>
 	
-
+	
 	
 <!-- 	@override ->getHoldInfoById -->
 <!-- 	add by lzc -->
@@ -440,7 +440,7 @@
 		order by h.order_num;
 	</select>
 	
-
+	
 	<select id="getControlInfoById" parameterType="string" resultType="com.xinyue.manage.model.Control">
 		select 
 		    t.name as industry,
@@ -479,18 +479,18 @@
 		select 
 			b.id,
 		    b.year,
-		    b.sales,
-		    b.month_water,
-		    b.order_amount,
-		    b.month_electriicity,
-		    b.vat_amount,
-		    b.income_tax_amount
+		    b.sales as totalSales,
+		    b.month_water as monthWaterMoney,
+		    b.order_amount as monthOrderMoney,
+		    b.month_electriicity as monthElectricMoney,
+		    b.vat_amount as totalVAT,
+		    b.income_tax_amount as totalIncomeTax
 		from
 		    m_business_info b
 		where
 		    b.target_id = #{id}
 		order by
-		    b.year;
+		    b.year desc;
 	</select>
 	
 	<select id="getRealEstateInfoById" parameterType="string" resultType="com.xinyue.manage.model.RealEstate">
@@ -928,9 +928,11 @@
 			    order_amount = #{business.monthOrderMoney},
 			    month_electriicity = #{business.monthElectricMoney},
 			    vat_amount = #{business.totalVAT},
-			    income_tax_amount = #{business.totalIncomeTax}
+			    income_tax_amount = #{business.totalIncomeTax},
+			    modified_time = now(),
+			    modified_id = #{user}
 			where
-			    id = #{business.id};
+			    id = #{business.id}
 		</foreach>
 	</update>
 	
@@ -1019,4 +1021,44 @@
 		where
 		    id = #{id};
 	</update>
+	
+	<insert id="saveBusiness" parameterType="list">
+		<foreach collection="businesses" item="business" separator=";">
+			insert into 
+				m_business_info(
+					id,
+					target_id,
+					target_type,
+					sales,
+					order_amount,
+					vat_amount,
+					month_water,
+					month_electriicity,
+					income_tax_amount,
+					year,
+					deleted,
+					created_time,
+					modified_time,
+					created_id,
+					modified_id
+				)
+			values(
+				#{business.id},
+				#{business.targetId},
+				1,
+				#{business.totalSales},
+				#{business.monthOrderMoney},
+				#{business.totalVAT},
+				#{business.monthWaterMoney},
+				#{business.monthElectricMoney},
+				#{business.totalIncomeTax},
+				#{business.year},
+				0,
+				now(),
+				now(),
+				#{user},
+				#{user}
+			)
+		</foreach>
+	</insert>
 </mapper>

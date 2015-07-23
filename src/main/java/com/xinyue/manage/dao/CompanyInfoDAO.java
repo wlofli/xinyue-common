@@ -36,7 +36,6 @@ public interface CompanyInfoDAO {
 	CompanyBase getCompanyBaseInfoById(String id);
 
 	List<Hold> getHoldInfoById(String id);
-
 	
 	/**
 	 * 
@@ -46,7 +45,6 @@ public interface CompanyInfoDAO {
 	 * @return
 	 */
 	List<Hold> getHoldInfoByOrderId(String id);
-
 
 	Control getControlInfoById(String id);
 
@@ -88,7 +86,7 @@ public interface CompanyInfoDAO {
 
 	int updateControl(HashMap<String, Object> map);
 
-	int updateBusiness(@Param("businesses")List<Business> businesses);
+	int updateBusiness(@Param("businesses")List<Business> businesses,@Param("user")String user);
 
 	int addEstate(HashMap<String, Object> map);
 
@@ -97,5 +95,7 @@ public interface CompanyInfoDAO {
 	int addDebt(HashMap<String, Object> map);
 
 	int updateDebt(HashMap<String, Object> map);
+
+	int saveBusiness(@Param("businesses")List<Business> businesses, @Param("user")String user);
 
 }
