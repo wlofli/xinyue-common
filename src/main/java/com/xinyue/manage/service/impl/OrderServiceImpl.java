@@ -1,5 +1,6 @@
 package com.xinyue.manage.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.dao.CompanyInfoDAO;
 import com.xinyue.manage.dao.OrderDAO;
+import com.xinyue.manage.model.Applicant;
 import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.Order;
 import com.xinyue.manage.service.OrderService;
@@ -24,6 +27,9 @@ public class OrderServiceImpl implements OrderService{
 	
 	@Resource
 	private OrderDAO orderDAO;
+	
+	@Resource 
+	private CompanyInfoDAO companyInfoDAO;
 	
 	private Logger log = Logger.getLogger(getClass());
 	
@@ -149,6 +155,86 @@ public class OrderServiceImpl implements OrderService{
 		}
 	}
 
+
+	@Override
+	public boolean addOrUpdateApplicant(Applicant applicant, String orderId,
+			String modifiedId,int state) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> map = new HashMap<>();
+		try {
+			map.clear();
+			map.put("name", applicant.getName());
+			map.put("phone", applicant.getPhone());
+			map.put("email", applicant.getEmail());
+			if (applicant.getLimitDate().equals("")) {
+				map.put("limitDate", null);
+			}else {
+				map.put("limitDate", applicant.getLimitDate());
+			}
+			if (applicant.getMoney().equals("")) {
+				map.put("money", null);
+			}else {
+				map.put("money", applicant.getMoney());
+			}
+			map.put("interestRate", applicant.getInterestRate());
+			if (applicant.getRepayType().equals("")) {
+				map.put("repayType", null);
+			}else {
+				map.put("repayType", applicant.getRepayType());
+			}
+			if (applicant.getGuaranteeType().equals("")) {
+				map.put("guaranteeType", null);
+			}else {
+				map.put("guaranteeType", applicant.getGuaranteeType());
+			}
+			map.put("guaranteePerson", applicant.getGuaranteePerson());
+			map.put("guaranteeGoods", applicant.getGuaranteeGoods());
+			if (applicant.getGuaranteeMoney().equals("")) {
+				map.put("guaranteeMoney", null);
+			}else {
+				map.put("guaranteeMoney", applicant.getGuaranteeMoney());
+			}
+			if (applicant.getGuaranteeProvince().equals("0") || applicant.getGuaranteeProvince().equals("")) {
+				map.put("guaranteeProvince", null);
+			}else {
+				map.put("guaranteeProvince", applicant.getGuaranteeProvince());
+			}
+			if (applicant.getGuaranteeCity().equals("0") || applicant.getGuaranteeCity().equals("")) {
+				map.put("guaranteeCity", null);
+			}else {
+				map.put("guaranteeCity", applicant.getGuaranteeCity());
+			}
+			if (applicant.getGuaranteeZone().equals("0") || applicant.getGuaranteeZone().equals("")) {
+				map.put("guaranteeZone", null);
+			}else {
+				map.put("guaranteeZone", applicant.getGuaranteeZone());
+			}
+			if (applicant.getIsLocation().equals("")) {
+				map.put("guaranteeZone", null);
+			}else {
+				map.put("isLocation", applicant.getIsLocation());
+			}
+			map.put("id", applicant.getId());
+			map.put("user", modifiedId);
+			if(state == 0){
+				map.put("type", "app");
+				map.put("applicantId", applicant.getId());
+				map.put("orderId", orderId);
+				orderDAO.updateOrderDetail(map);
+				companyInfoDAO.addApplicant(map);
+			}else {
+				companyInfoDAO.updateApplicant(map);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		return true;
+	}
+
+
+	
 	
 
 

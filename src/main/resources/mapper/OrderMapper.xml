@@ -119,17 +119,46 @@
 			where o.id = #{id}
 	</select>
 	
-	<select id="getOrderInfo">
+	<select id="getOrderInfo" resultMap="order">
 		SELECT
+			o.id,
+			applicant,
+			member_id,
 			b.name as bank,
 			d.`name` as product_name,
+			o.name,
+			link_user_name,
+			order_number,
+			o.credit,
+			o.credit_real,
+			link_phone,
 			d.code as product_code,
+			o.code,
+			commit_time,
 			s.select_value AS status,
+			applicat_person,
+			company_info,
+			o.license_info,
+			o.debt_info,
+			o.real_estate,
+			o.applicant_save,
+			o.business_save,
+			o.company_save,
+			o.debt_save,
+			o.applicant_info,
+			o.credit_real,
+			p.`name` AS province,
+			c.`name` AS city,
+			z.`name` AS zone
 		FROM
 				m_order_info o
+			LEFT JOIN m_applicant_info m ON o.applicant_info = m.id
 			LEFT JOIN m_select_info    s ON o.status = s.select_key AND s.type_code = #{typeCode}
-			LEFT JOIN m_bank_info b ON o.bank = b.id
+			LEFT JOIN m_bank_info      b ON o.bank = b.id
 			LEFT JOIN m_product_info   d ON d.id = o.product_info
+			LEFT JOIN m_area_province  p ON m.area_province = p.id
+			LEFT JOIN m_area_city      c ON m.area_city = c.id
+			LEFT JOIN m_area_zone      z ON m.area_zone = z.id
 			where o.id = #{id}
 	</select>
 	
@@ -489,6 +518,34 @@
 	</update>
 	
 	
+	<update id="updateOrderDetail">
+		update m_order_info
+			set modified_time = now(),
+		     modified_id = #{user},
+		    <include refid="updateOrderDetailInfo" />
+		where id = #{orderId}
+	</update>
+	
+	
+	<sql id="updateOrderDetailInfo">
+		<if test="type == 'app'">
+			applicant_info = #{applicantId},
+			applicant_save = 1
+		</if>
+		<if test="type == 'comp'">
+			license_info= #{licenseId},
+			company_save = 1
+		</if>
+		<if test="type == 'cont'">
+			business_save = 1
+		</if>
+		<if test="type == 'debt'">
+			real_estate = #{realEstate},
+			debt_info = #{debt},
+			deby_save = 1
+		</if>
+	
+	</sql>
 	
 	
 

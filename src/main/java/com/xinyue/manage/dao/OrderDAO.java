@@ -1,5 +1,6 @@
 package com.xinyue.manage.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -82,6 +83,9 @@ public interface OrderDAO {
     
 
     public void deleteOrderList(@Param("list")List<String> idList, @Param("modifiedId")String modifiedId);
+    
+    public boolean updateOrderDetail(HashMap<String, Object> map);
+    
     
 
 	

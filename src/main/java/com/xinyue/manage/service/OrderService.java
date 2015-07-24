@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.model.Applicant;
 import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.Order;
 
@@ -47,7 +48,12 @@ public interface OrderService {
 	
 
 	public int getCountByMemberId(String id, SearchOrder order);
-	
+	/**
+	 * add by lzc     date: 2015年7月23日
+	 * @param id
+	 * @return
+	 * 获取详细订单
+	 */
 	public Order getOrderInfo(String id);
 	
 	public Order getOrder(String id);
@@ -89,7 +95,15 @@ public interface OrderService {
 
 	public boolean deleteOrderList(List<String> idList, String modifiedId);
 
-	
+	/**
+	 * add by lzc     date: 2015年7月24日
+	 * @param applicant
+	 * @param orderId
+	 * @param modifiedId
+	 * @param state 0->add 1->update
+	 * @return
+	 */
+	public boolean addOrUpdateApplicant(Applicant applicant, String orderId, String modifiedId, int state);
 	
 	
 	

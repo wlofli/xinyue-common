@@ -50,7 +50,6 @@ public class Order {
 	private String auditePerson;
 	private String remark;//放款备注
 	
-	private String memberStatus;//会员订单状态
 	
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
