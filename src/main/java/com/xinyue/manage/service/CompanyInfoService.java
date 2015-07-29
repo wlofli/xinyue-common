@@ -70,7 +70,7 @@ public interface CompanyInfoService {
 
 	Rating getRatingInfoById(String ratingId);
 
-	List<Document> getDocumentInfoById(String memberId);
+	List<Document> getDocumentInfoById(String memberId,int index);
 
 	/**
 	 * 下载
@@ -88,7 +88,7 @@ public interface CompanyInfoService {
 
 	BusinessInfos editBusinessInfoById(String memberId);
 
-	List<Document> editDocumentInfoById(String memberId);
+//	List<Document> editDocumentInfoById(String memberId);
 
 	Control editControlInfoById(String controlId);
 
@@ -113,4 +113,13 @@ public interface CompanyInfoService {
 	boolean saveDebt(Debt debt, String memberId, String user);
 
 	BusinessInfos initBusinessInfo();
+
+	Rating editRating(String ratingId);
+
+	int getDocumentCount();
+
+	String updateDocument(String filePath, String fileId, String typeId,String memberId);
+
+	List<Document> editDocuments(String memberId);
+
 }

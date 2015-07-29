@@ -10,6 +10,7 @@ public class Hold {
 	private String workYear ="";
 	private String education ="";
 	private String marriage ="";
+	private String orderNum ="";
 	/**
 	 * @return the holdType
 	 */
@@ -105,5 +106,17 @@ public class Hold {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+	/**
+	 * @return the orderNum
+	 */
+	public String getOrderNum() {
+		return orderNum;
+	}
+	/**
+	 * @param orderNum the orderNum to set
+	 */
+	public void setOrderNum(String orderNum) {
+		this.orderNum = orderNum;
 	}
 }

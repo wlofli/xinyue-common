@@ -56,7 +56,7 @@ public interface CompanyInfoDAO {
 
 	Rating getRatingInfoById(String id);
 
-	List<Document> getDocumentInfoById(String id);
+	List<Document> getDocumentInfo(HashMap<String, Object> map);
 
 	Document getDocumentById(String id);
 
@@ -97,5 +97,19 @@ public interface CompanyInfoDAO {
 	int updateDebt(HashMap<String, Object> map);
 
 	int saveBusiness(@Param("businesses")List<Business> businesses, @Param("user")String user);
+
+	int saveHolds(@Param("holds")List<Hold> holds);
+
+	int saveMemberHolds(@Param("holds")List<Hold> holds, @Param("user")String user);
+
+	int editRatingById(String ratingId);
+
+	int getDocumentCount();
+
+	int saveDocument(HashMap<String, Object> map);
+
+	int updateDocument(HashMap<String, Object> map);
+
+	List<Document> getDocumentByMemberId(String memberId);
 
 }

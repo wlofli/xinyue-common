@@ -36,13 +36,26 @@ public class Member implements Serializable {
 	private Object createUser;
 	private Object modifyUser;
 	private String status;
-	
+	private String sex;
 	//2015/07/15 茅 追加 START
 	private String password;
 	//2015/07/15 茅 追加 END
+	private String invitationCode;//邀请码
 	
+	public String getInvitationCode() {
+		return invitationCode;
+	}
+	public void setInvitationCode(String invitationCode) {
+		this.invitationCode = invitationCode;
+	}
 	public String getCityids() {
 		return cityids;
+	}
+	public String getSex() {
+		return sex;
+	}
+	public void setSex(String sex) {
+		this.sex = sex;
 	}
 	public void setCityids(String cityids) {
 		this.cityids = cityids;

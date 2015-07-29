@@ -16,6 +16,15 @@ public class PageData<T> {
 		this.total = total;
 		this.currentPage = currentPage;
 	}
+	public PageData(List<T> data , int total , int currentPage , int pageSize) {
+		// TODO Auto-generated constructor stub
+		
+		this.pageSize = pageSize;
+		this.data = data;
+		this.total = total;
+		this.currentPage = currentPage;
+	}
+	
 	//总记录数
 	private int total;
 	//当前页

@@ -11,6 +11,7 @@ public class Business {
 	private String totalVAT = "";
 	private String totalIncomeTax = "";
 	private String targetId = "";
+	private String targetType = "";
 	/**
 	 * @return the year
 	 */
@@ -118,6 +119,18 @@ public class Business {
 	 */
 	public void setTargetId(String targetId) {
 		this.targetId = targetId;
+	}
+	/**
+	 * @return the targetType
+	 */
+	public String getTargetType() {
+		return targetType;
+	}
+	/**
+	 * @param targetType the targetType to set
+	 */
+	public void setTargetType(String targetType) {
+		this.targetType = targetType;
 	}
 	
 }

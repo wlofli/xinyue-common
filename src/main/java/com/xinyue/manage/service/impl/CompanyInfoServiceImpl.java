@@ -323,7 +323,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		return null;
+		return new ArrayList<Hold>();
 	}
 	
 	@Override
@@ -371,13 +371,41 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			realEstate = companyInfoDAO.getRealEstateInfoById(estateId);
 			
 			if (realEstate != null) {
-				realEstate.setFactory(df.format(Double.parseDouble(realEstate.getFactory())));
-				realEstate.setLand(df.format(Double.parseDouble(realEstate.getLand())));
-				realEstate.setOffice(df.format(Double.parseDouble(realEstate.getOffice())));
-				realEstate.setShop(df.format(Double.parseDouble(realEstate.getShop())));
-				realEstate.setPrivateProperty(df.format(Double.parseDouble(realEstate.getPrivateProperty())));
-				realEstate.setEquipment(df.format(Double.parseDouble(realEstate.getEquipment())));
-				realEstate.setOther(df.format(Double.parseDouble(realEstate.getOther())));
+				if (!realEstate.getFactory().equals("")) {
+					realEstate.setFactory(df.format(Double.parseDouble(realEstate.getFactory())));
+				}else {
+					realEstate.setFactory("");
+				}
+				if (!realEstate.getLand().equals("")) {
+					realEstate.setLand(df.format(Double.parseDouble(realEstate.getLand())));
+				} else {
+					realEstate.setLand("");
+				}
+				if (!realEstate.getOffice().equals("")) {
+					realEstate.setOffice(df.format(Double.parseDouble(realEstate.getOffice())));
+				} else {
+					realEstate.setOffice("");
+				}
+				if (!realEstate.getShop().equals("")) {
+					realEstate.setShop(df.format(Double.parseDouble(realEstate.getShop())));
+				} else {
+					realEstate.setShop("");
+				}
+				if (!realEstate.getPrivateProperty().equals("")) {
+					realEstate.setPrivateProperty(df.format(Double.parseDouble(realEstate.getPrivateProperty())));
+				} else {
+					realEstate.setPrivateProperty("");
+				}
+				if (!realEstate.getEquipment().equals("")) {
+					realEstate.setEquipment(df.format(Double.parseDouble(realEstate.getEquipment())));
+				} else {
+					realEstate.setEquipment("");
+				}
+				if (!realEstate.getOther().equals("")) {
+					realEstate.setOther(df.format(Double.parseDouble(realEstate.getOther())));
+				} else {
+					realEstate.setOther("");
+				}
 			}
 			
 			return realEstate;
@@ -391,7 +419,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 	public Debt getDebtInfoById(String debtId) {
 		try {
 			Debt debt = companyInfoDAO.getDebtInfoById(debtId);
-			
+System.out.println("server"+debt);			
 			if (debt != null) {
 				debt.setRepayIncome(df.format(Double.parseDouble(debt.getRepayIncome())));
 				debt.setNetAsset(df.format(Double.parseDouble(debt.getNetAsset())));
@@ -421,10 +449,14 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 	}
 
 	@Override
-	public List<Document> getDocumentInfoById(String memberId) {
+	public List<Document> getDocumentInfoById(String memberId,int index) {
 		
 		try {
-			List<Document> list = companyInfoDAO.getDocumentInfoById(memberId);
+			HashMap<String, Object> map = new HashMap<>();
+			map.put("memberId", memberId);
+			map.put("index", index);
+			
+			List<Document> list = companyInfoDAO.getDocumentInfo(map);
 			
 			return list;
 		} catch (Exception e) {
@@ -480,8 +512,16 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			companyBase = companyInfoDAO.editCompanyBaseInfoById(licenseId);
 			
 			if (companyBase != null) {
-				companyBase.setRegisterFund(df.format(Double.parseDouble(companyBase.getRegisterFund())));
-				companyBase.setFactFund(df.format(Double.parseDouble(companyBase.getFactFund())));
+				if (!companyBase.getRegisterFund().equals("")) {
+					companyBase.setRegisterFund(df.format(Double.parseDouble(companyBase.getRegisterFund())));
+				} else {
+					companyBase.setRegisterFund("");
+				}
+				if (!companyBase.getFactFund().equals("")) {
+					companyBase.setFactFund(df.format(Double.parseDouble(companyBase.getFactFund())));
+				} else {
+					companyBase.setFactFund("");
+				}
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -496,18 +536,27 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			
 			HoldInfos holdInfos = new HoldInfos();
 			
+			String[] ids = null;
+			String[] types = null;
+			String[] controlPersons = null;
+			String[] paperTypes = null;
+			String[] paperNumbers = null;
+			String[] workYears = null;
+			String[] educations = null;
+			String[] marriages = null;
+			
 			//数据整理
 			if (list != null && list.size() > 0) {
 				int count = list.size();
 				
-				String[] ids = new String[count];
-				String[] types = new String[count];
-				String[] controlPersons = new String[count];
-				String[] paperTypes = new String[count];
-				String[] paperNumbers = new String[count];
-				String[] workYears = new String[count];
-				String[] educations = new String[count];
-				String[] marriages = new String[count];
+				ids = new String[count];
+				types = new String[count];
+				controlPersons = new String[count];
+				paperTypes = new String[count];
+				paperNumbers = new String[count];
+				workYears = new String[count];
+				educations = new String[count];
+				marriages = new String[count];
 				
 				for (int i = 0; i < list.size(); i++) {
 					ids[i] = list.get(i).getId();
@@ -520,15 +569,36 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 					marriages[i] = list.get(i).getMarriage();
 				}
 				
-				holdInfos.setIds(ids);
-				holdInfos.setHoldTypes(types);
-				holdInfos.setControlPersons(controlPersons);
-				holdInfos.setPaperTypes(paperTypes);
-				holdInfos.setPaperNumbers(paperNumbers);
-				holdInfos.setWorkYears(workYears);
-				holdInfos.setEducations(educations);
-				holdInfos.setMarriages(marriages);
+			}else {
+				ids = new String[2];
+				types = new String[2];
+				controlPersons = new String[2];
+				paperTypes = new String[2];
+				paperNumbers = new String[2];
+				workYears = new String[2];
+				educations = new String[2];
+				marriages = new String[2];
+				
+				for (int i = 0; i < 2; i++) {
+					ids[i] ="";
+					types[i] ="";
+					controlPersons[i] ="";
+					paperTypes[i] ="";
+					paperNumbers[i] ="";
+					workYears[i] ="";
+					educations[i] ="";
+					marriages[i] ="";
+				}
+				
 			}
+			holdInfos.setIds(ids);
+			holdInfos.setHoldTypes(types);
+			holdInfos.setControlPersons(controlPersons);
+			holdInfos.setPaperTypes(paperTypes);
+			holdInfos.setPaperNumbers(paperNumbers);
+			holdInfos.setWorkYears(workYears);
+			holdInfos.setEducations(educations);
+			holdInfos.setMarriages(marriages);
 			
 			return holdInfos;
 		} catch (Exception e) {
@@ -643,17 +713,20 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		return null;
 	}
 
-	@Override
-	public List<Document> editDocumentInfoById(String memberId) {
-		try {
-			List<Document> list = companyInfoDAO.getDocumentInfoById(memberId);
-			
-			return list;
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-		return null;
-	}
+//	@Override
+//	public List<Document> editDocumentInfoById(String memberId) {
+//		try {
+//			HashMap<String, Object> map = new HashMap<>();
+//			map.put("memberId", memberId);
+//			map.put("index", index);
+//			List<Document> list = companyInfoDAO.getDocumentInfoById(memberId,"0");
+//			
+//			return list;
+//		} catch (Exception e) {
+//			log.error(e.getMessage());
+//		}
+//		return null;
+//	}
 
 	@Override
 	public Control editControlInfoById(String controlId) {
@@ -866,6 +939,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			map.put("licenseeType", companyBase.getLicenseeType());
 			map.put("organizationType", companyBase.getOrganizationType());
 			map.put("taxCode", companyBase.getTaxCode());
+			map.put("taxCodeN", companyBase.getTaxCodeN());
 			map.put("user", user);
 			
 			if (companyBase.getId().equals("")) {
@@ -883,8 +957,10 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 					map.put("type", "comp");
 					
 					count = companyInfoDAO.updateMemberInfo(map);
-					
-					return true;
+					if (count > 0) {
+						companyBase.setId(id);
+						return true;
+					}
 				}
 			}else {
 				map.put("id", companyBase.getId());
@@ -907,17 +983,52 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 	public boolean saveHolds(HoldInfos holdInfos,String user) {
 
 		List<Hold> holds = new ArrayList<>();
+		String[] ids = new String[holdInfos.getIds().length]; 
 		
+		String type = "add";
 		try {
 			for (int i = 0; i < 2; i++) {
 				Hold temp = new Hold();
-				temp.setId(holdInfos.getIds()[i]);
-				temp.setHoldType(holdInfos.getHoldTypes()[i]);
-				temp.setControlPerson(holdInfos.getControlPersons()[i]);
-				temp.setPaperType(holdInfos.getPaperTypes()[i]);
-				temp.setPaperNumber(holdInfos.getPaperNumbers()[i]);
-				temp.setWorkYear(holdInfos.getWorkYears()[i]);
-				temp.setEducation(holdInfos.getEducations()[i]);
+				if (holdInfos.getIds()[i].equals("")) {
+					String uuid = UUID.randomUUID().toString().replace("-", "");
+					temp.setId(uuid);
+					temp.setOrderNum(String.valueOf(i));
+					ids[i] = uuid;
+					type = "add";
+				} else {
+					temp.setId(holdInfos.getIds()[i]);
+					type = "update";
+				}
+				if (holdInfos.getHoldTypes()[i].equals("")) {
+					temp.setHoldType(null);
+				} else {
+					temp.setHoldType(holdInfos.getHoldTypes()[i]);
+				}
+				if (holdInfos.getControlPersons()[i].equals("")) {
+					temp.setControlPerson(null);
+				} else {
+					temp.setControlPerson(holdInfos.getControlPersons()[i]);
+				}
+				if (holdInfos.getPaperTypes()[i].equals("")) {
+					temp.setPaperType(null);
+				} else {
+					temp.setPaperType(holdInfos.getPaperTypes()[i]);
+				}
+				if (holdInfos.getPaperNumbers()[i].equals("")) {
+					temp.setPaperNumber(null);
+				} else {
+					temp.setPaperNumber(holdInfos.getPaperNumbers()[i]);
+				}
+				if (holdInfos.getWorkYears()[i].equals("")) {
+					temp.setWorkYear(null);
+				} else {
+					temp.setWorkYear(holdInfos.getWorkYears()[i]);
+				}
+				if (holdInfos.getEducations()[i].equals("")) {
+					temp.setEducation(null);
+				} else {
+					temp.setEducation(holdInfos.getEducations()[i]);
+				}
 				if (holdInfos.getMarriages()[i].equals("")) {
 					temp.setMarriage(null);	
 				}else {
@@ -928,7 +1039,17 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			}
 			
 			//持久化
-			int count = companyInfoDAO.updateHolds(holds,user);
+			int count = 0;
+			if (type.equals("add")) {
+				count = companyInfoDAO.saveHolds(holds);
+				if (count>0) {
+					count = companyInfoDAO.saveMemberHolds(holds,user);
+				}
+				holdInfos.setIds(ids);
+				
+			}else {
+				count = companyInfoDAO.updateHolds(holds,user);
+			}
 			
 			if (count > 0) {
 				return true;
@@ -936,7 +1057,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			return false;
+			throw new RuntimeException(e.getMessage());
 		}
 		
 		return false;
@@ -950,20 +1071,56 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		int count = 0;
 		try {
 			map.clear();
-			map.put("industry", control.getIndustry());
-			map.put("businessStartDate", control.getBusinessStartDate());
-			map.put("businessArea", control.getBusinessArea());
-			map.put("saleArea", control.getSaleArea());
-			map.put("fixedBusinessPlace", control.getFixedBusinessPlace());
-			map.put("interYear", control.getInterYear());
-			map.put("auditType", control.getAuditType());
+			if (control.getIndustry().equals("")) {
+				map.put("industry", null);
+			}else {
+				map.put("industry", control.getIndustry());
+			}
+			if (control.getBusinessStartDate().equals("")) {
+				map.put("businessStartDate", null);
+			} else {
+				map.put("businessStartDate", control.getBusinessStartDate());
+			}
+			if ( control.getBusinessArea().equals("")) {
+				map.put("businessArea", null);
+			} else {
+				map.put("businessArea", control.getBusinessArea());
+			}
+			if (control.getSaleArea().equals("")) {
+				map.put("saleArea", null);
+			} else {
+				map.put("saleArea", control.getSaleArea());
+			}
+			if (control.getFixedBusinessPlace().equals("")) {
+				map.put("fixedBusinessPlace",null);
+			} else {
+				map.put("fixedBusinessPlace", control.getFixedBusinessPlace());
+			}
+			if (control.getInterYear().equals("")) {
+				map.put("interYear", null);
+			} else {
+				map.put("interYear", control.getInterYear());
+			}
+			if (control.getAuditType().equals("")) {
+				map.put("auditType", null);
+			} else {
+				map.put("auditType", control.getAuditType());
+			}
 			if (control.getPeopleNumber().equals("")) {
 				map.put("peopleNumber", null);	
 			}else {
 				map.put("peopleNumber", control.getPeopleNumber());
 			}
-			map.put("haveLoanCard", control.getHaveLoanCard());
-			map.put("loanCardNumber", control.getLoanCardNumber());
+			if (control.getHaveLoanCard().equals("")) {
+				map.put("haveLoanCard", null);
+			} else {
+				map.put("haveLoanCard", control.getHaveLoanCard());
+			}
+			if (control.getLoanCardNumber().equals("")) {
+				map.put("loanCardNumber", null);
+			} else {
+				map.put("loanCardNumber", control.getLoanCardNumber());
+			}
 			map.put("user", user);
 			
 			if (control.getId().equals("")) {
@@ -988,9 +1145,10 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 				
 				count = companyInfoDAO.updateControl(map);
 				
-				if (count > 0) {
-					return true;
-				}
+			}
+			
+			if (count > 0) {
+				return true;
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -1051,6 +1209,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 				}
 				
 				temp.setTargetId(memberId);
+				temp.setTargetType("1");
 				
 				businesses.add(temp);
 			}
@@ -1092,8 +1251,8 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			map.put("other", estate.getOther());
 			map.put("user", user);
 			
+			String id = UUID.randomUUID().toString().replace("-", "");
 			if (estate.getId().equals("")) {
-				String id = UUID.randomUUID().toString().replace("-", "");
 				
 				map.put("id", id);
 				
@@ -1107,6 +1266,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 					map.put("type", "est");
 					
 					count = companyInfoDAO.updateMemberInfo(map);
+					
 				}
 			}else {
 				map.put("id", estate.getId());
@@ -1115,6 +1275,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			}
 			
 			if (count > 0) {
+				estate.setId(id);
 				return true;
 			}
 			
@@ -1161,8 +1322,8 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			}
 			map.put("user", user);
 			
+			String id = UUID.randomUUID().toString().replace("-", "");
 			if (debt.getId().equals("")) {
-				String id = UUID.randomUUID().toString().replace("-", "");
 				
 				map.put("id", id);
 				
@@ -1185,6 +1346,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			}
 			
 			if (count > 0) {
+				debt.setId(id);
 				return true;
 			}
 		} catch (Exception e) {
@@ -1209,6 +1371,65 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		businessInfos.setYears(years);
 		
 		return businessInfos;
+	}
+
+	@Override
+	public Rating editRating(String ratingId) {
+		
+//		Rating rating = new Rating();
+//		
+//		int result = companyInfoDAO.editRatingById(ratingId);
+		
+		return null;
+	}
+
+	@Override
+	public int getDocumentCount() {
+		return companyInfoDAO.getDocumentCount();
+	}
+
+	@Override
+	public String updateDocument(String filePath,String fileId, String typeId,String memberId) {
+		
+		int result = 0;
+		try {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("filePath", filePath);
+			map.put("typeId", typeId);
+			map.put("memberId", memberId);
+			
+			if (fileId.equals("")) {
+				fileId = UUID.randomUUID().toString().replace("-", "");
+				map.put("fileId", fileId);
+				
+				result = companyInfoDAO.saveDocument(map);
+			}else {
+				map.put("fileId", fileId);
+				
+				result = companyInfoDAO.updateDocument(map);
+			}
+			
+			if (result > 0) {
+				return fileId;
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return "";
+	}
+
+	@Override
+	public List<Document> editDocuments(String memberId) {
+		
+		List<Document> list = null;
+		try {
+			list = companyInfoDAO.getDocumentByMemberId(memberId);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return list;
 	}
 
 }

@@ -86,7 +86,11 @@ public interface OrderDAO {
     
     public boolean updateOrderDetail(HashMap<String, Object> map);
     
+    //以下为对m_order_hold表操作的方法
     
+    public void addHoldList(@Param("list")List<String> holdList, @Param("id")String orderId);
+    
+    public List<String> getHoldList(@Param("id")String orderId);
 
 	
 

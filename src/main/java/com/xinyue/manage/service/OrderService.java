@@ -2,11 +2,14 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import com.xinyue.manage.beans.BusinessInfos;
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Applicant;
+import com.xinyue.manage.model.Debt;
 import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.RealEstate;
 
 /**
  * author lzc
@@ -105,8 +108,18 @@ public interface OrderService {
 	 */
 	public boolean addOrUpdateApplicant(Applicant applicant, String orderId, String modifiedId, int state);
 	
+	/**
+	 * add by lzc     date: 2015年7月28日
+	 * @param debt
+	 * @param realEstate
+	 * @param orderId
+	 * @param modifiedId
+	 * @param state 0->add 1->update
+	 * @return
+	 */
+	public boolean addOrUpdateDebt(Debt debt, RealEstate realEstate, String orderId, String modifiedId, int state);
 	
 	
-	
+	public boolean addOrUpdateBusiness(BusinessInfos businessInfos, String orderId, String modifiedId,int state);
 	
 }

@@ -1,16 +1,36 @@
 package com.xinyue.manage.model;
 
+import java.io.Serializable;
+
 /**
  * 上传资料信息
  * @author MK)茅
  *
  */
-public class Document {
+public class Document implements Serializable {
 
-	private String documentId;
-	private String documentName;
-	private String documentDir;
-	private String documentType;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1932455026391925718L;
+	
+	private String documentId = "";
+	private String documentName = "";
+	private String documentDir = "";
+	private String documentType = "";
+	private String upLoadTime = "";
+	/**
+	 * @return the documentId
+	 */
+	public String getDocumentId() {
+		return documentId;
+	}
+	/**
+	 * @param documentId the documentId to set
+	 */
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
+	}
 	/**
 	 * @return the documentName
 	 */
@@ -48,15 +68,18 @@ public class Document {
 		this.documentType = documentType;
 	}
 	/**
-	 * @return the documentId
+	 * @return the upLoadTime
 	 */
-	public String getDocumentId() {
-		return documentId;
+	public String getUpLoadTime() {
+		return upLoadTime;
 	}
 	/**
-	 * @param documentId the documentId to set
+	 * @param upLoadTime the upLoadTime to set
 	 */
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
+	public void setUpLoadTime(String upLoadTime) {
+		this.upLoadTime = upLoadTime;
 	}
+	
+	
+	
 }

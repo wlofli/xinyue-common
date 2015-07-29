@@ -33,6 +33,7 @@ public class CompanyBase {
 	private String organizationType = "";
 	private String taxCode = "";
 	private String controlInfo = "";
+	private String taxCodeN = "";
 
 	/**
 	 * @return the companyName
@@ -488,5 +489,19 @@ public class CompanyBase {
 	 */
 	public void setCompanyZoneHid(String companyZoneHid) {
 		this.companyZoneHid = companyZoneHid;
+	}
+
+	/**
+	 * @return the taxCodeN
+	 */
+	public String getTaxCodeN() {
+		return taxCodeN;
+	}
+
+	/**
+	 * @param taxCodeN the taxCodeN to set
+	 */
+	public void setTaxCodeN(String taxCodeN) {
+		this.taxCodeN = taxCodeN;
 	}
 }
