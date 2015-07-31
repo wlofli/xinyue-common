@@ -26,7 +26,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	private String imgPath = CommonFunction.getValue("upload.path") + "auth/";
 	
-	private Logger log = Logger.getLogger(AdvertisingServiceImpl.class);
+	private Logger log = Logger.getLogger(AuthenticationServiceImpl.class);
 	
 	@Resource
 	AuthenticationDAO authenticationDAO;
@@ -196,10 +196,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public boolean saveMemberAuth(Authentication authInfo, String imgPath,String loginName) {
+	public boolean saveMemberAuth(Authentication authInfo, String imgPath,String memberId) {
 		
 		//图片实际存放路径
 		String realFilePath = CommonFunction.getValue("upload.path")+imgPath;
+		String uploadPath = CommonFunction.getValue("upload.path");
 		File dirPath = new File(realFilePath);
 		if (!dirPath.exists()) {
 			dirPath.mkdirs();
@@ -208,7 +209,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		try {
 			//数据整理
 			HashMap<String, Object> map = new HashMap<>();
-			map.put("id", UUID.randomUUID().toString().replace("-", ""));
+			String id = "";
+			if (authInfo.getCode().equals("")) {
+				id = UUID.randomUUID().toString().replace("-", "");
+			}else {
+				id = authInfo.getCode();
+			}
+			map.put("id", id);
 			map.put("companyName", authInfo.getCompanyName());
 			map.put("blCode", authInfo.getZone());
 			map.put("legalPersonName", authInfo.getLegalPersonName());
@@ -222,19 +229,57 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			map.put("contactTel", authInfo.getContactTel());
 			map.put("contactEmail", authInfo.getContactEmail());
 			map.put("contactAddress", authInfo.getContactAddress());
-			map.put("blImg", imgPath+authInfo.getBusinessLicense().split("/")[3]);
-			map.put("ozImg", imgPath+authInfo.getOrganizationCode().split("/")[3]);
-			map.put("trImg", imgPath+authInfo.getTaxRegistration().split("/")[3]);
-			map.put("idaImg", imgPath+authInfo.getIdentityCarda().split("/")[3]);
-			map.put("idnImg", imgPath+authInfo.getIdentityCardn().split("/")[3]);
-			map.put("idpImg", imgPath+authInfo.getIdentityCardp().split("/")[3]);
-			map.put("loginName", loginName);
+			if (authInfo.getBusinessLicense().contains("temp")) {
+				map.put("blImg", imgPath+authInfo.getBusinessLicense().split("/")[3]);
+			}else {
+				map.put("blImg", authInfo.getBusinessLicense());
+			}
+			if (authInfo.getOrganizationCode().contains("temp")) {
+				map.put("ozImg", imgPath+authInfo.getOrganizationCode().split("/")[3]);
+			}else {
+				map.put("ozImg", authInfo.getOrganizationCode());
+			}
+			if (authInfo.getTaxRegistration().contains("temp")) {
+				map.put("trImg", imgPath+authInfo.getTaxRegistration().split("/")[3]);
+			}else {
+				map.put("trImg", authInfo.getTaxRegistration());
+			}
+			if (authInfo.getIdentityCarda().contains("temp")) {
+				map.put("idaImg", imgPath+authInfo.getIdentityCarda().split("/")[3]);
+			}else {
+				map.put("idaImg", authInfo.getIdentityCarda());
+			}
+			if (authInfo.getIdentityCardn().contains("temp")) {
+				map.put("idnImg", imgPath+authInfo.getIdentityCardn().split("/")[3]);
+			}else {
+				map.put("idnImg", authInfo.getIdentityCardn());
+			}
+			if (authInfo.getIdentityCardp().contains("temp")) {
+				map.put("idpImg", imgPath+authInfo.getIdentityCardp().split("/")[3]);
+			}else {
+				map.put("idpImg", authInfo.getIdentityCardp());
+			}
+			map.put("loginName", memberId);
 			map.put("postCode", authInfo.getPostCode());
 			
 			//持久化
-			int result = authenticationDAO.saveMemberAuth(map);
+			int result = 0;
+			if (authInfo.getCode().equals("")) {
+				result = authenticationDAO.saveMemberAuth(map);
+			}else {
+				result = authenticationDAO.updateMemberAuth(map);
+			}
 			
 			if (result > 0) {
+				
+				//添加时
+				if (authInfo.getCode().equals("")) {
+					//更新用户表
+					map.clear();
+					map.put("memberId", memberId);
+					map.put("authId", id);
+					authenticationDAO.updateMemberById(map);
+				}
 				
 				//图片从临时文件夹移出
 				for (int i = 0; i < 6; i++) {
@@ -243,28 +288,52 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 					
 					switch (i) {
 					case 0:
-						tempImg = authInfo.getBusinessLicense();
-						realImg = imgPath+authInfo.getBusinessLicense().split("/")[3];
+						tempImg = uploadPath+authInfo.getBusinessLicense();
+						if (tempImg.contains("temp")) {
+							continue;
+						}
+						realImg = realFilePath+authInfo.getBusinessLicense().split("/")[3];
+						authInfo.setBusinessLicense(imgPath+authInfo.getBusinessLicense().split("/")[3]);
 						break;
 					case 1:
-						tempImg = authInfo.getOrganizationCode();
-						realImg = imgPath+authInfo.getOrganizationCode().split("/")[3];
+						tempImg = uploadPath+authInfo.getOrganizationCode();
+						if (tempImg.contains("temp")) {
+							continue;
+						}
+						realImg = realFilePath+authInfo.getOrganizationCode().split("/")[3];
+						authInfo.setOrganizationCode(imgPath+authInfo.getOrganizationCode().split("/")[3]);
 						break;
 					case 2:
-						tempImg = authInfo.getTaxRegistration();
-						realImg = imgPath+authInfo.getTaxRegistration().split("/")[3];
+						tempImg = uploadPath+authInfo.getTaxRegistration();
+						if (tempImg.contains("temp")) {
+							continue;
+						}
+						realImg = realFilePath+authInfo.getTaxRegistration().split("/")[3];
+						authInfo.setTaxRegistration(imgPath+authInfo.getTaxRegistration().split("/")[3]);
 						break;
 					case 3:
-						tempImg = authInfo.getIdentityCarda();
-						realImg = imgPath+authInfo.getIdentityCarda().split("/")[3];
+						tempImg = uploadPath+authInfo.getIdentityCarda();
+						if (tempImg.contains("temp")) {
+							continue;
+						}
+						realImg = realFilePath+authInfo.getIdentityCarda().split("/")[3];
+						authInfo.setIdentityCarda(imgPath+authInfo.getIdentityCarda().split("/")[3]);
 						break;
 					case 4:
-						tempImg = authInfo.getIdentityCardn();
-						realImg = imgPath+authInfo.getIdentityCardn().split("/")[3];
+						tempImg = uploadPath+authInfo.getIdentityCardn();
+						if (tempImg.contains("temp")) {
+							continue;
+						}
+						realImg = realFilePath+authInfo.getIdentityCardn().split("/")[3];
+						authInfo.setIdentityCardn(imgPath+authInfo.getIdentityCardn().split("/")[3]);
 						break;
 					case 5:
-						tempImg = authInfo.getIdentityCardp();
-						realImg = imgPath+authInfo.getIdentityCardp().split("/")[3];
+						tempImg = uploadPath+authInfo.getIdentityCardp();
+						if (tempImg.contains("temp")) {
+							continue;
+						}
+						realImg = realFilePath+authInfo.getIdentityCardp().split("/")[3];
+						authInfo.setIdentityCardp(imgPath+authInfo.getIdentityCardp().split("/")[3]);
 						break;
 					default:
 						break;
@@ -283,9 +352,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			throw new RuntimeException(e.getMessage());
 		}
 		
 		return false;
+	}
+
+	@Override
+	public Authentication findByMemberId(String memberId) {
+
+		Authentication authentication = null;
+		try {
+			authentication = authenticationDAO.findByMemberId(memberId);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return authentication;
 	}
 
 }

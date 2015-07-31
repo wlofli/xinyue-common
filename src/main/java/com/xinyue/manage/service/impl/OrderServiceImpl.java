@@ -1,8 +1,11 @@
 package com.xinyue.manage.service.impl;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -11,14 +14,18 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.BusinessInfos;
+import com.xinyue.manage.beans.HoldInfos;
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.CompanyInfoDAO;
 import com.xinyue.manage.dao.OrderDAO;
 import com.xinyue.manage.model.Applicant;
 import com.xinyue.manage.model.Business;
+import com.xinyue.manage.model.CompanyBase;
+import com.xinyue.manage.model.Control;
 import com.xinyue.manage.model.Debt;
 import com.xinyue.manage.model.Document;
+import com.xinyue.manage.model.Hold;
 import com.xinyue.manage.model.Order;
 import com.xinyue.manage.model.RealEstate;
 import com.xinyue.manage.service.OrderService;
@@ -378,9 +385,319 @@ System.out.println("realestate=============" + realEstate.getId());
 	}
 
 
+	@Override
+	public boolean addOrUpdateCompany(CompanyBase companyBase, HoldInfos holdInfos,
+			Control control, String orderId, String modifiedId, int state) {
+		// TODO Auto-generated method stub
+			//获取企业基本信息
+//System.out.println(2);
+			HashMap<String, Object> map = getCompanyBase(companyBase);
+			//获取治理信息
+			HashMap<String, Object> map2 = getControl(control);
+//System.out.println(3);
+			//获取控股信息
+			List<Hold> holds = getHoldList(holdInfos);
+//System.out.println(4);
+		try {
+			map.put("user", modifiedId);
+			map2.put("user", modifiedId);
+			map2.put("id", control.getId());
+				if(state == 0){
+					companyInfoDAO.addCompanyBase(map);
+					companyInfoDAO.addControl(map2);
+					map.clear();
+					map.put("orderId", orderId);
+					map.put("licenseId", companyBase.getId());
+					map.put("controlId", control.getId());
+					map.put("user", modifiedId);
+					map.put("type", "comp");
+					companyInfoDAO.saveHolds(holds);
+					List<String> holdList = new LinkedList<String>();
+					for(Hold hold : holds){
+						holdList.add(hold.getId());
+					}
+					orderDAO.addHoldList(holdList, orderId);
+					orderDAO.updateOrderDetail(map);
+System.out.println("updateOrderDetail!!");
+				}else {
+					companyInfoDAO.updateCompanyBase(map);
+					companyInfoDAO.updateHolds(holds,modifiedId);
+					companyInfoDAO.updateControl(map2);
+					
+				}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new RuntimeException(e.getMessage());
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean addDocumentList(List<Document> documentList,
+			String orderId,  String modifiedId) {
+		// TODO Auto-generated method stub
+		try {
+			if(documentList.size() > 0){
+				List<String> documentIdList = new LinkedList<String>();
+				for (Document document : documentList) {
+					documentIdList.add(document.getDocumentId());
+				}
+				orderDAO.addDocumentList(documentIdList, orderId);
+			}
+			HashMap<String, Object> map = new HashMap<>();
+			map.clear();
+			map.put("user", modifiedId);
+			map.put("type", "document");
+			map.put("orderId", orderId);
+			orderDAO.updateOrderDetail(map);
+System.out.println("updateOrderDetail");
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error(e.toString());
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public boolean addOrUpdateDocument(String filePath,String memberId, String typeId, String dId, String orderId, String documentId) {
+		// TODO Auto-generated method stub
+		try {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("filePath", filePath);
+			map.put("typeId", typeId);
+			map.put("memberId", memberId);
+			map.put("fileId", dId);
+			companyInfoDAO.saveDocumentByOrder(map);
+			if(documentId != null){
+				orderDAO.deleteDocument(documentId, orderId);
+			}
+			orderDAO.addDocument(dId, orderId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		return true;
+	}
+
+
 	
 	
+	private List<Hold> getHoldList(HoldInfos holdInfos){
+		//holdInfos
+		List<Hold> holds = new ArrayList<>();
+//System.out.println(holdInfos);
+		try {
+			for (int i = 0; i < 2; i++) {
+				Hold temp = new Hold();
+//System.out.println(holdInfos.getIds()[i]);
+				temp.setId(holdInfos.getIds()[i]);
+				temp.setOrderNum(String.valueOf(i));
+				if (holdInfos.getHoldTypes()[i].equals("")) {
+					temp.setHoldType(null);
+				} else {
+					temp.setHoldType(holdInfos.getHoldTypes()[i]);
+				}
+				if (holdInfos.getControlPersons()[i].equals("")) {
+					temp.setControlPerson(null);
+				} else {
+					temp.setControlPerson(holdInfos.getControlPersons()[i]);
+				}
+				if (holdInfos.getPaperTypes()[i].equals("")) {
+					temp.setPaperType(null);
+				} else {
+					temp.setPaperType(holdInfos.getPaperTypes()[i]);
+				}
+				if (holdInfos.getPaperNumbers()[i].equals("")) {
+					temp.setPaperNumber(null);
+				} else {
+					temp.setPaperNumber(holdInfos.getPaperNumbers()[i]);
+				}
+				if (holdInfos.getWorkYears()[i].equals("")) {
+					temp.setWorkYear(null);
+				} else {
+					temp.setWorkYear(holdInfos.getWorkYears()[i]);
+				}
+				if (holdInfos.getEducations()[i].equals("")) {
+					temp.setEducation(null);
+				} else {
+					temp.setEducation(holdInfos.getEducations()[i]);
+				}
+				if (holdInfos.getMarriages()[i].equals("")) {
+					temp.setMarriage(null);	
+				}else {
+					temp.setMarriage(holdInfos.getMarriages()[i]);
+				}
+				holds.add(temp);
+				
+			}
+System.out.println(holds.get(0).getEducation());
+System.out.println(holds.get(1).getEducation());
+			return holds;
+		} catch (Exception e) {
+			// TODO: handle exception
+			
+			e.printStackTrace();
+		}
+		return null;
+			
+	}
+
+	
+	private HashMap<String, Object> getCompanyBase(CompanyBase companyBase){
+			HashMap<String, Object> map = new HashMap<>();
+			map.clear();
+			map.put("companyName", companyBase.getCompanyName());
+			map.put("legalPerson", companyBase.getLegalPerson());
+			map.put("paperType", companyBase.getPaperType());
+			map.put("paperNumber", companyBase.getPaperNumber());
+			map.put("licenseeNumber", companyBase.getLicenseeNumber());
+			map.put("controlInfo", companyBase.getControlInfo());
+			if (companyBase.getCompanyRegisterDate().equals("")) {
+				map.put("companyRegisterDate", null);
+			}else {
+				map.put("companyRegisterDate", companyBase.getCompanyRegisterDate());
+			}
+			map.put("yearCheck", companyBase.getYearCheck());
+			if (companyBase.getYearCheckDate().equals("")) {
+				map.put("yearCheckDate", null);
+			}else {
+				map.put("yearCheckDate", companyBase.getYearCheckDate());
+			}
+			map.put("registerFundType", companyBase.getRegisterFundType());
+			if (companyBase.getRegisterFund().equals("")) {
+				map.put("registerFund", null);
+			}else {
+				map.put("registerFund", companyBase.getRegisterFund());
+			}
+			map.put("factFundType", companyBase.getFactFundType());
+			if (companyBase.getFactFund().equals("")) {
+				map.put("factFund", null);
+			}else {
+				map.put("factFund", companyBase.getFactFund());
+			}
+			map.put("companyType", companyBase.getCompanyType());
+			map.put("registerAddress", companyBase.getRegisterAddress());
+			if (companyBase.getCompanyProvince().equals("")) {
+				map.put("companyProvince", null);
+			}else {
+				map.put("companyProvince", companyBase.getCompanyProvince());
+			}
+			if (companyBase.getCompanyCity().equals("")) {
+				map.put("companyCity", null);
+			}else {
+				map.put("companyCity", companyBase.getCompanyCity());
+			}
+			if (companyBase.getCompanyZone().equals("")) {
+				map.put("companyZone", null);
+			}else {
+				map.put("companyZone", companyBase.getCompanyZone());
+			}
+			map.put("businessRange", companyBase.getBusinessRange());
+			map.put("organizationCode", companyBase.getOrganizationCode());
+			map.put("companyEdoorNum", companyBase.getCompanyEdoorNum());
+			map.put("companyTel", companyBase.getCompanyTel());
+			map.put("companyFax", companyBase.getCompanyFax());
+			if (companyBase.getLicenseeDeadLine().equals("")) {
+				map.put("licenseeDeadLine", null);
+			}else {
+				map.put("licenseeDeadLine", companyBase.getLicenseeDeadLine());
+			}
+			map.put("licenseeType", companyBase.getLicenseeType());
+			map.put("organizationType", companyBase.getOrganizationType());
+			map.put("taxCode", companyBase.getTaxCode());
+			map.put("taxCodeN", companyBase.getTaxCodeN());
+			map.put("id", companyBase.getId());
+			return map;
+	}
+	
+	
+	private HashMap<String, Object> getControl(Control control){
+			HashMap<String, Object> map = new HashMap<>();
+			map.clear();
+			if (control.getIndustry().equals("")) {
+				map.put("industry", null);
+			}else {
+				map.put("industry", control.getIndustry());
+			}
+			if (control.getBusinessStartDate().equals("")) {
+				map.put("businessStartDate", null);
+			} else {
+				map.put("businessStartDate", control.getBusinessStartDate());
+			}
+			if ( control.getBusinessArea().equals("")) {
+				map.put("businessArea", null);
+			} else {
+				map.put("businessArea", control.getBusinessArea());
+			}
+			if (control.getSaleArea().equals("")) {
+				map.put("saleArea", null);
+			} else {
+				map.put("saleArea", control.getSaleArea());
+			}
+			if (control.getFixedBusinessPlace().equals("")) {
+				map.put("fixedBusinessPlace",null);
+			} else {
+				map.put("fixedBusinessPlace", control.getFixedBusinessPlace());
+			}
+			if (control.getInterYear().equals("")) {
+				map.put("interYear", null);
+			} else {
+				map.put("interYear", control.getInterYear());
+			}
+			if (control.getAuditType().equals("")) {
+				map.put("auditType", null);
+			} else {
+				map.put("auditType", control.getAuditType());
+			}
+			if (control.getPeopleNumber().equals("")) {
+				map.put("peopleNumber", null);	
+			}else {
+				map.put("peopleNumber", control.getPeopleNumber());
+			}
+			if (control.getHaveLoanCard().equals("")) {
+				map.put("haveLoanCard", null);
+			} else {
+				map.put("haveLoanCard", control.getHaveLoanCard());
+			}
+			if (control.getLoanCardNumber().equals("")) {
+				map.put("loanCardNumber", null);
+			} else {
+				map.put("loanCardNumber", control.getLoanCardNumber());
+			}
+			return map;
+	}
 
 
+	@Override
+	public List<Document> getDocumentList(String orderId, int index) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> map = new HashMap<>();
+		map.clear();
+		map.put("orderId", orderId);
+		map.put("index", index);
+		return orderDAO.getDocumentByOrderId(map);
+	}
 
+
+	@Override
+	public int getDocumentCount(String orderId) {
+		// TODO Auto-generated method stub
+		return orderDAO.getDocumentCount(orderId);
+	}
+	
+	
 }
+
+		
+	
+
+	
+	
+
+
+
+

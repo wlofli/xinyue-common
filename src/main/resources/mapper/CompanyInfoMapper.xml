@@ -199,15 +199,15 @@
 		    m.id as member_id,
 		    m.applicant_info as applicant_id,
 		    m.license_info as license_id,
-		    l.control_info as control_id,
+		    m.control_info as control_id,
 		    m.real_estate as estate_id,
 		    m.debt_info as debt_id,
 		    m.rating_info as rating_id,
 		    m.realname_info as realname_id
 		FROM
 		    m_member_info m
-		        left join
-		    m_license_info l ON m.license_info = l.id
+<!-- 		        left join -->
+<!-- 		    m_license_info l ON m.license_info = l.id -->
 		WHERE
 		    m.id = #{code};
 	</select>
@@ -399,7 +399,7 @@
 	
 <!-- 	@override ->getHoldInfoById -->
 <!-- 	add by lzc -->
-	<select id="getHoleInfoByOrderId" parameterType="string" resultType="com.xinyue.manage.model.Hold">
+	<select id="getHoldInfoByOrderId" parameterType="string" resultType="com.xinyue.manage.model.Hold">
 		select 
 		    s1.select_value as holdType,
 		    h.hold_person as controlPerson,
@@ -655,6 +655,28 @@
 		            m_member_hold
 		        where
 		            member_id = #{id})
+		order by h.order_num;
+	</select>
+	
+	<select id="editHoldInfoByOrderId" parameterType="string" resultType="com.xinyue.manage.model.Hold">
+		select 
+			h.id as id,
+		    h.hold_type as holdType,
+		    h.hold_person as controlPerson,
+		    h.credential_type as paperType,
+		    h.credential_number as paperNumber,
+		    h.work_year as workYear,
+		    h.educational as education,
+		    h.marriage as marriage
+		from
+		    m_hold_info h
+		where
+		    id in (select 
+		            hold_id
+		        from
+		            m_order_hold
+		        where
+		            order_id = #{id})
 		order by h.order_num;
 	</select>
 	
@@ -1142,6 +1164,30 @@
 		);
 	</insert>
 	
+	<insert id="saveDocumentByOrder" parameterType="hashmap">
+		insert into
+			m_document_info(
+				id,
+				member_id,
+				file_dir,
+				file_type,
+				created_time,
+				modified_time,
+				created_id,
+				modified_id
+			)
+		values(
+			#{fileId},
+			"",
+			#{filePath},
+			#{typeId},
+			now(),
+			now(),
+			#{memberId},
+			#{memberId}
+		);
+	</insert>
+	
 	<update id="updateDocument" parameterType="hashmap">
 		update 
 			m_document_info
@@ -1152,4 +1198,19 @@
 		where
 			id=#{fileId};
 	</update>
+	
+	<select id="getDocumentByMemberId" parameterType="String" resultType="com.xinyue.manage.model.Document">
+		SELECT 
+		    di.id as fileId, 
+		    di.file_dir as filePath, 
+		    dt.name as documentName, 
+		    di.modified_time as upLoadTime
+		FROM
+		    m_document_info di
+		        left join
+		    m_document_type dt ON di.file_type = dt.type_id
+		where
+		    di.member_id = 'd8d5a7352cfb11e5a2d6d0278858a399';
+	</select>
+	
 </mapper>

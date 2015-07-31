@@ -314,16 +314,83 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 	}
 
 	@Override
-	public List<Hold> getHoldInfoByOrderId(String orderId) {
+	public HoldInfos getHoldInfoByOrderId(String orderId) {
 		
 		try {
-			List<Hold> list = companyInfoDAO.getHoldInfoByOrderId(orderId);
+			List<Hold> list = companyInfoDAO.editHoldInfoByOrderId(orderId);
 			
-			return list;
+			HoldInfos holdInfos = new HoldInfos();
+			
+			String[] ids = null;
+			String[] types = null;
+			String[] controlPersons = null;
+			String[] paperTypes = null;
+			String[] paperNumbers = null;
+			String[] workYears = null;
+			String[] educations = null;
+			String[] marriages = null;
+			
+			//数据整理
+			if (list != null && list.size() > 0) {
+				int count = list.size();
+				
+				ids = new String[count];
+				types = new String[count];
+				controlPersons = new String[count];
+				paperTypes = new String[count];
+				paperNumbers = new String[count];
+				workYears = new String[count];
+				educations = new String[count];
+				marriages = new String[count];
+				
+				for (int i = 0; i < list.size(); i++) {
+					ids[i] = list.get(i).getId();
+					types[i] = list.get(i).getHoldType();
+					controlPersons[i] = list.get(i).getControlPerson();
+					paperTypes[i] = list.get(i).getPaperType();
+					paperNumbers[i] = list.get(i).getPaperNumber();
+					workYears[i] = list.get(i).getWorkYear();
+					educations[i] = list.get(i).getEducation();
+					marriages[i] = list.get(i).getMarriage();
+				}
+				
+			}else {
+				ids = new String[2];
+				types = new String[2];
+				controlPersons = new String[2];
+				paperTypes = new String[2];
+				paperNumbers = new String[2];
+				workYears = new String[2];
+				educations = new String[2];
+				marriages = new String[2];
+				
+				for (int i = 0; i < 2; i++) {
+					ids[i] ="";
+					types[i] ="";
+					controlPersons[i] ="";
+					paperTypes[i] ="";
+					paperNumbers[i] ="";
+					workYears[i] ="";
+					educations[i] ="";
+					marriages[i] ="";
+				}
+				
+			}
+			holdInfos.setIds(ids);
+			holdInfos.setHoldTypes(types);
+			holdInfos.setControlPersons(controlPersons);
+			holdInfos.setPaperTypes(paperTypes);
+			holdInfos.setPaperNumbers(paperNumbers);
+			holdInfos.setWorkYears(workYears);
+			holdInfos.setEducations(educations);
+			holdInfos.setMarriages(marriages);
+			
+			return holdInfos;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		return new ArrayList<Hold>();
+		return null;
+	
 	}
 	
 	@Override

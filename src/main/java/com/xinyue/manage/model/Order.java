@@ -50,6 +50,8 @@ public class Order {
 	private String auditePerson;
 	private String remark;//放款备注
 	
+	private String controlInfo;//公司治理信息
+	private int documentSave;//上传文件保存标志
 	
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
@@ -79,6 +81,18 @@ public class Order {
 	
 	
 	
+	public int getDocumentSave() {
+		return documentSave;
+	}
+	public void setDocumentSave(int documentSave) {
+		this.documentSave = documentSave;
+	}
+	public String getControlInfo() {
+		return controlInfo;
+	}
+	public void setControlInfo(String controlInfo) {
+		this.controlInfo = controlInfo;
+	}
 	public Double getCreditReal() {
 		return creditReal;
 	}

@@ -20,5 +20,11 @@ public interface AuthenticationDAO {
 
 	int saveMemberAuth(HashMap<String, Object> map);
 
+	Authentication findByMemberId(String memberId);
+
+	void updateMemberById(HashMap<String, Object> map);
+
+	int updateMemberAuth(HashMap<String, Object> map);
+
 
 }

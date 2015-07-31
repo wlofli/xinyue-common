@@ -65,6 +65,13 @@ public interface CompanyInfoDAO {
 	CompanyBase editCompanyBaseInfoById(String licenseId);
 
 	List<Hold> editHoldInfoById(String memberId);
+	
+	/**
+	 * add by lzc     date: 2015年7月29日
+	 * @param orderId
+	 * @return
+	 */
+	List<Hold> editHoldInfoByOrderId(String orderId);
 
 	Control editControlInfoById(String controlId);
 
@@ -107,9 +114,15 @@ public interface CompanyInfoDAO {
 	int getDocumentCount();
 
 	int saveDocument(HashMap<String, Object> map);
+	/**
+	 * add by lzc     date: 2015年7月30日
+	 * @param map
+	 * @return
+	 */
+	int	saveDocumentByOrder(HashMap<String, Object> map);
 
 	int updateDocument(HashMap<String, Object> map);
 
 	List<Document> getDocumentByMemberId(String memberId);
-
+	
 }

@@ -36,6 +36,9 @@ public interface AuthenticationService {
 	 * @param imgPath
 	 * @return
 	 */
-	boolean saveMemberAuth(Authentication authInfo, String imgPath,String loginName);
+	boolean saveMemberAuth(Authentication authInfo, String imgPath,String memberId);
+
+	Authentication findByMemberId(String memberId);
+
 
 }

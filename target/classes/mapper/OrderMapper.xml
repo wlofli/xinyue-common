@@ -44,7 +44,9 @@
 		<result column="business_save" property="businessSave"/>
 		<result column="company_save" property="companySave"/>
 		<result column="debt_save" property="debtSave"/>
+		<result column="document_save" property="documentSave"/>
 		<result column="province" property="province"/>
+		<result column="control_info" property="controlInfo"/>
 		<result column="city" property="city"/>
 		<result column="zone" property="zone"/>
 <!-- 		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association> -->
@@ -76,6 +78,14 @@
 	<resultMap id="selectInfo" type="com.xinyue.manage.beans.SelectInfo">
 		<result column="key" property="key" />
 		<result column="value" property="value" />
+	</resultMap>
+	
+	<resultMap type="com.xinyue.manage.model.Document" id="documentResult">
+		<result column="id" property="documentId"/>
+		<result column="name" property="documentName"/>
+		<result column="dir" property="documentDir"/>
+		<result column="type" property="documentType"/>
+		<result column="time" property="upLoadTime"/>
 	</resultMap>
 	
 	
@@ -139,11 +149,13 @@
 			applicat_person,
 			company_info,
 			o.license_info,
+			o.control_info,
 			o.debt_info,
 			o.real_estate,
 			o.applicant_save,
 			o.business_save,
 			o.company_save,
+			o.document_save,
 			o.debt_save,
 			o.applicant_info,
 			o.credit_real,
@@ -453,7 +465,7 @@
 		        left join
 		    m_document_type t ON d.file_type = t.type_id
 		where
-		    d.member_id in (select document_id from m_order_document where order_id = #{id})
+		    d.id in (select document_id from m_order_document where order_id = #{id})
 	</select>
 	
 	
@@ -533,20 +545,86 @@
 			applicant_save = 1
 		</if>
 		<if test="type == 'comp'">
-			license_info= #{licenseId},
+			license_info = #{licenseId},
+			control_info = #{controlId},  
 			company_save = 1
 		</if>
-		<if test="type == 'cont'">
+		<if test="type == 'business'">
 			business_save = 1
 		</if>
 		<if test="type == 'debt'">
 			real_estate = #{realEstate},
 			debt_info = #{debt},
-			deby_save = 1
+			debt_save = 1
+		</if>
+		<if test="type == 'document'">
+			document_save = 1
 		</if>
 	
 	</sql>
 	
+	
+	<insert id="addHoldList">
+	 <foreach collection="list" item="list" index="index" separator=";">
+		 insert into m_order_hold
+			 (order_id, hold_id)
+			values
+			 (#{id},#{list})
+	 </foreach>
+	</insert>
+	
+	
+	
+	<select id="getHoldList" resultType="String">
+		select hold_id from 
+		m_order_hold
+		where order_id = #{id}
+	</select>
+	
+	<delete id="deleteDocument">
+		delete from m_order_document
+		where order_id = #{id} and document_id = #{documentId}
+	</delete>
+	
+	<insert id="addDocument">
+		insert into m_order_document
+				(order_id,document_id)
+			values (#{id}, #{documentId})
+	</insert>
+	
+	<insert id="addDocumentList">
+		<foreach collection="list" item = "documentId" separator=";">
+			insert into m_order_document
+				(order_id,document_id)
+			values (#{id}, #{documentId})
+		</foreach>
+	</insert>
+	
+	<!-- 	add by lzc ->override from companyInfoMapper.xml getDocumentInfo -->
+	<select id="getDocumentByOrderId" parameterType="hashmap" resultMap="documentResult">
+		select 
+		    di.id as id,
+		    dt.name as name,
+		    dt.type_id as type,
+		    date_format(di.created_time,'%Y-%m-%d') as time
+		from
+		    m_document_type dt
+		        left join
+		    (select 
+		        *
+		    from
+		        m_document_info
+		    where
+		        id in ( select document_id from m_order_document where order_id = #{orderId} )) di on di.file_type = dt.type_id
+		where
+		    dt.deleted = 0 order by dt.id
+		limit #{index},10;
+	</select>
+	
+	<select id="getDocumentCount" parameterType="String" resultType="int">
+		select count(*) from m_order_document
+		where order_id = #{orderId}
+	</select>
 	
 
 </mapper>

@@ -18,6 +18,14 @@
 		<result column="order_count" property="loanTimes"/>
 	</resultMap>
 	
+	<resultMap type="com.xinyue.manage.model.Document" id="documentResult">
+		<result column="id" property="documentId"/>
+		<result column="name" property="documentName"/>
+		<result column="dir" property="documentDir"/>
+		<result column="type" property="documentType"/>
+		<result column="time" property="upLoadTime"/>
+	</resultMap>
+	
 	<sql id="updateMember">
 		<if test="type == 'app'">
 			applicant_info = #{applicantId},
@@ -191,15 +199,15 @@
 		    m.id as member_id,
 		    m.applicant_info as applicant_id,
 		    m.license_info as license_id,
-		    l.control_info as control_id,
+		    m.control_info as control_id,
 		    m.real_estate as estate_id,
 		    m.debt_info as debt_id,
 		    m.rating_info as rating_id,
 		    m.realname_info as realname_id
 		FROM
 		    m_member_info m
-		        left join
-		    m_license_info l ON m.license_info = l.id
+<!-- 		        left join -->
+<!-- 		    m_license_info l ON m.license_info = l.id -->
 		WHERE
 		    m.id = #{code};
 	</select>
@@ -391,7 +399,7 @@
 	
 <!-- 	@override ->getHoldInfoById -->
 <!-- 	add by lzc -->
-	<select id="getHoleInfoByOrderId" parameterType="string" resultType="com.xinyue.manage.model.Hold">
+	<select id="getHoldInfoByOrderId" parameterType="string" resultType="com.xinyue.manage.model.Hold">
 		select 
 		    s1.select_value as holdType,
 		    h.hold_person as controlPerson,
@@ -534,18 +542,28 @@
 	<select id="getRatingInfoById" parameterType="string" resultType="com.xinyue.manage.model.Rating">
 	</select>
 	
-	<select id="getDocumentInfoById" parameterType="string" resultType="com.xinyue.manage.model.Document">
+	<select id="getDocumentInfo" parameterType="hashmap" resultMap="documentResult"> 
 		select 
-		    d.id as documentId, 
-		    d.file_name as documentName, 
-		    d.file_dir as documentDir, 
-		    t.name as documentType
+		    di.id as id,
+		    dt.name as name,
+		    dt.type_id as type,
+		    date_format(di.created_time,'%Y-%m-%d') as time
 		from
-		    m_document_info d
+		    m_document_type dt
 		        left join
-		    m_document_type t ON d.file_type = t.type_id
+		    (select 
+		        *
+		    from
+		        m_document_info
+		    where
+		        member_id = #{memberId}) di on di.file_type = dt.type_id
 		where
-		    d.member_id = #{id};
+		    dt.deleted = 0 order by dt.id
+		limit #{index},10;
+	</select>
+	
+	<select id="getDocumentCount" resultType="int">
+		select count(*) from m_document_type where deleted = 0;
 	</select>
 	
 	<select id="getDocumentById" parameterType="string" resultType="com.xinyue.manage.model.Document">
@@ -558,6 +576,7 @@
 		where
 		    d.id = #{id};
 	</select>
+	
 	<select id="editApplicantInfoById" parameterType="string" resultType="com.xinyue.manage.model.Applicant">
 		select 
 		    a.id as id,
@@ -616,6 +635,7 @@
 		where
 		    l.id = #{id};
 	</select>
+	
 	<select id="editHoldInfoById" parameterType="string" resultType="com.xinyue.manage.model.Hold">
 		select 
 			h.id as id,
@@ -635,6 +655,28 @@
 		            m_member_hold
 		        where
 		            member_id = #{id})
+		order by h.order_num;
+	</select>
+	
+	<select id="editHoldInfoByOrderId" parameterType="string" resultType="com.xinyue.manage.model.Hold">
+		select 
+			h.id as id,
+		    h.hold_type as holdType,
+		    h.hold_person as controlPerson,
+		    h.credential_type as paperType,
+		    h.credential_number as paperNumber,
+		    h.work_year as workYear,
+		    h.educational as education,
+		    h.marriage as marriage
+		from
+		    m_hold_info h
+		where
+		    id in (select 
+		            hold_id
+		        from
+		            m_order_hold
+		        where
+		            order_id = #{id})
 		order by h.order_num;
 	</select>
 	
@@ -659,9 +701,10 @@
 	
 	<select id="editDebtInfoById" parameterType="string" resultType="com.xinyue.manage.model.Debt">
 		select 
+			d.id as id,
 		    d.capital_debt_ratio as rate,
 		    d.guaranty as collateral,
-		    d.income_debt_ratio as repayIncome,
+		    d.repayment_income as repayIncome,
 		    d.big_company as isBig,
 		    d.company_capital as netAsset,
 		    d.capital_turnover_rate as floatRate,
@@ -772,6 +815,7 @@
 			company_end_time,
 			business_registration_type,
 			agency_type,
+			tax_registration_country,
 			tax_registration_area,
 			created_time,
 			modified_time,
@@ -804,6 +848,7 @@
 			#{licenseeDeadLine},
 			#{licenseeType},
 			#{organizationType},
+			#{taxCodeN},
 			#{taxCode},
 			now(),
 			now(),
@@ -872,6 +917,35 @@
 			    id = #{hold.id}
 		</foreach>
 	</update>
+	
+	<insert id="saveHolds" parameterType="list">
+		<foreach collection="holds" item="hold" separator=";" index="index">
+			insert into
+				m_hold_info
+			values(
+				#{hold.id},
+				#{hold.holdType},
+				#{hold.controlPerson},
+				#{hold.paperType},
+				#{hold.paperNumber},
+				#{hold.workYear},
+				#{hold.education},
+				#{hold.marriage},
+				#{hold.orderNum}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="saveMemberHolds" parameterType="list">
+		<foreach collection="holds" item="hold" separator=";" index="index">
+			insert into
+				m_member_hold
+			values(
+				#{user},
+				#{hold.id}
+			)
+		</foreach>
+	</insert>
 	
 	<insert id="addControl"  parameterType="hashmap">
 		insert into 
@@ -1045,7 +1119,7 @@
 			values(
 				#{business.id},
 				#{business.targetId},
-				1,
+				#{business.targetType},
 				#{business.totalSales},
 				#{business.monthOrderMoney},
 				#{business.totalVAT},
@@ -1061,4 +1135,82 @@
 			)
 		</foreach>
 	</insert>
+	
+	<select id="editRatingById" parameterType="String">
+		
+	</select>
+	
+	<insert id="saveDocument" parameterType="hashmap">
+		insert into
+			m_document_info(
+				id,
+				member_id,
+				file_dir,
+				file_type,
+				created_time,
+				modified_time,
+				created_id,
+				modified_id
+			)
+		values(
+			#{fileId},
+			#{memberId},
+			#{filePath},
+			#{typeId},
+			now(),
+			now(),
+			#{memberId},
+			#{memberId}
+		);
+	</insert>
+	
+	<insert id="saveDocumentByOrder" parameterType="hashmap">
+		insert into
+			m_document_info(
+				id,
+				member_id,
+				file_dir,
+				file_type,
+				created_time,
+				modified_time,
+				created_id,
+				modified_id
+			)
+		values(
+			#{fileId},
+			"",
+			#{filePath},
+			#{typeId},
+			now(),
+			now(),
+			#{memberId},
+			#{memberId}
+		);
+	</insert>
+	
+	<update id="updateDocument" parameterType="hashmap">
+		update 
+			m_document_info
+		set
+			file_dir=#{filePath},
+			modified_time=now(),
+			modified_id=#{memberId}
+		where
+			id=#{fileId};
+	</update>
+	
+	<select id="getDocumentByMemberId" parameterType="String" resultType="com.xinyue.manage.model.Document">
+		SELECT 
+		    di.id as fileId, 
+		    di.file_dir as filePath, 
+		    dt.name as documentName, 
+		    di.modified_time as upLoadTime
+		FROM
+		    m_document_info di
+		        left join
+		    m_document_type dt ON di.file_type = dt.type_id
+		where
+		    di.member_id = 'd8d5a7352cfb11e5a2d6d0278858a399';
+	</select>
+	
 </mapper>

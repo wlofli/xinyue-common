@@ -222,11 +222,82 @@
 			#{idaImg},
 			#{idnImg},
 			#{idpImg},
-			1,
+			0,
 			now(),
 			now(),
 			#{loginName},
 			#{loginName}
 		);
 	</insert>
+	
+	<update id="updateMemberAuth" parameterType="hashmap">
+		update m_authentication_info
+		set
+			business_license_code=#{blCode},
+			company_name=#{companyName},
+			legal_person_name=#{legalPersonName},
+			legal_personidnumber=#{legalPersonID},
+			legal_person_tel=#{legalPersonTel},
+			registration_address=#{registerAddress},
+			registration_date=#{companyRegDate},
+			registration_fund=#{regFund},
+			contact_name=#{contactPerson},
+			contact_sex=#{contactSex},
+			contact_tel=#{contactTel},
+			contact_email=#{contactEmail},
+			contact_address=#{contactAddress},
+			post_code=#{postCode},
+			business_license_name=#{blImg},
+			organization_code_name=#{ozImg},
+			tax_registration_name=#{trImg},
+			identity_carda=#{idaImg},
+			identity_cardn=#{idnImg},
+			identity_cardp=#{idpImg},
+			modified_time=now(),
+			modified_id=#{loginName}
+		where 
+			code=#{id};
+	</update>
+	
+	<select id="findByMemberId" parameterType="String" resultType="com.xinyue.manage.model.Authentication">
+		select 
+		    a.id as code,
+		    a.business_license_code as zone,
+		    a.company_name as companyName,
+		    a.legal_person_name as legalPersonName,
+		    a.legal_personidnumber as legalPersonID,
+		    a.legal_person_tel as legalPersonTel,
+		    a.registration_address as registerAddress,
+		    date_format(a.registration_date, '%Y-%m-%d') as companyRegDate,
+		    a.registration_fund as regFund,
+		    a.contact_name as contactPerson,
+		    a.contact_sex as contactSex,
+		    a.contact_tel as contactTel,
+		    a.contact_email as contactEmail,
+		    a.contact_address as contactAddress,
+		    a.post_code as postCode,
+		    a.business_license_name as businessLicense,
+		    a.organization_code_name as organizationCode,
+		    a.tax_registration_name as taxRegistration,
+		    a.identity_carda as identityCarda,
+		    a.identity_cardn as identityCardn,
+		    a.identity_cardp as identityCardp,
+		    success_flag as authenticationStatus
+		from
+		    m_authentication_info a,
+		    m_member_info m
+		where
+		    a.id = m.realname_info
+		        and m.id = #{memberId};
+	</select>
+	
+	<update id="updateMemberById" parameterType="hashmap">
+		update m_member_info
+		set
+			realname_info=#{authId},
+			modified_id=#{memberId},
+			modified_time=now()
+		where
+			id=#{memberId};
+	</update>
 </mapper>

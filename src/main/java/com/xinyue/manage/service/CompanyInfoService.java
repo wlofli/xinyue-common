@@ -58,7 +58,7 @@ public interface CompanyInfoService {
 	 * @param orderId
 	 * @return
 	 */
-	List<Hold> getHoldInfoByOrderId(String orderId);
+	HoldInfos getHoldInfoByOrderId(String orderId);
 	
 	Control getControlInfoById(String controlId);
 

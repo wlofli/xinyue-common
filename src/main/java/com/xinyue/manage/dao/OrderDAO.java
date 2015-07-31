@@ -93,5 +93,23 @@ public interface OrderDAO {
     public List<String> getHoldList(@Param("id")String orderId);
 
 	
+    
+    
+    public void addDocumentList(@Param("list")List<String> documentList, @Param("id")String orderId);
+    
+    public void addDocument(@Param("documentId")String document, @Param("id")String orderId);
+    
+    public void deleteDocument(@Param("documentId")String document, @Param("id")String orderId);
+    
+    
+    /**
+	 * add by lzc     date: 2015年7月30日
+	 * @param orderId
+	 * @return
+	 */
+	public List<Document> getDocumentByOrderId(HashMap<String, Object> map);
+	
+	public int getDocumentCount(String orderId);
+
 
 }

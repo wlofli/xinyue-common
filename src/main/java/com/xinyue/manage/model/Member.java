@@ -39,6 +39,7 @@ public class Member implements Serializable {
 	private String sex;
 	//2015/07/15 茅 追加 START
 	private String password;
+	private String invited;
 	//2015/07/15 茅 追加 END
 	private String invitationCode;//邀请码
 	
@@ -210,6 +211,18 @@ public class Member implements Serializable {
 	 */
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	/**
+	 * @return the invited
+	 */
+	public String getInvited() {
+		return invited;
+	}
+	/**
+	 * @param invited the invited to set
+	 */
+	public void setInvited(String invited) {
+		this.invited = invited;
 	}
 	
 }

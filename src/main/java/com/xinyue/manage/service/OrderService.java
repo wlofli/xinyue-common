@@ -3,9 +3,12 @@ package com.xinyue.manage.service;
 import java.util.List;
 
 import com.xinyue.manage.beans.BusinessInfos;
+import com.xinyue.manage.beans.HoldInfos;
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Applicant;
+import com.xinyue.manage.model.CompanyBase;
+import com.xinyue.manage.model.Control;
 import com.xinyue.manage.model.Debt;
 import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.Order;
@@ -121,5 +124,34 @@ public interface OrderService {
 	
 	
 	public boolean addOrUpdateBusiness(BusinessInfos businessInfos, String orderId, String modifiedId,int state);
+	/**
+	 * add by lzc     date: 2015年7月29日
+	 * @param state state 0->add 1->update
+	 */
+	public boolean addOrUpdateCompany(CompanyBase companyBase, HoldInfos holdInfos, Control control, String orderId,
+			String modifiedId, int state);
+	/**从企业档案资料导入到订单资料
+	 * add by lzc     date: 2015年7月30日
+	 * @param documentList
+	 * @param orderId
+	 * @param modifiedId
+	 * @return
+	 */
+	public boolean addDocumentList(List<Document> documentList, String orderId,  String modifiedId);
+	/**
+	 * add by lzc     date: 2015年7月30日
+	 * @param filePath
+	 * @param memberId
+	 * @param typeId
+	 * @param dId  添加的document id
+	 * @param orderId
+	 * @param documentId 删除的document id
+	 * @return
+	 */
+	public boolean addOrUpdateDocument(String filePath,String memberId, String typeId, String dId, String orderId,String documentId);
+	
+	public List<Document> getDocumentList(String orderId, int index);
+	
+	public int getDocumentCount(String orderId);
 	
 }
