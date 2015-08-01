@@ -220,6 +220,11 @@ public class GlobalConstant {
 	public static final String PRODUCT_RECOMMEND_OFF = "0";//不推荐
 	
 	
+	//add by lzc 推荐奖励
+	public static final String REWARD_SOURCE = "reward_source";
+	public static final String WITHDRAW_TYPE = "withdraw_type";
+	public static final String WITHDRAW_STATUS = "withdraw_status";
+	
 	//2015/06/18 茅 权限名称追加 START
 	//帮助中心权限
 	public static final String AUTHORITY_HELP_ADD = "help_add";
