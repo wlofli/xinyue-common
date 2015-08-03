@@ -19,9 +19,6 @@ public interface RewardDAO {
 	
 	public void addReward(RewardReward reward);
 	
-	public void updateOutline(@Param("userId")String userId, @Param("modifiedId")String modifiedId, int operation, float money);
-	
-	public float getTotalRecord(String userId);
 	
 	public RewardOutLine getRewardOutLine(String userId);
 	
@@ -29,15 +26,17 @@ public interface RewardDAO {
 			@Param("pageSize")int pageSize, @Param("searchReward")SearchReward searchReward,@Param("typeCode")String typeCode);
 	
 	public List<RewardWithdraw> getWithdrawList(@Param("userId")String userId, @Param("pageNo")int pageNo,
-			@Param("pageSize")int pageSize, @Param("searchReward")SearchReward searchReward,@Param("typeCode")String typeCode);
+			@Param("pageSize")int pageSize, @Param("searchReward")SearchReward searchReward);
 	
 	
+	public int countRewardList(@Param("userId")String userId, @Param("searchReward")SearchReward searchReward);
+	
+	public int countWithdrawList(@Param("userId")String userId, @Param("searchReward")SearchReward searchReward);
+	
+	public void updateOutline(@Param("userId")String userId, @Param("modifiedId")String modifiedId, int operation, float money);
+	
+	public float getTotalRecord(String userId);
 	
 	
-	
-	
-	
-	//undone
-	public void updateRewardStatus();
 	
 }

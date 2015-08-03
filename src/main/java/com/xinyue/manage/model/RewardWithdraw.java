@@ -56,7 +56,7 @@ public class RewardWithdraw {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getStatu() {
+	public String getStatus() {
 		return status;
 	}
 	public void setStatu(String status) {

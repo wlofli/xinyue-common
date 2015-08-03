@@ -70,16 +70,16 @@
 			(#{id},#{code},#{userId},#{waterId},#{remark},#{source},now(),#{createdId},#{rewardPrice},#{totalRecord})
 	</insert>
 	
-	<select id="getRewardList">
+	<select id="getRewardList" resultMap="reward">
 		select r.id,
 			   r.code,
 			   r.water_id,
 			   r.remark,
-			   s.selece_value as source,
+			   s.select_value as source,
 			   r.created_time,
 			   r.reward_price,
 			   r.total_record
-		from m_reward_rewar
+		from m_reward_reward r
 		left join m_select_info s on s.select_key = r.source and type_code = #{typeCode}
 		where r.user_id = #{userId} 
 			<if test="searchReward.startTime != null">
@@ -90,7 +90,20 @@
 			</if>
 		limit #{pageNo},#{pageSize}
 	</select>
-	<select id="getWithdrawList">
+	
+	<select id="countRewardList" resultType="int">
+		select count(*)
+		from m_reward_reward r
+		where r.user_id = #{userId} 
+			<if test="searchReward.startTime != null">
+				and created_time > #{searchReward.startTime}
+			</if>
+			<if test="searchReward.endTime != null">
+					<![CDATA[and created_time < #{searchReward.endTime} ]]> 
+			</if>
+	</select>
+	
+	<select id="getWithdrawList" resultMap="withdraw">
 		select * from m_reward_withdraw
 		where user_id = #{userId}
 		<if test="searchReward.startTime != null">
@@ -102,6 +115,21 @@
 		limit #{pageNo},#{pageSize}
 	</select>
 	
+	<select id="countWithdrawList" resultType="int">
+		select count(*) from m_reward_withdraw
+		where user_id = #{userId}
+		<if test="searchReward.startTime != null">
+				and created_time > #{searchReward.startTime}
+			</if>
+			<if test="searchReward.endTime != null">
+					<![CDATA[and created_time < #{searchReward.endTime} ]]> 
+			</if>
+	</select>
+	
+	<select id="getRewardOutLine" parameterType="string" resultMap="outline">
+		select * from m_reward_outline
+			where user_id = #{userId}
+	</select>
 	
 	
 	
