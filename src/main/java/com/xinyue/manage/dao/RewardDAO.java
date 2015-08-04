@@ -3,29 +3,30 @@ package com.xinyue.manage.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.poi.xslf.model.geom.Outline;
 
 import com.xinyue.manage.beans.SearchReward;
-import com.xinyue.manage.model.RewardOutLine;
-import com.xinyue.manage.model.RewardReward;
-import com.xinyue.manage.model.RewardWithdraw;
+import com.xinyue.manage.model.OutLine;
+import com.xinyue.manage.model.Reward;
+import com.xinyue.manage.model.WithdrawMoney;
 
 /**
  * author lzc
  */
 public interface RewardDAO {
-	public void addOutline(RewardOutLine outLine);
+	public void addOutline(Outline outLine);
 	
-	public void addWithdraw(RewardWithdraw withdraw);
+	public void addWithdraw(WithdrawMoney withdraw);
 	
-	public void addReward(RewardReward reward);
+	public void addReward(Reward reward);
 	
 	
-	public RewardOutLine getRewardOutLine(String userId);
+	public OutLine getRewardOutLine(String userId);
 	
-	public List<RewardReward> getRewardList(@Param("userId")String userId, @Param("pageNo")int pageNo,
+	public List<Reward> getRewardList(@Param("userId")String userId, @Param("pageNo")int pageNo,
 			@Param("pageSize")int pageSize, @Param("searchReward")SearchReward searchReward,@Param("typeCode")String typeCode);
 	
-	public List<RewardWithdraw> getWithdrawList(@Param("userId")String userId, @Param("pageNo")int pageNo,
+	public List<WithdrawMoney> getWithdrawList(@Param("userId")String userId, @Param("pageNo")int pageNo,
 			@Param("pageSize")int pageSize, @Param("searchReward")SearchReward searchReward);
 	
 	

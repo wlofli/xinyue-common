@@ -3,42 +3,40 @@ package com.xinyue.manage.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Component;
 
 /**
  * author lzc2015年7月31日上午10:57:55
  */
-@Component()
-public class Water {
-//	private static final String SERIAL_NUMBER = "XXXX"; // 流水号格式
-    private static Water water = null;
+@Component
+public class SerivalNumber {
+//	private static final String SERICAL_NUMBER = "XXXX"; // 流水号格式
+    private static SerivalNumber sericalnumber = null;
     private  int number;
     
     static{
-    	Water.getInstance();
+    	SerivalNumber.getInstance();
     }
     
-//    public Water(){
+//    public SerivalNumber(){
 //    }
     
     /**
-     * 取得Water的单例实现
+     * 取得SerivalNumber的单例实现
      * 
      * @return
      */
-    public static Water getInstance() {
+    public static SerivalNumber getInstance() {
     	
-        if (water == null) {
-            synchronized (Water.class) {
-                if (water == null) {
-                    water = new Water();
-                    water.number = 0;
+        if (sericalnumber == null) {
+            synchronized (SerivalNumber.class) {
+                if (sericalnumber == null) {
+                    sericalnumber = new SerivalNumber();
+                    sericalnumber.number = 0;
                 }
             }
         }
-        return water;
+        return sericalnumber;
     }
  
     /**
@@ -64,12 +62,12 @@ public class Water {
 	
     
     public static void main(String[] args) {
-		Water water = Water.getInstance();
-		String idString = water.generaterNextNumber();
+		SerivalNumber sericalnumber = SerivalNumber.getInstance();
+//		String idString = sericalnumber.generaterNextNumber();
 		for (int i = 0; i <10000 ; i++) {
 //			System.out.println("time ======================= " + System.currentTimeMillis());
-			System.out.println(water.generaterNextNumber());
-//			idString = water.generaterNextNumber(idString);
+			System.out.println(sericalnumber.generaterNextNumber());
+//			idString = sericalnumber.generaterNextNumber(idString);
 		}
 		
 		

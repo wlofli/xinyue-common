@@ -1,44 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xinyue.manage.dao.RewardDAO">
-	<resultMap type="com.xinyue.manage.model.RewardOutLine" id="outline">
+	<resultMap type="com.xinyue.manage.model.OutLine" id="outline">
 		<result column="id" property="id" />
 		<result column="user_id" property="userId" />
-		<result column="total_price" property="totalPrice" />
-		<result column="total_withdraw_cash" property="totalWithdrawCash" />
-		<result column="total_record" property="totalRecord" />
+		<result column="user_type" property="userType" />
+		<result column="recharge_total" property="rechargeTotal" />
+		<result column="consumption_total" property="consumptionTotal" />
+		<result column="reward_total" property="rewardTotal" />
+		<result column="withdraw_total" property="withdrawTotal" />
+		<result column="remaining_sum" property="remainingSum" />
 		<result column="created_id" property="createdId" />
 		<result column="modified_id" property="modifiedId" />
 		<result column="created_time" property="createdTime" />
 		<result column="modified_time" property="modifiedTime" />
 	</resultMap>
 	
-	<resultMap type="com.xinyue.manage.model.RewardReward" id="reward">
+	<resultMap type="com.xinyue.manage.model.Reward" id="reward">
 		<result column="id" property="id" />
-		<result column="code" property="code" />
-		<result column="user_id" property="userId" />
-		<result column="water_id" property="waterId" />
+		<result column="userId" property="userId" />
+		<result column="userType" property="userType" />
+		<result column="rewardType" property="rewardType" />
+		<result column="sericalNumber" property="sericalNumber" />
 		<result column="remark" property="remark" />
 		<result column="source" property="source" />
-		<result column="created_time" property="createdTime" />
-		<result column="created_id" property="createdId" />
-		<result column="reward_price" property="rewardPrice" />
-		<result column="total_record" property="totalRecord" />
+		<result column="rewardAmount" property="rewardAmount" />
+		<result column="rewardTime" property="rewardTime" />
+		<result column="currentAmount" property="currentAmount" />
+		<result column="deleted" property="deleted" />
 	</resultMap>
 
-	<resultMap type="com.xinyue.manage.model.RewardWithdraw" id="withdraw">
+	<resultMap type="com.xinyue.manage.model.WithdrawMoney" id="withdraw">
 		<result column="id" property="id" />
-		<result column="code" property="code" />
 		<result column="user_id" property="userId" />
-		<result column="water_id" property="waterId" />
+		<result column="user_type" property="userType" />
+		<result column="serical_number" property="sericalNumber" />
+		<result column="current_amount" property="currentAmount" />
+		<result column="withdraw_amount" property="withdrawAmount" />
+		<result column="withdraw_time" property="withdrawTime" />
 		<result column="remark" property="remark" />
-		<result column="created_time" property="createdTime" />
-		<result column="created_id" property="createdId" />
-		<result column="modified_id" property="modifiedId" />
-		<result column="modified_time" property="modifiedTime" />
-		<result column="total_record" property="totalRecord" />
-		<result column="withdraw_price" property="withdrawPrice" />
-		<association column="type"  property="type" javaType="String" select="getWithdrawType"></association>
+		<result column="deleted" property="deleted" />
+		<association column="withdraw_type"  property="withdrawType" javaType="String" select="getWithdrawType"></association>
 		<association column="status"  property="status" javaType="String" select="getWithdrawStatus"></association>
 	</resultMap>
 	
@@ -50,79 +52,84 @@
 		select select_value from m_select_info where select_key = #{status} and type_code = 'withdraw_status'
 	</select>
 	
-	<insert id="addOutline" parameterType="com.xinyue.manage.model.RewardOutLine">
+	<insert id="addOutline" parameterType="com.xinyue.manage.model.OutLine">
 		insert into m_reward_outline
-			(id,user_id,total_price,total_withdraw_cash,total_record,created_id,created_time,modified_id,modified_time)
+			(id,user_id,user_type,recharge_total,consumption_total,reward_total,withdraw_total,
+				remaining_sum,created_id,created_time,modified_id,modified_time)
 		values
-			(#{id},#{userId},#{totalPrice},#{totalWithdrawCash},#{tatalRecord},#{createdId},now(),#{modifiedId},now())
+			(#{id},#{userId},#{userType},#{rechargeTotal},#{consumptionTotal},#{rewardTotal},#{withdrawTotal},
+				#{remainingSum},#{createdId},now(),#{modifiedId},now())
 	</insert>
 	
-	<insert id="addWithdraw" parameterType="com.xinyue.manage.model.RewardWithdraw">
-		insert into m_reward_withdraw
-			(id,code,user_id,water_id,remark,type,status,created_time,created_id,modified_id,modified_time,total_record,withdraw_price)
+	<insert id="addWithdraw" parameterType="com.xinyue.manage.model.WithdrawMoney">
+		insert into m_withdraw_money_info
+			(id,user_id,withdraw_type,withdraw_amount,withdraw_time,status,serical_number,
+				remark,deleted,user_type,current_amount)
 		values
-			(#{id},#{code},#{userId},#{waterId},#{remark},#{type},#{status},now(),#{createdId},#{modifiedId},now(),#{totalRecord},#{withdrawPrice})
+			(#{id},#{userId},#{withdrawType},#{withdrawAmount},now(),#{status},#{sericalNumber},
+				#{remark},#{deleted},#{userType},#{currentAmount})
 	</insert>
-	<insert id="addReward" parameterType="com.xinyue.manage.model.RewardReward">
-		insert into m_reward_reward
-			(id,code,user_id,water_id,remark,source,created_time,created_id,reward_price,total_record)
+	<insert id="addReward" parameterType="com.xinyue.manage.model.Reward">
+		insert into m_reward_info
+			(id,user_id,reward_type,reward_amount,reward_time,status,serical_number,
+				remark,deleted,user_type,current_amount)
 		values
-			(#{id},#{code},#{userId},#{waterId},#{remark},#{source},now(),#{createdId},#{rewardPrice},#{totalRecord})
+			(#{id},#{userId},#{rewardType},#{rewardAmount},now(),#{status},#{sericalNumber}
+				#{remark},#{deleted},#{userType},#{currentAmount})
 	</insert>
 	
 	<select id="getRewardList" resultMap="reward">
 		select r.id,
-			   r.code,
-			   r.water_id,
+			   r.serical_number,
 			   r.remark,
-			   s.select_value as source,
-			   r.created_time,
-			   r.reward_price,
-			   r.total_record
-		from m_reward_reward r
-		left join m_select_info s on s.select_key = r.source and type_code = #{typeCode}
+			   s.select_value as reward_type,
+			   r.reward_time,
+			   r.reward_amount,
+			   r.current_amount
+		from m_reward_info r
+		left join m_select_info s on s.select_key = r.reward_type and type_code = #{typeCode}
 		where r.user_id = #{userId} 
 			<if test="searchReward.startTime != null">
-				and created_time > #{searchReward.startTime}
+				and reward_time > #{searchReward.startTime}
 			</if>
 			<if test="searchReward.endTime != null">
-					<![CDATA[and created_time < #{searchReward.endTime} ]]> 
+					<![CDATA[and reward_time < #{searchReward.endTime} ]]> 
 			</if>
 		limit #{pageNo},#{pageSize}
 	</select>
 	
 	<select id="countRewardList" resultType="int">
 		select count(*)
-		from m_reward_reward r
+		from m_reward_info r
 		where r.user_id = #{userId} 
 			<if test="searchReward.startTime != null">
-				and created_time > #{searchReward.startTime}
+				and reward_time > #{searchReward.startTime}
 			</if>
 			<if test="searchReward.endTime != null">
-					<![CDATA[and created_time < #{searchReward.endTime} ]]> 
+					<![CDATA[and reward_time < #{searchReward.endTime} ]]> 
 			</if>
 	</select>
 	
 	<select id="getWithdrawList" resultMap="withdraw">
-		select * from m_reward_withdraw
+		select * from m_withdraw_money_info
 		where user_id = #{userId}
 		<if test="searchReward.startTime != null">
-				and created_time > #{searchReward.startTime}
+				and withdraw_time > #{searchReward.startTime}
 			</if>
 			<if test="searchReward.endTime != null">
-					<![CDATA[and created_time < #{searchReward.endTime} ]]> 
+					<![CDATA[and withdraw_time < #{searchReward.endTime} ]]> 
 			</if>
 		limit #{pageNo},#{pageSize}
 	</select>
 	
 	<select id="countWithdrawList" resultType="int">
-		select count(*) from m_reward_withdraw
+		select count(*) from m_withdraw_money_info
 		where user_id = #{userId}
 		<if test="searchReward.startTime != null">
-				and created_time > #{searchReward.startTime}
+				and withdraw_time > #{searchReward.startTime}
 			</if>
 			<if test="searchReward.endTime != null">
-					<![CDATA[and created_time < #{searchReward.endTime} ]]> 
+					<![CDATA[and withdraw_time < #{searchReward.endTime} ]]> 
 			</if>
 	</select>
 	
