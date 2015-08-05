@@ -63,11 +63,8 @@ public class SerivalNumber {
     
     public static void main(String[] args) {
 		SerivalNumber sericalnumber = SerivalNumber.getInstance();
-//		String idString = sericalnumber.generaterNextNumber();
 		for (int i = 0; i <10000 ; i++) {
-//			System.out.println("time ======================= " + System.currentTimeMillis());
 			System.out.println(sericalnumber.generaterNextNumber());
-//			idString = sericalnumber.generaterNextNumber(idString);
 		}
 		
 		

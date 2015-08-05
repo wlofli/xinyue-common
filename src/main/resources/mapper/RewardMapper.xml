@@ -18,15 +18,15 @@
 	
 	<resultMap type="com.xinyue.manage.model.Reward" id="reward">
 		<result column="id" property="id" />
-		<result column="userId" property="userId" />
-		<result column="userType" property="userType" />
-		<result column="rewardType" property="rewardType" />
-		<result column="sericalNumber" property="sericalNumber" />
+		<result column="user_id" property="userId" />
+		<result column="user_type" property="userType" />
+		<result column="reward_type" property="rewardType" />
+		<result column="serical_number" property="sericalNumber" />
 		<result column="remark" property="remark" />
 		<result column="source" property="source" />
-		<result column="rewardAmount" property="rewardAmount" />
-		<result column="rewardTime" property="rewardTime" />
-		<result column="currentAmount" property="currentAmount" />
+		<result column="reward_amount" property="rewardAmount" />
+		<result column="reward_time" property="rewardTime" />
+		<result column="current_amount" property="currentAmount" />
 		<result column="deleted" property="deleted" />
 	</resultMap>
 
@@ -95,6 +95,7 @@
 			<if test="searchReward.endTime != null">
 					<![CDATA[and reward_time < #{searchReward.endTime} ]]> 
 			</if>
+		order by r.reward_time desc
 		limit #{pageNo},#{pageSize}
 	</select>
 	
@@ -119,6 +120,7 @@
 			<if test="searchReward.endTime != null">
 					<![CDATA[and withdraw_time < #{searchReward.endTime} ]]> 
 			</if>
+		order by withdraw_time desc
 		limit #{pageNo},#{pageSize}
 	</select>
 	
@@ -137,9 +139,5 @@
 		select * from m_reward_outline
 			where user_id = #{userId}
 	</select>
-	
-	
-	
-	
 	
 </mapper>

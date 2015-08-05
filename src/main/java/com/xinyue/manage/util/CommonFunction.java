@@ -22,10 +22,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -42,6 +45,12 @@ import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.xinyue.authe.AutheManage;
 import com.xinyue.manage.beans.PageInfo;
 import com.xinyue.manage.beans.SelectInfo;
@@ -207,9 +216,9 @@ public class CommonFunction {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		
 		//在webbook中添加一个sheet,对应Excel文件中的sheet
-		HSSFSheet sheet = wb.createSheet(GlobalConstant.AUTHENTICATION_SHEET_NAME);
+		HSSFSheet sheet = wb.createSheet(sheetName);
 		
-		//在sheet中添加表头第0行
+		//在sheet中添加表头第1行
 		HSSFRow row = sheet.createRow(0);
 		
 		//创建单元格，并设置值表头 设置表头居中
@@ -390,5 +399,34 @@ public class CommonFunction {
 		}
 		
 		return true;
+	}
+	
+	public static String createCode(String url , String path){
+		MultiFormatWriter multiFormatWriter= new MultiFormatWriter();
+		
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddss");
+		String date = df.format(new Date(System.currentTimeMillis()));
+		
+		Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType, Object>();
+		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+		//纠错等级
+		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+		//余白
+		hints.put(EncodeHintType.MARGIN, 1);
+		try {
+			BitMatrix bitMatrix = multiFormatWriter.encode(url, BarcodeFormat.QR_CODE, 150, 150, hints);
+			//输出位置
+			File file = new File(path, date+"_qrCode.jpg");
+			
+			MatrixToImageWriter.writeToFile(bitMatrix, "jpg", file);
+			
+		} catch (WriterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return date;
 	}
 }

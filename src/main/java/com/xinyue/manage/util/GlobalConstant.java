@@ -11,6 +11,8 @@ public class GlobalConstant {
 	public static final String SESSION_MEMBER_INFO = "session_member_info";
 	public static final String SESSION_CHECK_CODE = "session_check_code";
 	public static final String SESSION_COMMON_CODE = "session_common_code";
+	public static final String SESSION_BIND_ALIPAY_CODE = "session_bind_alipay_code";//用于绑定支付宝验证码
+	public static final String SESSION_BIND_BANK_CODE = "session_bind_bank_code";//用于绑定银行卡验证码
 	public static final String USER = "admin";
 
 	public static final String TYPE_CITY = "tc";
