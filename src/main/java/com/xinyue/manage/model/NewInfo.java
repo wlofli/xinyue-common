@@ -15,31 +15,31 @@ public class NewInfo implements Serializable{
 	
 	private static final long serialVersionUID = -1242719513788445310L;
 	private String id;
-	private String title;
+	private String title;//标题
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
-	private Date sendDate;
-	private int top;
-	private int status;
-	private String imageUrl;
-	private String type;
-	private String newType;//newType id
-	private String author;
-	private String compositionSource;
-	private String sourceUrl;
-	private String fileName;
-	private String fileDir;
+	private Date sendDate;//发布时间
+	private int top;//置顶标志
+	private int status;//状态
+	private String imageUrl;//图片路径
+	private String type;//类型
+	private String newType;//newType id 新闻类型
+	private String author;//作者
+	private String compositionSource;//来源
+	private String sourceUrl;//来源网址
+	private String fileName;//logo名
+	private String fileDir;//logo地址
 	private String newMainContent;
-	private String newContent;
+	private String newContent;//内容
 	private int deleted;
 	private Date createdTime;
 	private String createdId;
 	private Date modifiedTime;
 	private String modifiedId;
-	private String showTitle;
-	private String newsKeywords;
-	private String newsDescription;
-	private String contentTemp;
-	private String publish;
+	private String showTitle;//显示标题
+	private String newsKeywords;//关键字
+	private String newsDescription;//描述
+	private String contentTemp;//临时内容
+	private String publish;//发布标志
 	private List<String> substationList;
 	
 	public String getPublish() {

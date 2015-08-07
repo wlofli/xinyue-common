@@ -9,11 +9,11 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @date 2015年6月26日上午10:55:29
  */
 public class SearchNew {
-	private String keywords;
-	private String value;
-	private String publish;
-	private int city;
-	private String newType;
+	private String keywords;//关键字
+	private String value;//关键字值
+	private String publish;//发布人
+	private int city;//所属城市
+	private String newType;//分类
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
 	private Date pubDate;
 	private Date endDate;

@@ -2,6 +2,7 @@ package com.xinyue.manage.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -166,6 +167,12 @@ public class NewServiceImpl implements NewService {
 	}
 
 	@Override
+	public List<SelectInfo> getAllNewTypeList(List<String> idList) {
+		// TODO Auto-generated method stub
+		return newDAO.getAllNewTypeListExceptIdList(idList);
+	}
+	
+	@Override
 	public List<SelectInfo> getAllSubstationList() {
 		// TODO Auto-generated method stub
 		List<SelectInfo> list = newDAO.getAllSubstationList();
@@ -232,6 +239,28 @@ public class NewServiceImpl implements NewService {
 			searchNew.setEndDate(calendar.getTime());
 		}
 	}
+
+	@Override
+	public List<NewInfo> getNewInfoListByTime(SearchNew searchNew, int pageNo,
+			int pageSize) {
+		// TODO Auto-generated method stub
+		return newDAO.getListByTime(pageNo, pageSize, searchNew);
+	}
+
+	@Override
+	public List<NewType> getNewTypeByPage(int pageNo, int pageSize) {
+		// TODO Auto-generated method stub
+		return newDAO.getNewTypeByPage(pageNo, pageSize);
+	}
+
+	@Override
+	public SelectInfo getRecentNew(String typeId, Date sendDate, int type) {
+		// TODO Auto-generated method stub
+		return newDAO.getRecentlyInfoList(typeId, sendDate, type, 0, 1).get(0);
+	}
+
+	
+
 
 	
 	

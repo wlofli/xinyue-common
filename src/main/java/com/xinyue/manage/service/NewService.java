@@ -1,5 +1,6 @@
 package com.xinyue.manage.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -22,6 +23,8 @@ public interface NewService {
 	
 	public List<NewType> getNewTypeByPage(int index);
 	
+	public List<NewType> getNewTypeByPage(int pageNo, int pageSize);
+	
 	public NewType getNewType(String id);
 	
 	public boolean deleteNewType(@Param("id")String id,@Param("modifiedId")String modifiedId);
@@ -33,7 +36,11 @@ public interface NewService {
 	
 	public int getNewTypeCount();
 	
+	
 	public List<SelectInfo> getAllNewTypeList();
+	
+	//获取所有除了idList里的新闻类型
+	public List<SelectInfo> getAllNewTypeList(List<String> idList);
 	
 	/**
 	 * 
@@ -45,6 +52,7 @@ public interface NewService {
 	
 	//newInfo类操作
 	public List<NewInfo> getNewInfoListByPage(int index,SearchNew searchNew);
+	
 	
 	public boolean addNewInfo(NewInfo newInfo);
 	
@@ -68,5 +76,11 @@ public interface NewService {
 	 * @param username 修改人id
 	 */
 	public boolean updateNewInfo(List<String> idList,int status,String modifiedId);
+	
+	
+	//前台新闻操作
+	public List<NewInfo> getNewInfoListByTime(SearchNew searchNew, int pageNo, int pageSize);
 
+	
+	public SelectInfo getRecentNew(String typeId, Date sendDate,int type);
 }

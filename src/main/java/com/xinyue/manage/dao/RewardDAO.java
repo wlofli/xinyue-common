@@ -33,7 +33,7 @@ public interface RewardDAO {
 	public int countRewardList(@Param("userId")String userId, @Param("searchReward")SearchReward searchReward);
 	
 	public int countWithdrawList(@Param("userId")String userId, @Param("searchReward")SearchReward searchReward);
-	
+	//以下方法未实现
 	public void updateOutline(@Param("userId")String userId, @Param("modifiedId")String modifiedId, int operation, float money);
 	
 	public float getTotalRecord(String userId);

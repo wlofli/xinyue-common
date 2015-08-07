@@ -39,6 +39,8 @@ public class GlobalConstant {
 	
 	//add by lzc 2015年7月22日11:21:02
 	public static final int PAGE_SIZE_ONE = 1;
+	public static final int PAGE_SIZE_TWO = 2;
+	public static final int PAGE_SIZE_FIFTY = 50;
 	
 	/**wenhai.you 2015-05-08 下午
 	 * 判断对象是否为空或者为空串
@@ -182,6 +184,7 @@ public class GlobalConstant {
 	
 	//搜索新闻条件
 	public static final String SEARCH_NEW = "search_new";
+	public static final String NEW_HOTNEWS_ID = "";//热门资讯主键id//undone
 	
 	//订单审核的权限
 	public static final String ORDER_AUDITE_NAME = "订单审批";//订单模块名称

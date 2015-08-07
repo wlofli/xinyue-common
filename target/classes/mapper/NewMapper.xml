@@ -67,6 +67,20 @@
 			where deleted = 0
 	</select>
 	
+	<select id="getAllNewTypeListExceptIdList" resultMap="selectInfo">
+		 select  
+			id as select_key, 
+			name as select_value
+		from m_new_type
+		where deleted = 0
+			<if test="idList.size() > 0">
+				and id not in
+				<foreach collection="idList" open="(" close=")" separator="," item="id">
+					#{id}
+				</foreach>
+			</if>
+	</select>
+	
 	<select id="getNewTypeCount" resultType="int">
 		select count(*)
 			from m_new_type
@@ -221,6 +235,55 @@
 			
 		limit #{pageNo},#{pageSize}
 	</select>
+	
+	<select id="getListByTime">
+		select
+			i.id,
+			title,
+			send_date,
+			i.status,
+<!-- 			t.name as new_type, -->
+<!-- 			author -->
+			image_url,
+			file_name,
+			file_dir,
+			send_date
+		from m_new_info i
+		left join m_new_type t on t.id = i.new_type 
+		
+		where i.deleted = 0 and t.deleted = 0
+		<choose><when test="searchNew != null ">
+<!-- 			<if test="searchNew.keywords == 1"> -->
+<!-- 				and title like '%' #{searchNew.value} '%' -->
+<!-- 			</if> -->
+<!-- 			<if test="searchNew.keywords == 2"> -->
+<!-- 				and new_content like '%' #{searchNew.value} '%' -->
+<!-- 			</if> -->
+<!-- 			<if test="searchNew.keywords == 3"> -->
+<!-- 				and ( new_content like '%' #{searchNew.value} '%' or title like '%' #{searchNew.value} '%') -->
+<!-- 			</if> -->
+<!-- 			<if test="searchNew.publish != null"> -->
+<!-- 				and publish like '%'  #{searchNew.publish} '%' -->
+<!-- 			</if> -->
+<!-- 			<if test="searchNew.pubDate != null"> -->
+<!-- 				and send_date between #{searchNew.pubDate} and #{searchNew.endDate} -->
+<!-- 			</if> -->
+			<if test="searchNew.newType != null">
+				and i.new_type = #{searchNew.newType} 
+			</if>
+			<if test="searchNew.city != 0">
+				and i.id in (
+					select tab_new_id from new2substation 
+					where tab_substation_id = #{searchNew.city}	
+				)
+			</if>
+		</when></choose>
+		order by send_date	desc
+		limit #{pageNo},#{pageSize}
+	
+	
+	</select>
+	
 	<insert id="addNewInfo" parameterType="com.xinyue.manage.model.NewInfo">
 		insert into m_new_info
 		(id,title,send_date,top,status,image_url,type,new_type,author,composition_source,source_url,
@@ -321,6 +384,25 @@
 			)
 	</select>
 	
-
+	<select id="getRecentlyInfoList" resultMap="selectInfo">
+		select
+			id as select_key,
+			title as select_value
+		from m_new_info
+		where
+			new_type = #{typeId}
+		<if test="type == 0">
+			<![CDATA[ 
+			and send_date < #{date}
+			order by send_date desc
+			]]>
+		</if>
+		<if test="type == 1">
+			and send_date > #{date}
+			order by send_date 
+		</if>
+		
+		limit #{pageNo}, #{pageSize}
+	</select>
 
 </mapper>

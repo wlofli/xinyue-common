@@ -1,5 +1,6 @@
 package com.xinyue.manage.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -24,6 +25,8 @@ public interface NewDAO {
 	 */
 	public List<SelectInfo> getAllNewTypeList();
 	
+	public List<SelectInfo> getAllNewTypeListExceptIdList(@Param("idList")List<String> idList);
+	
 	public void deleteNewType(@Param("id")String id,@Param("modifiedId")String modifiedId);
 	
 	public void updateNewType(NewType newType);
@@ -46,6 +49,10 @@ public interface NewDAO {
 	public List<NewInfo> getListByPage(@Param("pageNo")int pageNo, @Param("pageSize")int pageSize, 
 			@Param("searchNew")SearchNew searchNew);
 	
+	
+	public List<NewInfo> getListByTime(@Param("pageNo")int pageNo, @Param("pageSize")int pageSize, @Param("searchNew")SearchNew searchNew);
+	
+	
 	public void addNewInfo(NewInfo newInfo);
 	
 	public void updateNewInfo(NewInfo newInfo);
@@ -63,6 +70,18 @@ public interface NewDAO {
 	 */
 	public void updateNewInfos(@Param("list")List<String> idList,@Param("status")int status,@Param("modifiedId")String modifiedId);
 
+	
+	/**获取离时间最近的相同新闻类型的新闻列表
+	 * add by lzc     date: 2015年8月6日
+	 * @param typeId 新闻类型
+	 * @param sendDate 时间
+	 * @param type 0 ->before  1->after
+	 * @param pageNo  可能没什么用
+	 * @param pageSize
+	 * @return key->id value->name
+	 */
+	public List<SelectInfo>  getRecentlyInfoList(@Param("typeId")String typeId, @Param("date")Date sendDate, 
+			@Param("type")int type, @Param("pageNo")int pageNo, @Param("pageSize")int pageSize);
 	
 //	关联表的内容
 	public List<SelectInfo> getAllSubstationList();

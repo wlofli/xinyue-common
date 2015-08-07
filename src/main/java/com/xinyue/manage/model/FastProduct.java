@@ -20,7 +20,7 @@ public class FastProduct {
 	private int deleted;
 	private String status;
 	private String statusValue;
-	private Double credit;
+	private Double credit; //贷款额度
 	private String contactPhone;
 	private String createdId;
 	@DateTimeFormat(pattern="yyyy-MM-dd")
