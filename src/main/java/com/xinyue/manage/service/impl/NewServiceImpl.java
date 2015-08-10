@@ -256,7 +256,9 @@ public class NewServiceImpl implements NewService {
 	@Override
 	public SelectInfo getRecentNew(String typeId, Date sendDate, int type) {
 		// TODO Auto-generated method stub
-		return newDAO.getRecentlyInfoList(typeId, sendDate, type, 0, 1).get(0);
+		List<SelectInfo> selectInfos = newDAO.getRecentlyInfoList(typeId, sendDate, type, 0, 1);
+//System.out.println(selectInfos);
+		return  selectInfos.size() >0 ? selectInfos.get(0) : null;
 	}
 
 	

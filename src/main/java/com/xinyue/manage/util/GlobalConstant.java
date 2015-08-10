@@ -184,7 +184,7 @@ public class GlobalConstant {
 	
 	//搜索新闻条件
 	public static final String SEARCH_NEW = "search_new";
-	public static final String NEW_HOTNEWS_ID = "";//热门资讯主键id//undone
+	public static final String NEW_HOTNEWS_ID = "af492c9780d84fdebce633d987d5f4fd";//热门资讯主键id
 	
 	//订单审核的权限
 	public static final String ORDER_AUDITE_NAME = "订单审批";//订单模块名称

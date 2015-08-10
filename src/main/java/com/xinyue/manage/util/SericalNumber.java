@@ -9,29 +9,29 @@ import org.springframework.stereotype.Component;
  * author lzc2015年7月31日上午10:57:55
  */
 @Component
-public class SerivalNumber {
+public class SericalNumber {
 //	private static final String SERICAL_NUMBER = "XXXX"; // 流水号格式
-    private static SerivalNumber sericalnumber = null;
+    private static SericalNumber sericalnumber = null;
     private  int number;
     
     static{
-    	SerivalNumber.getInstance();
+    	SericalNumber.getInstance();
     }
     
-//    public SerivalNumber(){
+//    public SericalNumber(){
 //    }
     
     /**
-     * 取得SerivalNumber的单例实现
+     * 取得SericalNumber的单例实现
      * 
      * @return
      */
-    public static SerivalNumber getInstance() {
+    public static SericalNumber getInstance() {
     	
         if (sericalnumber == null) {
-            synchronized (SerivalNumber.class) {
+            synchronized (SericalNumber.class) {
                 if (sericalnumber == null) {
-                    sericalnumber = new SerivalNumber();
+                    sericalnumber = new SericalNumber();
                     sericalnumber.number = 0;
                 }
             }
@@ -62,7 +62,7 @@ public class SerivalNumber {
 	
     
     public static void main(String[] args) {
-		SerivalNumber sericalnumber = SerivalNumber.getInstance();
+		SericalNumber sericalnumber = SericalNumber.getInstance();
 		for (int i = 0; i <10000 ; i++) {
 			System.out.println(sericalnumber.generaterNextNumber());
 		}

@@ -80,6 +80,8 @@ public interface NewService {
 	
 	//前台新闻操作
 	public List<NewInfo> getNewInfoListByTime(SearchNew searchNew, int pageNo, int pageSize);
+	
+	
 
 	
 	public SelectInfo getRecentNew(String typeId, Date sendDate,int type);

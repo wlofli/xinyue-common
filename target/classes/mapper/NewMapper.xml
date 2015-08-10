@@ -236,18 +236,18 @@
 		limit #{pageNo},#{pageSize}
 	</select>
 	
-	<select id="getListByTime">
+	<select id="getListByTime" resultMap="newInfo">
 		select
 			i.id,
 			title,
+			i.show_title,
 			send_date,
 			i.status,
-<!-- 			t.name as new_type, -->
-<!-- 			author -->
 			image_url,
 			file_name,
 			file_dir,
 			send_date
+			
 		from m_new_info i
 		left join m_new_type t on t.id = i.new_type 
 		
@@ -278,7 +278,7 @@
 				)
 			</if>
 		</when></choose>
-		order by send_date	desc
+		order by i.modified_time	desc
 		limit #{pageNo},#{pageSize}
 	
 	
@@ -394,12 +394,12 @@
 		<if test="type == 0">
 			<![CDATA[ 
 			and send_date < #{date}
-			order by send_date desc
+			order by modified_time desc
 			]]>
 		</if>
 		<if test="type == 1">
 			and send_date > #{date}
-			order by send_date 
+			order by modified_time
 		</if>
 		
 		limit #{pageNo}, #{pageSize}
