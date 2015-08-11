@@ -32,6 +32,8 @@ public interface FastProductDAO {
 	
 	public void updateFastProductStatusList(@Param("list")List<String> idList, @Param("status")String status, 
 			@Param("modifiedId")String modifiedId);
+
+	public int saveFastOrder(FastProduct fastLoanInfo);
 	
 	
 }

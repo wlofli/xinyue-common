@@ -402,6 +402,10 @@ public class CommonFunction {
 	}
 	
 	public static String createCode(String url , String path){
+		File folder = new File(path);
+		if(!folder.exists()){
+			folder.mkdirs();
+		}
 		MultiFormatWriter multiFormatWriter= new MultiFormatWriter();
 		
 		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddss");

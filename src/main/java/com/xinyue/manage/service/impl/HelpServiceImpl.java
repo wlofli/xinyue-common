@@ -206,4 +206,12 @@ public class HelpServiceImpl implements HelpService {
 		return types;
 	}
 
+	@Override
+	public List<Helper> getAllListByIndex() {
+		
+		List<Helper> helpers = helperDAO.getAllListByIndex();
+		
+		return helpers;
+	}
+
 }

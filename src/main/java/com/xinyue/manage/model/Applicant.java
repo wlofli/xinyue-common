@@ -1,11 +1,19 @@
 package com.xinyue.manage.model;
 
+import java.io.Serializable;
+
 /**
  * 申请人信息
  * @author MK)茅
- *
+ * @version v1.0
+ * @date 创建时间：2015年5月
  */
-public class Applicant {
+public class Applicant implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3900843757264340378L;
 
 	/** 申请信息id */
 	private String id = "";
@@ -50,6 +58,11 @@ public class Applicant {
 	
 	/** 担保物是否在本地 */
 	private String isLocation ="";
+	
+	/**
+	 * 两年内信用
+	 */
+	private String twoYearCredit ="";
 
 	/**
 	 * @return the name
@@ -273,6 +286,20 @@ public class Applicant {
 	 */
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the twoYearCredit
+	 */
+	public String getTwoYearCredit() {
+		return twoYearCredit;
+	}
+
+	/**
+	 * @param twoYearCredit the twoYearCredit to set
+	 */
+	public void setTwoYearCredit(String twoYearCredit) {
+		this.twoYearCredit = twoYearCredit;
 	}
 	
 	

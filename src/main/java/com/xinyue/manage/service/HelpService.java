@@ -6,6 +6,12 @@ import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.HelpType;
 import com.xinyue.manage.model.Helper;
 
+/**
+ * 帮助中心服务层
+ * @author MK)茅
+ * @version v1.0
+ * @date 创建时间：2015年7月1日
+ */
 public interface HelpService {
 
 	List<Helper> getList(int index);
@@ -27,5 +33,11 @@ public interface HelpService {
 	boolean addHelpType(HelpType helpType);
 
 	List<SelectInfo> getTypes();
+
+	/**
+	 * 根据序号取得所有帮助中心内容
+	 * @return
+	 */
+	List<Helper> getAllListByIndex();
 	
 }

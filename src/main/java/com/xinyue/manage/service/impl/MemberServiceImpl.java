@@ -271,4 +271,15 @@ public class MemberServiceImpl implements MemberService {
 			logger.error("会员导出失败："+e);
 		}
 	}
+
+	@Override
+	public boolean findMemberByPhone(String contactPhone) {
+		
+		int result = memberDao.findMemberByPhone(contactPhone);
+		
+		if (result > 0) {
+			return true;
+		}
+		return false;
+	}
 }

@@ -57,4 +57,6 @@ public interface MemberDao {
 	
 	public List<Member> findGuoPage(MemberInfo memberinfo);
 	public int getGuoCount(MemberInfo memberinfo);
+
+	public int findMemberByPhone(String contactPhone);
 }

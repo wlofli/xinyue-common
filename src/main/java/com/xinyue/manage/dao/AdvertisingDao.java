@@ -77,4 +77,6 @@ public interface AdvertisingDao{
 	 * 检测广告过期则将publish设置为4
 	 */
 	public  void updateOverdue();
+
+	public List<Advertising> getIndexAD();
 }

@@ -261,6 +261,12 @@ public class NewServiceImpl implements NewService {
 		return  selectInfos.size() >0 ? selectInfos.get(0) : null;
 	}
 
+	@Override
+	public List<NewInfo> getNewINfoTop(int pageSize) {
+		// TODO Auto-generated method stub
+		return newDAO.getListByTop(pageSize, 0);
+	}
+
 	
 
 

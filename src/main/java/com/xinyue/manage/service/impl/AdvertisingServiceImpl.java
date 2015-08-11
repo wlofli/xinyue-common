@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -255,5 +254,11 @@ public class AdvertisingServiceImpl implements AdvertisingService {
 			}
 		}
 		return "fail";
+	}
+
+	@Override
+	public List<Advertising> getIndexAD() {
+				
+		return advertisingDao.getIndexAD();
 	}
 }

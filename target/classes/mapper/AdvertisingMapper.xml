@@ -150,4 +150,17 @@
 		]]>
 	</update>
 	
+	<select id="getIndexAD" resultType="com.xinyue.manage.model.Advertising">
+		select 
+    		title as title,
+    		logo_file_dir as directory, 
+    		logo_file_name as thumbnail
+		from
+		    moke.m_advertising_info
+		where
+		    type in ('1' , '4', '5', '12', '13', '14')
+		        and deleted = 0
+		        and (end_time > now() or end_time is NULL)
+		order by type;
+	</select>
 </mapper>

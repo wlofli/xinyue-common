@@ -1,8 +1,9 @@
 package com.xinyue.manage.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Province {
+public class Province implements Serializable {
 
 	int id;
 	

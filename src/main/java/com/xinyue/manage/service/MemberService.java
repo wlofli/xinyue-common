@@ -79,4 +79,8 @@ public interface MemberService {
 	public static final String MEMBER_TITLE_10 = "贷款订单数";
 	public static final String MEMBER_TITLE_11 = "注册日期";
 	public static final String MEMBER_TITLE_12 = "最近登录时间";
+	
+	//2015/08/07 茅 追加 START
+	public boolean findMemberByPhone(String contactPhone);
+	//2015/08/07 茅 追加 END
 }

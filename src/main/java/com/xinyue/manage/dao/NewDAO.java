@@ -52,6 +52,8 @@ public interface NewDAO {
 	
 	public List<NewInfo> getListByTime(@Param("pageNo")int pageNo, @Param("pageSize")int pageSize, @Param("searchNew")SearchNew searchNew);
 	
+	//获取置顶的新闻
+	public List<NewInfo> getListByTop(@Param("pageSize")int pageSize,@Param("pageNo")int pageNo);
 	
 	public void addNewInfo(NewInfo newInfo);
 	

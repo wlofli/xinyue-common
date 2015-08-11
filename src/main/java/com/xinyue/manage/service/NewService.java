@@ -81,7 +81,8 @@ public interface NewService {
 	//前台新闻操作
 	public List<NewInfo> getNewInfoListByTime(SearchNew searchNew, int pageNo, int pageSize);
 	
-	
+	//前台轮播图最新的四个新闻
+	public List<NewInfo> getNewINfoTop(int pageSize);
 
 	
 	public SelectInfo getRecentNew(String typeId, Date sendDate,int type);

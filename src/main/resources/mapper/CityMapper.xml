@@ -144,4 +144,35 @@
 	<select id="findZoneByCode" parameterType="String" resultType="int">
 		select COUNT(*) from m_area_zone where code=#{code};
 	</select>
+	
+	<select id="getCitiesByPy" parameterType="String" resultType="com.xinyue.manage.model.City">
+		select 
+			name
+		from 
+			m_area_city 
+		where 
+			pinyin=#{pinyin};
+	</select>
+	
+	<select id="findProvince" resultType="com.xinyue.manage.model.Province">
+		select 
+			id,
+			code,
+			name,
+			location
+		from 
+			m_area_province;
+	</select>
+	
+	<select id="findCityByCode" parameterType="String" resultType="String">
+		select
+			name
+		from 
+			m_area_city
+		where code=#{code};
+	</select>
+	
+	<select id="findCityCodeByName" parameterType="String" resultType="String">
+		select code from m_area_city where name like concat(concat('%',#{cityName}),'%');
+	</select>
 </mapper>

@@ -39,4 +39,12 @@ public interface CityInfoDAO {
 	int getCountBySearchConditions(SearchCity searchCity);
 
 	int findZoneByCode(String code);
+
+	List<City> getCitiesByPy(String pinyin);
+
+	List<Province> findProvince();
+
+	String findCityByCode(String code);
+
+	String findCityCodeByName(String cityName);
 }

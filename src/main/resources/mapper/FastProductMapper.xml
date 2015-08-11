@@ -225,4 +225,38 @@
 		    id in 
 		    <foreach collection="list" item="id" index="index" separator="," open="(" close=")">#{id}</foreach>
 	</update>
+	
+	<!-- 2015/08/07 茅 追加 START -->
+	<insert id="saveFastOrder">
+		insert into 
+			m_product_fast_info(
+				id,
+				company,
+				code,
+				area_province,
+				area_city,
+				area_zone,
+				credit,
+				contact_name,
+				contact_phone,
+				deleted,
+				created_time,
+				modified_time
+			)
+		values(
+			#{id},
+			#{company},
+			#{code},
+			#{areaProvince},
+			#{areaCity},
+			#{areaZone},
+			#{credit},
+			#{contactName},
+			#{contactPhone},
+			0,
+			now(),
+			now()
+		);
+	</insert>
+	<!-- 2015/08/07 茅 追加 END -->
 </mapper>

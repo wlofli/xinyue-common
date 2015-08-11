@@ -1257,4 +1257,8 @@
 			]]>
 		</if>
 	</select>
+	
+	<select id="findMemberByPhone" parameterType="String" resultType="int">
+		select count(*) from m_member_info where contact_phone=#{contactPhone} and deleted=0;
+	</select>
 </mapper>

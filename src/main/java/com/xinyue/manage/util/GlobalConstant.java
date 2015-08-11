@@ -29,6 +29,14 @@ public class GlobalConstant {
 	
 	public static final String RET_FAIL = "fail";
 	
+	//add by lzc
+	public static final String RET_JSON_RESULT = "result";//json格式返回的名称
+		
+	public static final String SUB_CITY_INFO = "sub_city_info";
+	public static final String SUB_CITY_NAME = "city_name";
+	
+	public static final String INDEX_TYPE = "index_type";
+	
 	/**
 	 * 未登陆或登陆超时
 	 */
@@ -36,11 +44,13 @@ public class GlobalConstant {
 	
 	//wenhai.you 2015-05-08 下午
 	public static final int PAGE_SIZE = 10;
+	public static final int PAGE_SIZE_TWO = 2;
+	public static final int PAGE_SIZE_FIFTY = 50;
+	public static final int PAGE_SIZE_NEWLIST = 28;
+	public static final int PAGE_SIZE_SHOW_PICTURE = 4;
 	
 	//add by lzc 2015年7月22日11:21:02
 	public static final int PAGE_SIZE_ONE = 1;
-	public static final int PAGE_SIZE_TWO = 2;
-	public static final int PAGE_SIZE_FIFTY = 50;
 	
 	/**wenhai.you 2015-05-08 下午
 	 * 判断对象是否为空或者为空串
@@ -155,6 +165,10 @@ public class GlobalConstant {
 	 * 抵质押物情况
 	 */
 	public static final String COMPANY_COLLATERAL_TYPE = "collateral_type";
+	/**
+	 * 两年内信用
+	 */
+	public static final String COMPANY_CREDIT_TYPE = "credit_type";
 	
 	
 	

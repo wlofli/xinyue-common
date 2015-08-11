@@ -103,4 +103,20 @@
 		    moke.m_help_type
 		order by id;
 	</select>
+	
+	<select id="getAllListByIndex" resultType="com.xinyue.manage.model.Helper">
+		select 
+		    id as code,
+		    title as name,
+		    content,
+		    type,
+		    author,
+		    help_status as status,
+		    date_format(spread_time,'%Y-%m-%d') as date
+		from
+		    moke.m_assist_info
+		where
+		    deleted = 0 and order_num is not null
+		order by order_num;
+	</select>
 </mapper>

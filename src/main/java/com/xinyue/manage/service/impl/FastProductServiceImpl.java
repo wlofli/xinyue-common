@@ -1,6 +1,9 @@
 package com.xinyue.manage.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -76,6 +79,27 @@ public class FastProductServiceImpl implements FastProductService{
 			throw new RuntimeException();
 		}
 		return true;
+	}
+
+	@Override
+	public boolean saveFastOrder(FastProduct fastLoanInfo) {
+		
+		try {
+			//生成订单号
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyMMddsss");
+			String orderId = "2"+dateFormat.format(new Date());
+			
+			fastLoanInfo.setId(UUID.randomUUID().toString().replace("-", ""));
+			fastLoanInfo.setCode(orderId);
+			
+			int result = fastProductDAO.saveFastOrder(fastLoanInfo);
+			if (result > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		return false;
 	}
 
 }

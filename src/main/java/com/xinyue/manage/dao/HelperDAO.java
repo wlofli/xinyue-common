@@ -30,4 +30,6 @@ public interface HelperDAO {
 	int addHelpType(HelpType helpType);
 
 	List<SelectInfo> getTypes();
+
+	List<Helper> getAllListByIndex();
 }

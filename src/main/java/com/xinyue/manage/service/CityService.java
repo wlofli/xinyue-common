@@ -33,4 +33,20 @@ public interface CityService {
 	int getCountBySearchConditions(SearchCity searchCity);
 
 	boolean findZoneByCode(String code);
+
+	
+	String[] getCitiesByPy(String pinyin);
+
+	List<Province> findProvince();
+
+	String[] findCitiesByParentId(String code);
+
+	String findCityByCode(String code);
+
+	/**
+	 * 根据城市名查询行政区划代码
+	 * @param cityName 城市名
+	 * @return
+	 */
+	String findCityCodeByName(String cityName);
 }

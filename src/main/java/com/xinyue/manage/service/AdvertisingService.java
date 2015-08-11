@@ -69,4 +69,5 @@ public interface AdvertisingService {
 	public final static String REAL_PATH = CommonFunction.getValue("upload.path");
 	public final static String SHOW_PATH = CommonFunction.getValue("down.path")+"moko/images/";
 
+	public List<Advertising> getIndexAD();
 }

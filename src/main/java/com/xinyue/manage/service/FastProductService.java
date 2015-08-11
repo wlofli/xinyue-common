@@ -41,4 +41,14 @@ public interface FastProductService {
 	 * @return 获取status对应的相关文字描述
 	 */
 	public List<SelectInfo> getStatus(String typeCode);
+	
+	
+	//2015/08/07 茅 追加 START
+	/**
+	 * 快速申贷保存
+	 * @param fastLoanInfo
+	 * @return
+	 */
+	public boolean saveFastOrder(FastProduct fastLoanInfo);
+	//2015/08/07 茅 追加 END
 }

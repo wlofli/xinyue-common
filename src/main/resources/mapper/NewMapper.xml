@@ -284,6 +284,23 @@
 	
 	</select>
 	
+	<select id="getListByTop" resultMap="newInfo">
+		select i.id,
+			title,
+			i.show_title,
+			send_date,
+			i.status,
+			image_url,
+			file_name,
+			file_dir,
+			send_date
+		from m_new_info i
+		left join m_new_type t on t.id = i.new_type 
+		where i.deleted = 0 and t.deleted = 0 and i.top = 1
+		order by i.modified_time desc
+		limit #{pageNo},#{pageSize}
+	</select>
+	
 	<insert id="addNewInfo" parameterType="com.xinyue.manage.model.NewInfo">
 		insert into m_new_info
 		(id,title,send_date,top,status,image_url,type,new_type,author,composition_source,source_url,
@@ -404,5 +421,7 @@
 		
 		limit #{pageNo}, #{pageSize}
 	</select>
+	
+	
 
 </mapper>

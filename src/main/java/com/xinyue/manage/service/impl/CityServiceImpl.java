@@ -20,6 +20,7 @@ import com.xinyue.manage.model.Province;
 import com.xinyue.manage.model.SubStation;
 import com.xinyue.manage.model.Zone;
 import com.xinyue.manage.service.CityService;
+import com.xinyue.manage.util.CommonFunction;
 
 /**
  * 城市分站Service
@@ -198,6 +199,58 @@ public class CityServiceImpl implements CityService {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public String[] getCitiesByPy(String pinyin) {
+		
+		List<City> cityList = null;
+		String[] cityArray = null;
+		
+		cityList = cityInfoDAO.getCitiesByPy(pinyin);
+		
+		if (cityList != null && cityList.size()>0) {
+			cityArray = new String[cityList.size()];
+			for (int i = 0; i < cityList.size(); i++) {
+				cityArray[i] = cityList.get(i).getName();
+			}
+		}
+		return cityArray;
+	}
+
+	@Override
+	public List<Province> findProvince() {
+		return cityInfoDAO.findProvince();
+	}
+
+	@Override
+	public String[] findCitiesByParentId(String code) {
+		
+		List<City> cityList = cityInfoDAO.getCitiesByProvinceId(code);
+		String[] cityArray = null;
+		
+		if (cityList != null && cityList.size()>0) {
+			cityArray = new String[cityList.size()];
+			for (int i = 0; i < cityList.size(); i++) {
+				cityArray[i] = cityList.get(i).getName();
+			}
+		}
+		return cityArray;
+	}
+
+	@Override
+	public String findCityByCode(String code) {
+		
+		return cityInfoDAO.findCityByCode(code);
+	}
+
+	@Override
+	public String findCityCodeByName(String cityName) {
+		
+		if (cityName.equals(CommonFunction.getValue("quanbu"))) {
+			return "000000";
+		}
+		return cityInfoDAO.findCityCodeByName(cityName);
 	}
 
 }
