@@ -85,5 +85,5 @@ public interface NewService {
 	public List<NewInfo> getNewINfoTop(int pageSize);
 
 	
-	public SelectInfo getRecentNew(String typeId, Date sendDate,int type);
+	public SelectInfo getRecentNew(String typeId, Date modifiedTime,int type);
 }

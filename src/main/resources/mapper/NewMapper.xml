@@ -247,7 +247,8 @@
 			image_url,
 			file_name,
 			file_dir,
-			send_date
+			send_date,
+			i.modified_time
 			
 		from m_new_info i
 		left join m_new_type t on t.id = i.new_type 
@@ -408,15 +409,15 @@
 			title as select_value
 		from m_new_info
 		where
-			new_type = #{typeId}
+			new_type = #{typeId} and deleted = 0
 		<if test="type == 0">
 			<![CDATA[ 
-			and send_date < #{date}
+			and modified_time < #{date}
 			order by modified_time desc
 			]]>
 		</if>
 		<if test="type == 1">
-			and send_date > #{date}
+			and modified_time > #{date}
 			order by modified_time
 		</if>
 		
