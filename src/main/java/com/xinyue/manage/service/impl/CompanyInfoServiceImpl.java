@@ -567,7 +567,6 @@ System.out.println("server"+debt);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		
 		return applicant;
 	}
 
@@ -854,6 +853,11 @@ System.out.println("server"+debt);
 			map.put("name", applicant.getName());
 			map.put("phone", applicant.getPhone());
 			map.put("email", applicant.getEmail());
+			if (applicant.getTwoYearCredit().equals("")) {
+				map.put("twoYearCredit", null);
+			} else {
+				map.put("twoYearCredit", applicant.getTwoYearCredit());
+			}
 			if (applicant.getLimitDate().equals("")) {
 				map.put("limitDate", null);
 			}else {
@@ -864,7 +868,11 @@ System.out.println("server"+debt);
 			}else {
 				map.put("money", applicant.getMoney());
 			}
-			map.put("interestRate", applicant.getInterestRate());
+			if (applicant.getInterestRate().equals("")) {
+				map.put("interestRate", null);
+			} else {
+				map.put("interestRate", applicant.getInterestRate());
+			}
 			if (applicant.getRepayType().equals("")) {
 				map.put("repayType", null);
 			}else {

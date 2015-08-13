@@ -65,6 +65,7 @@
 			name as select_value
 			from m_new_type
 			where deleted = 0
+			order by order_num
 	</select>
 	
 	<select id="getAllNewTypeListExceptIdList" resultMap="selectInfo">
@@ -184,7 +185,7 @@
 		<if test="searchNew.pubDate != null">
 			and send_date between #{searchNew.pubDate} and #{searchNew.endDate}
 		</if>
-		<if test="searchNew.newType != null">
+		<if test="searchNew.newType != null and searchNew.newType != ''">
 			and new_type like '%' #{searchNew.newType} '%'
 		</if>
 		<if test="searchNew.city != 0">
@@ -268,7 +269,7 @@
 <!-- 			<if test="searchNew.pubDate != null"> -->
 <!-- 				and send_date between #{searchNew.pubDate} and #{searchNew.endDate} -->
 <!-- 			</if> -->
-			<if test="searchNew.newType != null">
+			<if test="searchNew.newType != null and searchNew.newType != ''">
 				and i.new_type = #{searchNew.newType} 
 			</if>
 			<if test="searchNew.city != 0">
