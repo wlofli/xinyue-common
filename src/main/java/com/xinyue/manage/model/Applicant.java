@@ -64,6 +64,22 @@ public class Applicant implements Serializable {
 	 */
 	private String twoYearCredit ="";
 
+	/**add by lzc
+	 * 申贷用途
+	 */
+	private String creditPurpose ="";
+	
+	
+	
+
+	public String getCreditPurpose() {
+		return creditPurpose;
+	}
+
+	public void setCreditPurpose(String creditPurpose) {
+		this.creditPurpose = creditPurpose;
+	}
+
 	/**
 	 * @return the name
 	 */

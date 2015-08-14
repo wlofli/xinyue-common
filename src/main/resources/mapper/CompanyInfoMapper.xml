@@ -221,6 +221,9 @@
 		    a.deadline as limitDate,
 		    a.amount as money,
 		    a.two_year_credit as twoYearCredit,
+<!-- 		    add by lzc -->
+			a.credit_purpose as creditPurpose,
+
 		    s1.select_value as interestRate,
 		    s2.select_value as repayType,
 		    s3.select_value as guaranteeType,
@@ -737,6 +740,11 @@
 		    area_zone = #{guaranteeZone},
 		    guarantor_is_area = #{isLocation},
 		    modified_id = #{user},
+<!-- 		    add by lzc -->
+		    <if test="creditPurpose != null ">
+		    credit_purpose = #{creditPurpose},
+		    </if>
+		    
 		    modified_time = now()
 		where
 		    id = #{id};
@@ -752,6 +760,12 @@
 				deadline,
 				amount,
 				two_year_credit,
+				
+<!-- 				add by lzc -->
+				<if test="creditPurpose != null">
+				credit_purpose,
+				</if>
+				
 				max_rate,
 				repayment,
 				guarantee,
@@ -775,6 +789,11 @@
 				#{limitDate},
 				#{money},
 				#{twoYearCredit},
+<!-- 				add by lzc -->
+				<if test="creditPurpose != null ">
+				#{creditPurpose},
+				</if>
+				
 				#{interestRate},
 				#{repayType},
 				#{guaranteeType},

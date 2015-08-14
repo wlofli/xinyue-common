@@ -154,4 +154,6 @@ public interface OrderService {
 	
 	public int getDocumentCount(String orderId);
 	
+	public boolean updateOrderEvaluate(Order order, String modifiedId);
+	
 }

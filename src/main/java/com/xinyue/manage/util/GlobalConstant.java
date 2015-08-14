@@ -169,8 +169,10 @@ public class GlobalConstant {
 	 * 两年内信用
 	 */
 	public static final String COMPANY_CREDIT_TYPE = "credit_type";
-	
-	
+	/**add by lzc
+	 * 申贷用途
+	 */
+	public static final String COMPANY_CREDIT_PURPOSE = "credit_purpose";
 	
 	
 	/**

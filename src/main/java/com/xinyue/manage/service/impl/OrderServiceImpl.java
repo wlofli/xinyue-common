@@ -71,7 +71,7 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public Order getOrderInfo(String id) {
 		// TODO Auto-generated method stub
-		return orderDAO.getOrderInfo(id,GlobalConstant.ORDER_STATUS);
+		return orderDAO.getOrderInfo(id,GlobalConstant.ORDER_MEMBER_STATUS);
 	}
 
 
@@ -168,7 +168,6 @@ public class OrderServiceImpl implements OrderService{
 		}
 	}
 
-
 	@Override
 	public boolean addOrUpdateApplicant(Applicant applicant, String orderId,
 			String modifiedId,int state) {
@@ -179,6 +178,16 @@ public class OrderServiceImpl implements OrderService{
 			map.put("name", applicant.getName());
 			map.put("phone", applicant.getPhone());
 			map.put("email", applicant.getEmail());
+			if (applicant.getTwoYearCredit().equals("")) {
+				map.put("twoYearCredit", null);
+			} else {
+				map.put("twoYearCredit", applicant.getTwoYearCredit());
+			}
+			if(applicant.getCreditPurpose().equals("")){
+				map.put("creditPurpose", null);
+			}else {
+				map.put("creditPurpose", applicant.getCreditPurpose());
+			}
 			if (applicant.getLimitDate().equals("")) {
 				map.put("limitDate", null);
 			}else {
@@ -687,6 +696,20 @@ System.out.println(holds.get(1).getEducation());
 	public int getDocumentCount(String orderId) {
 		// TODO Auto-generated method stub
 		return orderDAO.getDocumentCount(orderId);
+	}
+
+
+	@Override
+	public boolean updateOrderEvaluate(Order order, String modifiedId) {
+		// TODO Auto-generated method stub
+		try {
+			orderDAO.updateOrderEvaluate(order, modifiedId);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
 	}
 	
 	

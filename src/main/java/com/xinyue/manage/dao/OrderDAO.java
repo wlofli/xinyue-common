@@ -68,6 +68,13 @@ public interface OrderDAO {
 	 */
 	public boolean updateOrder(@Param("order")Order order);
 	
+	/**更新订单评价信息
+	 * add by lzc     date: 2015年8月14日
+	 * @param order
+	 * @return
+	 */
+	public boolean updateOrderEvaluate(@Param("order")Order order, @Param("modifiedId")String modifiedId);
+	
 	
 	
 	/**

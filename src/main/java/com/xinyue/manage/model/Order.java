@@ -46,7 +46,7 @@ public class Order {
 	private Date commitTime;//下单时间
 	private String status;//订单状态
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
-	private Date auditeTime;//放款实际
+	private Date auditeTime;//放款实际时间
 	private String auditePerson;
 	private String remark;//放款备注
 	
@@ -78,9 +78,24 @@ public class Order {
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5人员主动操作
 	private Double creditReal;//实际贷款
 	
+	private String leval;//评价星级
+	private String evaluateContent;//评价内容
 	
 	
 	
+	
+	public String getLeval() {
+		return leval;
+	}
+	public void setLeval(String leval) {
+		this.leval = leval;
+	}
+	public String getEvaluateContent() {
+		return evaluateContent;
+	}
+	public void setEvaluateContent(String evaluateContent) {
+		this.evaluateContent = evaluateContent;
+	}
 	public int getDocumentSave() {
 		return documentSave;
 	}
