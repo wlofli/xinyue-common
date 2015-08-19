@@ -1,5 +1,7 @@
 package com.xinyue.manage.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.SelectInfo;
@@ -55,4 +57,23 @@ public interface OrderCustomerDAO {
 	public OrderAppointed getOrderAppointed(@Param("orderId")String orderId, @Param("type")int type);
 	
 	public OrderLowPrice getOrderLowPrice(@Param("orderId")String orderId, @Param("type")int type);
+	
+	
+	/**从订单表及其关系表中获取信息
+	 * add by lzc     date: 2015年8月17日
+	 * @param orderId
+	 * @return
+	 */
+	public OrderAppointed getOrderAppointedFromOrder(@Param("orderId")String orderId);
+	/**从订单表及其关系表中获取信息
+	 * add by lzc     date: 2015年8月17日
+	 * @param orderId
+	 * @return
+	 */
+	public OrderFixed getOrderFixedFromOrder(@Param("orderId")String orderId);
+	
+	
+	public List<OrderAppointed> getAppointedListByManageId(@Param("manageId")String manageId);
+	
+	public List<OrderFixed> getFixedListByPage(@Param("manageId")String manageId);
 }

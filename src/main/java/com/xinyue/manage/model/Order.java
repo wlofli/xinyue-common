@@ -78,17 +78,18 @@ public class Order {
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5人员主动操作
 	private Double creditReal;//实际贷款
 	
-	private String leval;//评价星级
+	private String level;//评价星级
 	private String evaluateContent;//评价内容
 	
 	
 	
 	
-	public String getLeval() {
-		return leval;
+	
+	public String getLevel() {
+		return level;
 	}
-	public void setLeval(String leval) {
-		this.leval = leval;
+	public void setLevel(String level) {
+		this.level = level;
 	}
 	public String getEvaluateContent() {
 		return evaluateContent;

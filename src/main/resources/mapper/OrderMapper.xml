@@ -49,7 +49,7 @@
 		<result column="control_info" property="controlInfo"/>
 		<result column="city" property="city"/>
 		<result column="zone" property="zone"/>
-		<result column="leval" property="leval"/>
+		<result column="level" property="level"/>
 		<result column="evaluate_content" property="evaluateContent"/>
 		
 <!-- 		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association> -->
@@ -166,7 +166,7 @@
 			o.tax_audite_person,
 			o.blank_audite_person,
 			o.blank_audite_time,
-			o.leval,
+			o.level,
 			o.evaluate_content,
 			p.`name` AS province,
 			c.`name` AS city,
@@ -554,7 +554,7 @@
 		update m_order_info
 			set modified_time = now(),
 			modified_id = #{modifiedId},
-			leval = #{order.leval},
+			level = #{order.level},
 			evaluate_content = #{order.evaluateContent}
 		where id = #{order.id}
 	

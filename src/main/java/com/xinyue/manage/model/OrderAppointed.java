@@ -2,6 +2,8 @@ package com.xinyue.manage.model;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 /**
  * author lzc
  * 2015年6月30日下午4:01:38
@@ -22,6 +24,59 @@ public class OrderAppointed {
 	private String orderId;//订单外键
 	private int type;//1.订单2快速申贷
 	private String manageId;//信贷经理外键
+	
+	
+	
+	
+	
+	private double credit;//贷款金额
+	private String limitDate;//贷款期限
+	private String applicantName;//申贷人姓名
+	private String applicantPhone;//申贷人电话
+	private String companyName;//借款单位
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	private Date applicantTime;//申贷时间
+	
+	
+	
+	
+	
+	public double getCredit() {
+		return credit;
+	}
+	public void setCredit(double credit) {
+		this.credit = credit;
+	}
+	public String getLimitDate() {
+		return limitDate;
+	}
+	public void setLimitDate(String limitDate) {
+		this.limitDate = limitDate;
+	}
+	public String getApplicantName() {
+		return applicantName;
+	}
+	public void setApplicantName(String applicantName) {
+		this.applicantName = applicantName;
+	}
+	public String getApplicantPhone() {
+		return applicantPhone;
+	}
+	public void setApplicantPhone(String applicantPhone) {
+		this.applicantPhone = applicantPhone;
+	}
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	public Date getApplicantTime() {
+		return applicantTime;
+	}
+	public void setApplicantTime(Date applicantTime) {
+		this.applicantTime = applicantTime;
+	}
 	public String getId() {
 		return id;
 	}

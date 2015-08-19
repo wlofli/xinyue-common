@@ -15,6 +15,13 @@
 		<result column="order_id" property="orderId" />
 		<result column="type" property="type" />
 		<result column="manage_id" property="manageId" />
+		<result column="credit" property="credit" />
+		<result column="limit_date" property="limitDate" />
+		<result column="applicant_name" property="applicantName" />
+		<result column="applicant_phone" property="applicantPhone" />
+		<result column="company_name" property="companyName" />
+		<result column="applicant_time" property="applicantTime" />
+		
 	</resultMap>
 	<resultMap type="com.xinyue.manage.model.OrderAuction" id="auction">
 		<result column="id" property="id" />
@@ -46,6 +53,17 @@
 		<result column="order_id" property="orderId" />
 		<result column="type" property="type" />
 		<result column="manage_id" property="manageId" />
+		<result column="company_type" property="companyType" />
+		<result column="person_num" property="personNum" />
+		<result column="sales" property="sales" />
+		<result column="run_year" property="runYear" />
+		<result column="credit" property="credit" />
+		<result column="guarantee_type" property="guaranteeType" />
+		<result column="two_year_credit" property="twoYearCredit" />
+		<result column="collateral" property="collateral" />
+		<result column="limit_date" property="limitDate" />
+		<result column="total_vat" property="totalVat" />
+		
 	</resultMap>
 	<resultMap type="com.xinyue.manage.model.OrderLowPrice" id="lowprice">
 		<result column="id" property="id" />
@@ -74,9 +92,11 @@
 	
 	<insert id="addOrderAppointed" parameterType="com.xinyue.manage.model.OrderAppointed">
 		insert into c_order_appoint (id,credit_name,credit_phone,blank,price,deleted,created_id,
-					created_time,modified_id,modified_time,order_id,type,manage_id)
+					created_time,modified_id,modified_time,order_id,type,manage_id,
+					credit,limit_date,applicant_name,applicant_phone,company_name,applicant_time)
 			values (#{id},#{creditName},#{creditPhone},#{blank},#{price},#{deleted},#{createdId},
-					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId},
+					#{credit},#{limitDate},#{applicantName},#{applicantPhone},#{companyName},#{applicantTime})
 	
 	</insert>
 	<insert id="addOrderAuction" parameterType="com.xinyue.manage.model.OrderAuction">
@@ -87,9 +107,14 @@
 	</insert>
 	<insert id="addOrderFixed" parameterType="com.xinyue.manage.model.OrderFixed">
 		insert into c_order_fixed (id,price,start_time,end_time,deleted,created_id,
-					created_time,modified_id,modified_time,order_id,type,manage_id)
+					created_time,modified_id,modified_time,order_id,type,manage_id,
+					company_type,person_num,sales,run_year,credit,guarantee_type,
+					two_year_credit,collateral,limit_date,total_vat
+					)
 			values (#{id},#{price},#{startTime},#{endTime},#{deleted},#{createdId},
-					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId},
+					#{companyType},#{personNum},#{sales},#{runYear},#{credit},#{guaranteeType},
+					#{twoYearCredit},#{collateral},#{limitDate},#{totalVat})
 	</insert>
 	<insert id="addOrderLowPrice" parameterType="com.xinyue.manage.model.OrderLowPrice">
 		insert into c_order_lowprice (id,max_price,min_price,per_minus,miniute,now_price,start_time,end_time,
@@ -156,6 +181,46 @@
 	 		${tabName}	
 	 	where id = #{id} and deleted = 0
 	 
+	 </select>
+	 
+	 <select id="getOrderAppointedFromOrder" resultMap="appointed">
+	 	select 
+	 		o.credit,
+	 		a.deadline as limit_date,
+	 		a.name as applicant_name,
+	 		a.phone as applicant_phone,
+	 		l.company_name as company_name,
+	 		o.created_time as applicant_time
+	 	from m_order_info       	o
+	 	left join m_applicant_info  a  on o.applicant_info = a.id
+	 	left join m_license_info 	l  on o.license_info = l.id
+	 	where o.id = #{orderId}
+	 </select>
+	 
+	 
+	 <select id="getOrderFixedFromOrder" resultMap="fixed">
+	 	select 
+	 		l.business_registration_type as company_type,
+	 		c.person_num as person_num,
+	 		b.sales,
+	 		timestampdiff(year, c.business_start_time , now()) as run_year,
+	 		o.credit,
+	 		a.guarantee as guarantee_type,
+	 		a.two_year_credit as two_year_credit,
+	 		d.guaranty as collateral,
+	 		a.deadline as limit_date,
+	 		b.vat_amount as total_vet
+	 	from m_order_info       	o
+	 	left join m_debt_info   	d  on o.debt_info = d.id
+<!-- 	 	left join m_select_info 	s  on s.select_key = d.guaranty and s.type_code = 'collateral_type' -->
+	 	left join m_license_info 	l  on o.license_info = l.id
+<!-- 	 	left join m_select_info 	s1 on s1.select_key = l.business_registration_type and s1.type_code = 'business_type' -->
+	 	left join m_control_info 	c  on o.control_info = c.id 
+		left join m_business_info   b  on o.id = b.target_id and b.target_type = '2' and b.year = '2015'
+		left join m_applicant_info  a  on o.applicant_info = a.id
+<!-- 		left join m_select_info     s2 on s2.select_key = a.two_year_credit and s2.type_code ='credit_type' -->
+<!-- 		left join m_select_info     s3 on s3.select_key = a.guarantee and s3.type_code = 'guarantee_type' -->
+	 	where o.id = #{orderId}
 	 </select>
 			
 	

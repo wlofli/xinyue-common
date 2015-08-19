@@ -85,5 +85,20 @@ public interface OrderCustomerService {
 	 * @return
 	 */
 	public OrderLowPrice getOrderLowPrice(String orderId,int type);
+	
+	/**从订单表及其关系表中获取信息
+	 * add by lzc     date: 2015年8月17日
+	 * @param orderId
+	 * @return
+	 */
+	public OrderAppointed getOrderAppointedFromOrder(String orderId);
+	
+	/**从订单表及其关系表中获取信息
+	 * add by lzc     date: 2015年8月17日
+	 * @param orderId
+	 * @return
+	 */
+	public OrderFixed getOrderFixedFromOrder(String orderId);
+	
 
 }

@@ -26,6 +26,88 @@ public class OrderFixed {
 	private String orderId;//订单外键
 	private int type;//1.订单2快速申贷
 	private String manageId;//信贷经理外键
+	
+	
+	
+	private String companyType;//企业类型
+	private String personNum;//员工人数
+	private String sales;//年销售收入
+	private String runYear;//企业经营年限
+	private double credit;//贷款额度
+	private String guaranteeType;//担保方式
+	private String twoYearCredit;//信用记录
+	private String collateral;//抵押物
+	private String limitDate;//申贷期限
+	private double totalVat;//企业年增值税
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public String getCompanyType() {
+		return companyType;
+	}
+	public void setCompanyType(String companyType) {
+		this.companyType = companyType;
+	}
+	public String getPersonNum() {
+		return personNum;
+	}
+	public void setPersonNum(String personNum) {
+		this.personNum = personNum;
+	}
+	public String getSales() {
+		return sales;
+	}
+	public void setSales(String sales) {
+		this.sales = sales;
+	}
+	public String getRunYear() {
+		return runYear;
+	}
+	public void setRunYear(String runYear) {
+		this.runYear = runYear;
+	}
+	public double getCredit() {
+		return credit;
+	}
+	public void setCredit(double credit) {
+		this.credit = credit;
+	}
+	public String getGuaranteeType() {
+		return guaranteeType;
+	}
+	public void setGuaranteeType(String guaranteeType) {
+		this.guaranteeType = guaranteeType;
+	}
+	public String getTwoYearCredit() {
+		return twoYearCredit;
+	}
+	public void setTwoYearCredit(String twoYearCredit) {
+		this.twoYearCredit = twoYearCredit;
+	}
+	public String getCollateral() {
+		return collateral;
+	}
+	public void setCollateral(String collateral) {
+		this.collateral = collateral;
+	}
+	public String getLimitDate() {
+		return limitDate;
+	}
+	public void setLimitDate(String limitDate) {
+		this.limitDate = limitDate;
+	}
+	public double getTotalVat() {
+		return totalVat;
+	}
+	public void setTotalVat(double totalVat) {
+		this.totalVat = totalVat;
+	}
 	public String getId() {
 		return id;
 	}

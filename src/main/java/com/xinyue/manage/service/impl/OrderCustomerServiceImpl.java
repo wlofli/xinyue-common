@@ -173,6 +173,18 @@ System.out.println(orderTabName);
 		
 	}
 
+	@Override
+	public OrderAppointed getOrderAppointedFromOrder(String orderId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getOrderAppointedFromOrder(orderId);
+	}
+
+	@Override
+	public OrderFixed getOrderFixedFromOrder(String orderId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getOrderFixedFromOrder(orderId);
+	}
+
 	
 
 	
