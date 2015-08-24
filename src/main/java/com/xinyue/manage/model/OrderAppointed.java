@@ -37,10 +37,36 @@ public class OrderAppointed {
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date applicantTime;//申贷时间
 	
+	private String code;//订单编号
+	private String status;//订单状态
+	private String productName;//产品名称
 	
 	
 	
 	
+	
+	
+	
+	
+	
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
 	public double getCredit() {
 		return credit;
 	}

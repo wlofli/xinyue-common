@@ -1,5 +1,8 @@
 package com.xinyue.manage.service;
 
+import java.util.List;
+
+import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.model.OrderAppointed;
 import com.xinyue.manage.model.OrderAuction;
 import com.xinyue.manage.model.OrderFixed;
@@ -41,9 +44,6 @@ public interface OrderCustomerService {
 	 * @return
 	 */
 	public boolean deleteOrderCustom(String tableName,String id, String modifiedId, String orderStatus);
-	
-	
-	
 	
 	
 	/**
@@ -100,5 +100,35 @@ public interface OrderCustomerService {
 	 */
 	public OrderFixed getOrderFixedFromOrder(String orderId);
 	
+	/**信贷:获取立即领取列表
+	 * add by lzc     date: 2015年8月20日
+	 * @param searchCustomer
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	public List<OrderFixed> getOrderFixedByPage(SearchCustomer searchCustomer, int pageNo, int pageSize);
+	
+	
+	public int countOrderFixedByPage(SearchCustomer searchCustomer);
+	
+	/**信贷:推送客户列表
+	 * add by lzc     date: 2015年8月20日
+	 * @param searchCustomer
+	 * @param pageNo
+	 * @param pageSize
+	 * @param manageId
+	 * @return
+	 */
+	public List<OrderAppointed> getOrderAppointedByPage(SearchCustomer searchCustomer, int pageNo, int pageSize, String manageId);
 
+	public int countOrderAppointedByPage(SearchCustomer searchCustomer, String manageId);
+	
+	/**信贷:购买订单
+	 * add by lzc     date: 2015年8月21日
+	 * @param customerId
+	 * @param manageId
+	 * @return
+	 */
+	public boolean saveOrderFixed(String fixId, String manageId, String modifiedId);
 }

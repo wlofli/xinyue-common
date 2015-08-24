@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.dao.OrderCustomerDAO;
 import com.xinyue.manage.dao.OrderDAO;
 import com.xinyue.manage.model.OrderAppointed;
@@ -183,6 +184,61 @@ System.out.println(orderTabName);
 	public OrderFixed getOrderFixedFromOrder(String orderId) {
 		// TODO Auto-generated method stub
 		return orderCustomerDAO.getOrderFixedFromOrder(orderId);
+	}
+
+	@Override
+	public List<OrderFixed> getOrderFixedByPage(SearchCustomer searchCustomer,
+			int pageNo, int pageSize) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getFixedListByPage(pageNo, pageSize, searchCustomer);
+	}
+
+	@Override
+	public List<OrderAppointed> getOrderAppointedByPage(
+			SearchCustomer searchCustomer, int pageNo, int pageSize,
+			String manageId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getAppointedListByManageId(manageId, pageNo, pageSize, searchCustomer);
+	}
+
+	@Override
+	public int countOrderFixedByPage(SearchCustomer searchCustomer) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.countFixedListByPage(searchCustomer);
+	}
+
+	@Override
+	public int countOrderAppointedByPage(SearchCustomer searchCustomer,
+			String manageId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.countAppointedListByManageId(manageId, searchCustomer);
+	}
+
+	@Override
+	public boolean saveOrderFixed(String fixId, String manageId, String modifiedId) {
+		// TODO Auto-generated method stub
+		OrderFixed orderFixed = orderCustomerDAO.getOrderFixedById(fixId);
+		try {
+//			undone->信贷经理资金未扣除
+			
+			orderCustomerDAO.updateOrderCustomerManageId(GlobalConstant.ORDER_TABNAME_FIXED, 
+					fixId, manageId, modifiedId);
+			String tabName;
+			if(orderFixed.getType() == 1){
+				tabName = GlobalConstant.ORDER_TABLENAME;
+			}else {
+				tabName = GlobalConstant.FASTPRODUCT_TABNAME_FAST;
+			}
+			orderCustomerDAO.updateOrderType(tabName, GlobalConstant.ORDER_ORDERSTATUS_GET, null, 
+					modifiedId, orderFixed.getOrderId(), null);
+			
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			log.warn(e.toString());
+			throw new RuntimeException();
+		}
 	}
 
 	

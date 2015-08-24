@@ -21,7 +21,9 @@
 		<result column="applicant_phone" property="applicantPhone" />
 		<result column="company_name" property="companyName" />
 		<result column="applicant_time" property="applicantTime" />
-		
+		<result column="code" property="code" />
+		<result column="status" property="status" />
+		<result column="product_name" property="productName" />
 	</resultMap>
 	<resultMap type="com.xinyue.manage.model.OrderAuction" id="auction">
 		<result column="id" property="id" />
@@ -63,6 +65,9 @@
 		<result column="collateral" property="collateral" />
 		<result column="limit_date" property="limitDate" />
 		<result column="total_vat" property="totalVat" />
+		<result column="applicant_name" property="applicantName" />
+		<result column="image" property="image" />
+		
 		
 	</resultMap>
 	<resultMap type="com.xinyue.manage.model.OrderLowPrice" id="lowprice">
@@ -134,13 +139,38 @@
 	<update id="updateOrderType">
 		update 
 			${tabName} 
-		 set order_type = #{orderType},
-		 	 order_status = #{orderStatus},
+		 set
+		 <if test="orderType != null and orderType != ''">
+		 	order_type = #{orderType},
+		 </if>
+		 <if test="orderStatus != null and orderStatus != ''">
+		 	order_status = #{orderStatus},
+		 </if>
+		 <if test="status != null and status != ''">
 		 	 status = #{status},
+		 </if>
 		 	 modified_time = now(),
 		 	 modified_id = #{modifyId}
 		 where id = #{id} and deleted = 0
 	</update>
+	
+	<update id="updateOrderCustomerManageId">
+		update
+			${tabName}
+		set
+			manage_id = #{manageId},
+			modified_time = now(),
+			modified_id = #{modifiedId}
+		where id = #{id} and deleted = 0
+	</update>
+	
+	
+	<select id="getOrderFixedById" resultMap="fixed">
+		select * 
+			from c_order_fixed
+		where
+			id = #{id} and deleted = 0
+	</select>
 	
 	<select id="getOrderFixed" resultMap="fixed">
 		select * 
@@ -222,7 +252,111 @@
 <!-- 		left join m_select_info     s3 on s3.select_key = a.guarantee and s3.type_code = 'guarantee_type' -->
 	 	where o.id = #{orderId}
 	 </select>
-			
+	 
+	 <select id="getFixedListByPage" resultMap="fixed">
+	 	select 
+	 		f.id,
+	 		f.price,
+	 		f.start_time,
+	 		f.end_time,
+	 		f.order_id,
+	 		s2.select_value as company_type,
+	 		f.person_num,
+	 		f.sales,
+	 		f.run_year,
+	 		f.credit,
+	 		s3.select_value as guarantee_type,
+	 		s.select_value as two_year_credit,
+	 		s1.select_value as collateral,
+	 		f.limit_date,
+	 		f.total_vat,
+	 		a.name as applicant_name
+	 		from c_order_fixed f
+	 	left join  m_select_info s  on s.select_key = f.two_year_credit and s.type_code = 'credit_type'
+	 	left join  m_select_info s1 on s1.select_key = f.collateral and s1.type_code = 'collateral_type'
+	 	left join  m_select_info s3 on s3.select_key = f.guarantee_type and s3.type_code = 'guarantee_type'
+	 	left join  m_select_info s2 on s2.select_key = f.company_type and s2.type_code = 'business_type'
+	 	
+	 	
+	 	left join  m_order_info  o  on o.id = f.order_id and f.type = 1
+	 	left join  m_applicant_info a on o.applicant_info = a.id
+	 	where f.deleted = 0 and f.manage_id is null
+	 	<if test="search.collateral != null and search.collateral != 0">
+	 		and #{search.collateral} = f.collateral
+	 	</if>
+	 	<if test="search.twoYearCredit != null and search.twoYearCredit != 0">
+	 		and #{search.twoYearCredit} = f.two_year_credit
+	 	</if>
+	 	limit #{pageNo}, #{pageSize}
+	 </select>
+	 
+	 <select id="countFixedListByPage" resultType="int">
+	 	select count(*)
+	 		from c_order_fixed f
+	 	where f.deleted = 0 and f.manage_id is null
+	 	<if test="search.collateral != null and search.collateral != 0">
+	 		and #{search.collateral} = f.collateral
+	 	</if>
+	 	<if test="search.twoYearCredit != null and search.twoYearCredit != 0">
+	 		and #{search.twoYearCredit} = f.two_year_credit
+	 	</if>
+	 
+	 </select>
 	
-
+	
+	<select id="getAppointedListByManageId" resultMap="appointed">
+		select a.*,
+			o.code as code,
+			s.select_value as `status`,
+			d.`name` as product_name
+		from
+			c_order_appoint a
+		left join m_order_info     o   on o.id = a.order_id and a.type = '1' and o.deleted = 0 and o.order_type = '4'
+		left join m_product_info   d   on d.id = o.product_info
+		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
+		where a.deleted = 0 
+		and manage_id = #{manageId}
+		<if test="search.startTime != null and search.startTime !=''">
+			and a.applicant_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+				and a.applicant_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.code != null and search.code != ''">
+<!-- 			undone.. -->
+		</if>
+		<if test="search.applicantPhone != null and search.applicantPhone != ''">
+			and a.applicant_phone like '%' #{search.applicantPhone} '%'
+		</if>
+		<if test="search.applicantName != null and search.applicantName != ''">
+			and a.applicant_name like '%' #{search.applicantName} '%'
+		</if>
+		limit #{pageNo}, #{pageSize}
+	</select>
+	
+	<select id="countAppointedListByManageId" resultType="int">
+		select count(*)
+			from c_order_appoint a
+		where deleted = 0 
+		and manage_id = #{manageId}
+		<if test="search.startTime != null and search.startTime !=''">
+			and a.applicant_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+				and a.applicant_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.code != null and search.code != ''">
+<!-- 			undone.. -->
+		</if>
+		<if test="search.applicantPhone != null and search.applicantPhone != ''">
+			and a.applicant_phone like '%' #{search.applicantPhone} '%'
+		</if>
+		<if test="search.applicantName != null and search.applicantName != ''">
+			and a.applicant_name like '%' #{search.applicantName} '%'
+		</if>
+	</select>
 </mapper>

@@ -74,17 +74,25 @@ public class Order {
 	private Date modifiedTime;
 	
 	
-	private String orderStatus;//指定客户状态1.领取未开始2.未领取3.无人领取4.已领取
+	private String orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5人员主动操作
 	private Double creditReal;//实际贷款
 	
 	private String level;//评价星级
 	private String evaluateContent;//评价内容
+	private Date evaluationTime;//评价时间
 	
 	
 	
 	
 	
+	
+	public Date getEvaluationTime() {
+		return evaluationTime;
+	}
+	public void setEvaluationTime(Date evaluationTime) {
+		this.evaluationTime = evaluationTime;
+	}
 	public String getLevel() {
 		return level;
 	}

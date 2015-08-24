@@ -40,6 +40,8 @@ public class OrderFixed {
 	private String limitDate;//申贷期限
 	private double totalVat;//企业年增值税
 	
+	private String applicantName;//申请人姓名
+	private String image;//头像
 	
 	
 	
@@ -48,6 +50,18 @@ public class OrderFixed {
 	
 	
 	
+	public String getApplicantName() {
+		return applicantName;
+	}
+	public void setApplicantName(String applicantName) {
+		this.applicantName = applicantName;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
 	public String getCompanyType() {
 		return companyType;
 	}

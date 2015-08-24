@@ -51,6 +51,7 @@
 		<result column="zone" property="zone"/>
 		<result column="level" property="level"/>
 		<result column="evaluate_content" property="evaluateContent"/>
+		<result column="evaluation_time" property="evaluationTime"/>
 		
 <!-- 		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association> -->
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
@@ -168,6 +169,7 @@
 			o.blank_audite_time,
 			o.level,
 			o.evaluate_content,
+			o.evaluation_time,
 			p.`name` AS province,
 			c.`name` AS city,
 			z.`name` AS zone
@@ -555,7 +557,8 @@
 			set modified_time = now(),
 			modified_id = #{modifiedId},
 			level = #{order.level},
-			evaluate_content = #{order.evaluateContent}
+			evaluate_content = #{order.evaluateContent},
+			evaluation_time = now()
 		where id = #{order.id}
 	
 	</update>

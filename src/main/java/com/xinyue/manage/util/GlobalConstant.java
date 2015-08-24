@@ -31,6 +31,7 @@ public class GlobalConstant {
 	
 	//add by lzc
 	public static final String RET_JSON_RESULT = "result";//json格式返回的名称
+	public static final String RET_MESSAGE = "message";//json格式的消息
 		
 	public static final String SUB_CITY_INFO = "sub_city_info";
 	public static final String SUB_CITY_NAME = "city_name";
@@ -48,6 +49,7 @@ public class GlobalConstant {
 	public static final int PAGE_SIZE_FIFTY = 50;
 	public static final int PAGE_SIZE_NEWLIST = 28;
 	public static final int PAGE_SIZE_SHOW_PICTURE = 4;
+	public static final int PAGE_SIZE_FIXED = 8;
 	
 	//add by lzc 2015年7月22日11:21:02
 	public static final int PAGE_SIZE_ONE = 1;
@@ -195,12 +197,16 @@ public class GlobalConstant {
 	public static final String ORDER_INIT_NUMBER = "2";//订单初始化
 //	public static final String ORDER_SEARCH_TIME = "order_search_time";//订单排序,升序,降序
 	
+	//信贷:客户条件
+	public static final String CUSTOMER_COLLERTAOR = "customer_collateral";
+	public static final String CUSTOMER_CREDIT = "customer_credit";
+	
+	
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info
 	
 	//搜索新闻条件
 	public static final String SEARCH_NEW = "search_new";
-	public static final String NEW_HOTNEWS_ID = "af492c9780d84fdebce633d987d5f4fd";//热门资讯主键id
 	
 	//订单审核的权限
 	public static final String ORDER_AUDITE_NAME = "订单审批";//订单模块名称

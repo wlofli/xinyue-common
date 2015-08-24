@@ -34,7 +34,7 @@ public class FastProduct {
 	
 	
 	
-	private String orderStatus;//指定客户状态1.领取未开始2.未领取3.无人领取4.已领取
+	private String orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5重置
 	
 	
