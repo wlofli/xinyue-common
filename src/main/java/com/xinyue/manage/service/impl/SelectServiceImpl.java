@@ -72,4 +72,11 @@ public class SelectServiceImpl implements SelectService {
 		// TODO Auto-generated method stub
 		return sdao.getOrgList();
 	}
+
+
+	@Override
+	public List<SelectInfo> getProductList() {
+		// TODO Auto-generated method stub
+		return sdao.findProduct();
+	}
 }

@@ -27,11 +27,26 @@ public class Organization implements Serializable {
 	private int deleted;//删除标记 默认为0 0为未删除
 	private String pinyin;//拼音
 	
-	public String getPinyin() {
-		return pinyin;
+	private String shortName;
+	private String domain;
+	private String capital;
+	private String regNum;
+	private String pv;
+	private String introduce;
+	private String image;
+	private String notice;
+	private String area;
+	private String scale;
+	private String establish;
+	private String business;
+	private String orderNum;
+	private String description;
+	
+	public String getDescription() {
+		return description;
 	}
-	public void setPinyin(String pinyin) {
-		this.pinyin = pinyin;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	public String getId() {
 		return id;
@@ -117,15 +132,95 @@ public class Organization implements Serializable {
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
-	public Organization() {
-		super();
-	}
 	public int getDeleted() {
 		return deleted;
 	}
 	public void setDeleted(int deleted) {
 		this.deleted = deleted;
+	}
+	public String getPinyin() {
+		return pinyin;
+	}
+	public void setPinyin(String pinyin) {
+		this.pinyin = pinyin;
+	}
+	public String getShortName() {
+		return shortName;
+	}
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public String getCapital() {
+		return capital;
+	}
+	public void setCapital(String capital) {
+		this.capital = capital;
+	}
+	public String getRegNum() {
+		return regNum;
+	}
+	public void setRegNum(String regNum) {
+		this.regNum = regNum;
+	}
+	public String getPv() {
+		return pv;
+	}
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+	public String getIntroduce() {
+		return introduce;
+	}
+	public void setIntroduce(String introduce) {
+		this.introduce = introduce;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public String getNotice() {
+		return notice;
+	}
+	public void setNotice(String notice) {
+		this.notice = notice;
+	}
+	public String getArea() {
+		return area;
+	}
+	public void setArea(String area) {
+		this.area = area;
+	}
+	public String getScale() {
+		return scale;
+	}
+	public void setScale(String scale) {
+		this.scale = scale;
+	}
+	public String getEstablish() {
+		return establish;
+	}
+	public void setEstablish(String establish) {
+		this.establish = establish;
+	}
+	public String getBusiness() {
+		return business;
+	}
+	public void setBusiness(String business) {
+		this.business = business;
+	}
+	public String getOrderNum() {
+		return orderNum;
+	}
+	public void setOrderNum(String orderNum) {
+		this.orderNum = orderNum;
 	}
 	@Override
 	public String toString() {
@@ -135,7 +230,12 @@ public class Organization implements Serializable {
 				+ ", position=" + position + ", telphone=" + telphone
 				+ ", fixed=" + fixed + ", fax=" + fax + ", mail=" + mail
 				+ ", status=" + status + ", deleted=" + deleted + ", pinyin="
-				+ pinyin + "]";
+				+ pinyin + ", shortName=" + shortName + ", domain=" + domain
+				+ ", capital=" + capital + ", regNum=" + regNum + ", pv=" + pv
+				+ ", introduce=" + introduce + ", image=" + image + ", notice="
+				+ notice + ", area=" + area + ", scale=" + scale
+				+ ", establish=" + establish + ", business=" + business
+				+ ", orderNum=" + orderNum + "]";
 	}
 	
 }

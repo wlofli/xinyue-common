@@ -3,6 +3,7 @@ package com.xinyue.manage.service;
 import java.util.List;
 
 import com.xinyue.manage.beans.SearchCustomer;
+import com.xinyue.manage.beans.SearchOrderCredit;
 import com.xinyue.manage.model.OrderAppointed;
 import com.xinyue.manage.model.OrderAuction;
 import com.xinyue.manage.model.OrderFixed;
@@ -93,12 +94,27 @@ public interface OrderCustomerService {
 	 */
 	public OrderAppointed getOrderAppointedFromOrder(String orderId);
 	
+	
+	/**从快速申贷及其表中获取信息
+	 * add by lzc     date: 2015年8月24日
+	 * @param orderId
+	 * @return
+	 */
+	public OrderAppointed getOrderAppointedFromFastProduct(String fastId);
+	
 	/**从订单表及其关系表中获取信息
 	 * add by lzc     date: 2015年8月17日
 	 * @param orderId
 	 * @return
 	 */
 	public OrderFixed getOrderFixedFromOrder(String orderId);
+	
+	/**从快速申贷及其表中获取信息
+	 * add by lzc     date: 2015年8月24日
+	 * @param orderId
+	 * @return
+	 */
+	public OrderFixed getOrderFixedFromFastProduct(String fastId);
 	
 	/**信贷:获取立即领取列表
 	 * add by lzc     date: 2015年8月20日
@@ -131,4 +147,7 @@ public interface OrderCustomerService {
 	 * @return
 	 */
 	public boolean saveOrderFixed(String fixId, String manageId, String modifiedId);
+	
+	
+	public List<SearchOrderCredit> getSearchOrderCreditList(String typeCode, int[] orderStatus);
 }

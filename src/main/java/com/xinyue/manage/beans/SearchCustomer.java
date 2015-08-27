@@ -2,13 +2,19 @@ package com.xinyue.manage.beans;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 /**
  * author lzc
  */
 public class SearchCustomer {
+	private String status;
 	private String collateral;
 	private String twoYearCredit;
+	@DateTimeFormat(iso=ISO.DATE)
 	private Date startTime;
+	@DateTimeFormat(iso=ISO.DATE)
 	private Date endTime;
 	private String product;
 	private String code;
@@ -61,6 +67,12 @@ public class SearchCustomer {
 	}
 	public void setApplicantName(String applicantName) {
 		this.applicantName = applicantName;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	

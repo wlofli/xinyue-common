@@ -54,4 +54,11 @@ public interface SelectService {
 	public List<Select> getIndustryList();
 	
 	public List<Select> getOrgList();
+	
+	
+	/**获取所有产品列表
+	 * add by lzc     date: 2015年8月26日
+	 * @return key->id, value->name
+	 */
+	public List<SelectInfo> getProductList();
 }

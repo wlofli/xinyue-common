@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.SearchCustomer;
+import com.xinyue.manage.beans.SearchOrderCredit;
 import com.xinyue.manage.dao.OrderCustomerDAO;
 import com.xinyue.manage.dao.OrderDAO;
 import com.xinyue.manage.model.OrderAppointed;
@@ -241,9 +242,24 @@ System.out.println(orderTabName);
 		}
 	}
 
-	
+	@Override
+	public OrderAppointed getOrderAppointedFromFastProduct(String fastId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getOrderAppointedFromFastProduct(fastId);
+	}
 
-	
+	@Override
+	public OrderFixed getOrderFixedFromFastProduct(String fastId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getOrderFixedFromFastProduct(fastId);
+	}
+
+	@Override
+	public List<SearchOrderCredit> getSearchOrderCreditList(String typeCode,
+			int[] orderStatus) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getSearchOrderCredit(typeCode, orderStatus);
+	}
 
 
 }

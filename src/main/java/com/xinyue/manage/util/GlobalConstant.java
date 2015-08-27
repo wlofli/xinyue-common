@@ -175,6 +175,12 @@ public class GlobalConstant {
 	 * 申贷用途
 	 */
 	public static final String COMPANY_CREDIT_PURPOSE = "credit_purpose";
+	/**
+	 * 贷款类型
+	 */
+	public static final String LOAN_TYPE = "loan_type";
+	
+	
 	
 	
 	/**
@@ -201,6 +207,8 @@ public class GlobalConstant {
 	public static final String CUSTOMER_COLLERTAOR = "customer_collateral";
 	public static final String CUSTOMER_CREDIT = "customer_credit";
 	
+	
+	public static final int[] ORDER_CONDITION = {6,7,8,9,10,11};
 	
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info
@@ -241,6 +249,7 @@ public class GlobalConstant {
 	public static final String ORDER_ORDERSTATUS_NOGET = "3";//无人领取
 	public static final String ORDER_ORDERSTATUS_NOSTART = "4";//未开始
 	public static final String ORDER_ORDERSTATUS_RESET = "5";//重置标识
+	
 	
 	//add by lzc 产品信息
 	public static final String PRODUCT_RECOMMEND_ON = "1";//推荐

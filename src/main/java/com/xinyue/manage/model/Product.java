@@ -16,6 +16,7 @@ public class Product implements Serializable {
 	private String name;//产品名称
 	private ProductType type;//产品类型
 	private BankInfo bank;//所属银行
+	private String orgid;//机构id
 	private Double credit;//贷款额度
 	private String content;//内容
 	private String code;//产品编号
@@ -31,8 +32,20 @@ public class Product implements Serializable {
 	private String createUser;//创建者
 	private String modifiedUser;//修改者
 	private List<ProductFile> file;//对应文件申请资料
+	private String typeName;
 	
-	
+	public String getOrgid() {
+		return orgid;
+	}
+	public void setOrgid(String orgid) {
+		this.orgid = orgid;
+	}
+	public String getTypeName() {
+		return typeName;
+	}
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
+	}
 	public Select getStatus() {
 		return status;
 	}

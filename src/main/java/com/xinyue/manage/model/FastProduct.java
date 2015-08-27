@@ -52,7 +52,22 @@ public class FastProduct {
 	private Double creditReal;//实际贷款
 	
 	
+	private String applicantFastId;//快速申贷申请人信息
+	private String companyFastId;//快速申贷公司信息
 	
+	
+	public String getApplicantFastId() {
+		return applicantFastId;
+	}
+	public void setApplicantFastId(String applicantFastId) {
+		this.applicantFastId = applicantFastId;
+	}
+	public String getCompanyFastId() {
+		return companyFastId;
+	}
+	public void setCompanyFastId(String companyFastId) {
+		this.companyFastId = companyFastId;
+	}
 	public Double getCreditReal() {
 		return creditReal;
 	}

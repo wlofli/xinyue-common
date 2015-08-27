@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.SearchCustomer;
+import com.xinyue.manage.beans.SearchOrderCredit;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.OrderAppointed;
 import com.xinyue.manage.model.OrderAuction;
@@ -76,12 +77,27 @@ public interface OrderCustomerDAO {
 	 * @return
 	 */
 	public OrderAppointed getOrderAppointedFromOrder(@Param("orderId")String orderId);
+	
+	/**从快速申贷表及其关系表中获取信息
+	 * add by lzc     date: 2015年8月24日
+	 * @param fastId
+	 * @return
+	 */
+	public OrderAppointed getOrderAppointedFromFastProduct(@Param("fastId")String fastId);
+	
 	/**从订单表及其关系表中获取信息
 	 * add by lzc     date: 2015年8月17日
 	 * @param orderId
 	 * @return
 	 */
 	public OrderFixed getOrderFixedFromOrder(@Param("orderId")String orderId);
+	
+	/**从快速申贷表及其关系表中获取信息
+	 * add by lzc     date: 2015年8月24日
+	 * @param fastId
+	 * @return
+	 */
+	public OrderFixed getOrderFixedFromFastProduct(@Param("fastId")String fastId);
 	
 	
 	public List<OrderAppointed> getAppointedListByManageId(@Param("manageId")String manageId, 
@@ -97,6 +113,6 @@ public interface OrderCustomerDAO {
 	public int countFixedListByPage(@Param("search")SearchCustomer searchCustomer);
 	
 	
-	
+	public List<SearchOrderCredit> getSearchOrderCredit(@Param("typeCode")String typeCode, @Param("list")int[] statusList);
 	
 }

@@ -29,6 +29,8 @@
 		<result column="tax_audite_time" property="taxAuditeTime"/>
 		<result column="tax_audite_remark" property="taxAuditeRemark"/>
 		<result column="tax_audite_status" property="taxAuditeStatus"/>
+		<result column="company_fast_id" property="companyFastId"/>
+		<result column="applicant_fast_id" property="applicantFastId"/>
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
 		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
 		

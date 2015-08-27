@@ -60,7 +60,7 @@
 		SELECT 
 		    code skey, name svalue
 		FROM
-		    moke.m_area_city
+		    m_area_city
 		WHERE
 		    parent_id = #{code};
 	</select>
@@ -72,6 +72,16 @@
 		    m_area_zone
 		WHERE
 		    parent_id = #{code};
+	</select>
+	
+	
+	<!-- 	add by lzc -->
+	<select id="findProduct" resultType="com.xinyue.manage.beans.SelectInfo">
+		select 
+			id as `key`,
+			name as value
+		from
+			 m_product_info	
 	</select>
 
 </mapper>

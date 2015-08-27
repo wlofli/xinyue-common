@@ -662,5 +662,100 @@
 		where order_id = #{orderId}
 	</select>
 	
+	<select id="getCreditManager" resultType="com.xinyue.manage.model.CreditManager">
+		select id,tel_number as tel, real_name as realName,
+			organization
+		from c_manager_info
+		where real_name = #{name}
+	
+	</select>
+	<select id="getCreditManagerList" resultMap="selectInfo">
+		select id as `key`,
+			   real_name as value
+		from c_manager_info	
+	</select>
+	
+	<!-- add by mzj 2015/08/26 start -->
+	<insert id="addFastApplicant" parameterType="com.xinyue.manage.model.FastProductApplicant">
+	insert into 
+		m_applicant_fast_info 
+	values(
+		#{applicantFastId},
+		#{loanAmount},
+		#{loanPeriod},
+		#{profession},
+		#{monthManagement},
+		#{monthCashIncome},
+		#{managementLife},
+		#{registerProvince},
+		#{registerCity},
+		#{registerZone},
+		#{twoYearCredit},
+		#{houseType}
+	);
+	</insert>
+	
+	<insert id="addFastCompany" parameterType="com.xinyue.manage.model.FastProductCompany">
+	insert into 
+		m_company_fast_info 
+	values(
+		#{companyFastId},
+		#{companyName},
+		#{legalRepresentative},
+		#{parpersType},
+		#{papersNumber},
+		#{businessLicenseNumber},
+		#{registerTime},
+		#{registerFund},
+		#{companyType},
+		#{industry},
+		#{registerAddress},
+		#{factBusinessArea},
+		#{yearTurnover},
+		#{yearInvoice},
+		#{assetLiability},
+		#{businessGrowth},
+		#{yearNetProfit},
+		#{staffNumber},
+		#{personInformation}
+	);
+	</insert>
+	
+	<insert id="addFastOrder" parameterType="hashmap">
+	insert into
+		m_product_fast_info(
+			id,
+			company,
+			code,
+			area_province,
+			area_city,
+			area_zone,
+			contact_phone,
+			deleted,
+			created_time,
+			modified_time,
+			applicant_fast_id,
+			company_fast_id
+		)
+	values(
+		#{id},
+		#{company},
+		#{code},
+		#{province},
+		#{city},
+		#{zone},
+		#{phone},
+		0,
+		now(),
+		now(),
+		#{applicantFastId},
+		#{companyFastId}
+	);
+	</insert>
+	<!-- add by mzj 2015/08/26 end   -->
+	
+	
 
+	
+	
 </mapper>

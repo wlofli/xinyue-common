@@ -1,11 +1,11 @@
 package com.xinyue.manage.service.impl;
 
-import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -23,8 +23,11 @@ import com.xinyue.manage.model.Applicant;
 import com.xinyue.manage.model.Business;
 import com.xinyue.manage.model.CompanyBase;
 import com.xinyue.manage.model.Control;
+import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.Debt;
 import com.xinyue.manage.model.Document;
+import com.xinyue.manage.model.FastProductApplicant;
+import com.xinyue.manage.model.FastProductCompany;
 import com.xinyue.manage.model.Hold;
 import com.xinyue.manage.model.Order;
 import com.xinyue.manage.model.RealEstate;
@@ -711,16 +714,71 @@ System.out.println(holds.get(1).getEducation());
 			throw new RuntimeException();
 		}
 	}
+
+	@Override
+	public CreditManager getCreditManager(String name) {
+		// TODO Auto-generated method stub
+		try {
+			return orderDAO.getCreditManager(name);
+		} catch (Exception e) {
+			// TODO: handle exception
+			//可能会出现信贷经理同名情形,查询 1 but found n
+			log.error(e.toString());
+			throw new RuntimeException();
+		}
+	}
+
+
+	@Override
+	public List<SelectInfo> getCreditMangerList() {
+		// TODO Auto-generated method stub
+		return orderDAO.getCreditManagerList();
+	}
 	
+	@Override
+	public boolean addFastOrderTypeTwo(String tel,
+			FastProductApplicant applicantFast, FastProductCompany companyFast) {
+		
+		int result = 0;
+		
+		SimpleDateFormat sf = new SimpleDateFormat("yyMMddHHmmss");
+		
+		try {
+			//生成申请人信息
+			String applicantId = UUID.randomUUID().toString().replace("-", "");
+			applicantFast.setApplicantFastId(applicantId);
+			result = orderDAO.addFastApplicant(applicantFast);
+			
+			//生成公司信息
+			String companyId = UUID.randomUUID().toString().replace("-", "");
+			companyFast.setCompanyFastId(companyId);
+			result = orderDAO.addFastCompany(companyFast);
+			
+			//生成快速订单
+			String fastId = UUID.randomUUID().toString().replace("-", "");
+			String orderId = "F"+sf.format(new Date());
+			HashMap<String, Object> map = new HashMap<>();
+			map.put("id", fastId);
+			map.put("company", companyFast.getCompanyName());
+			map.put("code", orderId);
+			map.put("province", applicantFast.getRegisterProvince());
+			map.put("city", applicantFast.getRegisterCity());
+			map.put("zone", applicantFast.getRegisterZone());
+			map.put("phone", tel);
+			map.put("applicantFastId", applicantId);
+			map.put("companyFastId", companyId);
+			
+			result = orderDAO.addFastOrder(map);
+			
+			if (result > 0) {
+				return true;
+			}
+			
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new RuntimeException();
+		}
+		return false;
+	}
 	
 }
-
-		
-	
-
-	
-	
-
-
-
-
