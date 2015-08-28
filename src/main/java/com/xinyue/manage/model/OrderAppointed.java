@@ -15,7 +15,7 @@ public class OrderAppointed {
 	private String creditName;//信贷经理姓名
 	private String creditPhone;//手机号
 	private String blank;//所属机构
-	private double price;//获得价格
+	private Double price;//获得价格
 	private int deleted;
 	private String createdId;
 	private Date createdTime;
@@ -29,7 +29,7 @@ public class OrderAppointed {
 	
 	
 	
-	private double credit;//贷款金额
+	private Double credit;//贷款金额
 	private String limitDate;//贷款期限
 	private String applicantName;//申贷人姓名
 	private String applicantPhone;//申贷人电话
@@ -67,10 +67,10 @@ public class OrderAppointed {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
-	public double getCredit() {
+	public Double getCredit() {
 		return credit;
 	}
-	public void setCredit(double credit) {
+	public void setCredit(Double credit) {
 		this.credit = credit;
 	}
 	public String getLimitDate() {
@@ -127,10 +127,10 @@ public class OrderAppointed {
 	public void setBlank(String blank) {
 		this.blank = blank;
 	}
-	public double getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 	public int getDeleted() {

@@ -13,10 +13,10 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
  */
 public class OrderAuction {
 	private String id;
-	private double fixedPrice;//一口价
-	private double startPrice;//起拍价
-	private double lowerAddPrice;//最低加价
-	private double nowPrice;//现在的价格
+	private Double fixedPrice;//一口价
+	private Double startPrice;//起拍价
+	private Double lowerAddPrice;//最低加价
+	private Double nowPrice;//现在的价格
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date startTime;
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -41,28 +41,28 @@ public class OrderAuction {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public double getFixedPrice() {
+	public Double getFixedPrice() {
 		return fixedPrice;
 	}
-	public void setFixedPrice(double fixedPrice) {
+	public void setFixedPrice(Double fixedPrice) {
 		this.fixedPrice = fixedPrice;
 	}
-	public double getStartPrice() {
+	public Double getStartPrice() {
 		return startPrice;
 	}
-	public void setStartPrice(double startPrice) {
+	public void setStartPrice(Double startPrice) {
 		this.startPrice = startPrice;
 	}
-	public double getLowerAddPrice() {
+	public Double getLowerAddPrice() {
 		return lowerAddPrice;
 	}
-	public void setLowerAddPrice(double lowerAddPrice) {
+	public void setLowerAddPrice(Double lowerAddPrice) {
 		this.lowerAddPrice = lowerAddPrice;
 	}
-	public double getNowPrice() {
+	public Double getNowPrice() {
 		return nowPrice;
 	}
-	public void setNowPrice(double nowPrice) {
+	public void setNowPrice(Double nowPrice) {
 		this.nowPrice = nowPrice;
 	}
 	public Date getStartTime() {

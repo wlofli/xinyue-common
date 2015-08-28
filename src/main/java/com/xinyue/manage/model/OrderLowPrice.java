@@ -14,11 +14,11 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 public class OrderLowPrice {
 	
 	private String id;
-	private double maxPrice;//最高价
-	private double minPrice;//最低价
-	private double perMinus;//每次降价
+	private Double maxPrice;//最高价
+	private Double minPrice;//最低价
+	private Double perMinus;//每次降价
 	private int miniute;//时间间隔
-	private double nowPrice;//现在的价格
+	private Double nowPrice;//现在的价格
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date startTime;
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -37,22 +37,22 @@ public class OrderLowPrice {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public double getMaxPrice() {
+	public Double getMaxPrice() {
 		return maxPrice;
 	}
-	public void setMaxPrice(double maxPrice) {
+	public void setMaxPrice(Double maxPrice) {
 		this.maxPrice = maxPrice;
 	}
-	public double getMinPrice() {
+	public Double getMinPrice() {
 		return minPrice;
 	}
-	public void setMinPrice(double minPrice) {
+	public void setMinPrice(Double minPrice) {
 		this.minPrice = minPrice;
 	}
-	public double getPerMinus() {
+	public Double getPerMinus() {
 		return perMinus;
 	}
-	public void setPerMinus(double perMinus) {
+	public void setPerMinus(Double perMinus) {
 		this.perMinus = perMinus;
 	}
 	public int getMiniute() {
@@ -61,10 +61,10 @@ public class OrderLowPrice {
 	public void setMiniute(int miniute) {
 		this.miniute = miniute;
 	}
-	public double getNowPrice() {
+	public Double getNowPrice() {
 		return nowPrice;
 	}
-	public void setNowPrice(double nowPrice) {
+	public void setNowPrice(Double nowPrice) {
 		this.nowPrice = nowPrice;
 	}
 	public Date getStartTime() {

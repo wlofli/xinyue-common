@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
  */
 public class OrderFixed {
 	private String id;//主键
-	private double price;//立即领取价格
+	private Double price;//立即领取价格
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date startTime;//领取开始时间
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -33,12 +33,12 @@ public class OrderFixed {
 	private String personNum;//员工人数
 	private String sales;//年销售收入
 	private String runYear;//企业经营年限
-	private double credit;//贷款额度
+	private Double credit;//贷款额度
 	private String guaranteeType;//担保方式
 	private String twoYearCredit;//信用记录
 	private String collateral;//抵押物
 	private String limitDate;//申贷期限
-	private double totalVat;//企业年增值税
+	private String totalVat;//企业年增值税
 	
 	private String applicantName;//申请人姓名
 	private String image;//头像
@@ -86,10 +86,10 @@ public class OrderFixed {
 	public void setRunYear(String runYear) {
 		this.runYear = runYear;
 	}
-	public double getCredit() {
+	public Double getCredit() {
 		return credit;
 	}
-	public void setCredit(double credit) {
+	public void setCredit(Double credit) {
 		this.credit = credit;
 	}
 	public String getGuaranteeType() {
@@ -116,10 +116,10 @@ public class OrderFixed {
 	public void setLimitDate(String limitDate) {
 		this.limitDate = limitDate;
 	}
-	public double getTotalVat() {
+	public String getTotalVat() {
 		return totalVat;
 	}
-	public void setTotalVat(double totalVat) {
+	public void setTotalVat(String totalVat) {
 		this.totalVat = totalVat;
 	}
 	public String getId() {
@@ -128,10 +128,10 @@ public class OrderFixed {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public double getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 	public Date getStartTime() {
