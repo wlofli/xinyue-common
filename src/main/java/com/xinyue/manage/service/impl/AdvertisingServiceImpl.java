@@ -261,4 +261,15 @@ public class AdvertisingServiceImpl implements AdvertisingService {
 				
 		return advertisingDao.getIndexAD();
 	}
+
+	@Override
+	public Advertising findAdByType(int type) {
+		
+		List<Advertising> advertisings = advertisingDao.findAdByType(type);
+		
+		if (advertisings != null && advertisings.size() > 0) {
+			return advertisings.get(0);
+		}
+		return null;
+	}
 }

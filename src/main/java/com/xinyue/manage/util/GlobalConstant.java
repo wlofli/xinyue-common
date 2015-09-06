@@ -32,11 +32,34 @@ public class GlobalConstant {
 	//add by lzc
 	public static final String RET_JSON_RESULT = "result";//json格式返回的名称
 	public static final String RET_MESSAGE = "message";//json格式的消息
-		
+	
 	public static final String SUB_CITY_INFO = "sub_city_info";
 	public static final String SUB_CITY_NAME = "city_name";
 	
 	public static final String INDEX_TYPE = "index_type";
+	
+	//add by mzj start
+	public static final String FAST_APPLICANT_STEP_ONE = "fast_applicant_step_one";
+	
+	public static final String FAST_APPLICANT_STEP_TWO = "fast_applicant_step_two";
+	/**
+	 * 职业
+	 */
+	public static final String PROFESSION_TYPE = "profession_type";
+	/**
+	 * 房产类型
+	 */
+	public static final String HOUSE_TYPE = "house_type";
+	/**
+	 * 贷款额度
+	 */
+	public static final String LOAN_AMOUNT = "loan_amount";
+	
+	public static final String LOAN_PERIOD = "loan_period";
+	
+	public static final String STAR_LEVEL = "star_level";
+	
+	//add by mzj end
 	
 	/**
 	 * 未登陆或登陆超时
@@ -204,17 +227,18 @@ public class GlobalConstant {
 //	public static final String ORDER_SEARCH_TIME = "order_search_time";//订单排序,升序,降序
 	
 	//信贷:客户条件
-	public static final String CUSTOMER_COLLERTAOR = "customer_collateral";
-	public static final String CUSTOMER_CREDIT = "customer_credit";
-	
-	
-	public static final int[] ORDER_CONDITION = {6,7,8,9,10,11};
-	
+		public static final String CUSTOMER_COLLERTAOR = "customer_collateral";
+		public static final String CUSTOMER_CREDIT = "customer_credit";
+		
+		
+		public static final int[] ORDER_CONDITION = {6,7,8,9,10,11};//信贷界面部分状态
+		
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info
 	
 	//搜索新闻条件
 	public static final String SEARCH_NEW = "search_new";
+	public static final String NEW_HOTNEWS_ID = "af492c9780d84fdebce633d987d5f4fd";//热门资讯主键id
 	
 	//订单审核的权限
 	public static final String ORDER_AUDITE_NAME = "订单审批";//订单模块名称
@@ -249,7 +273,6 @@ public class GlobalConstant {
 	public static final String ORDER_ORDERSTATUS_NOGET = "3";//无人领取
 	public static final String ORDER_ORDERSTATUS_NOSTART = "4";//未开始
 	public static final String ORDER_ORDERSTATUS_RESET = "5";//重置标识
-	
 	
 	//add by lzc 产品信息
 	public static final String PRODUCT_RECOMMEND_ON = "1";//推荐

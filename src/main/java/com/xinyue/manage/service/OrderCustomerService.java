@@ -2,6 +2,7 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import com.xinyue.manage.beans.OrderCustomer;
 import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrderCredit;
 import com.xinyue.manage.model.OrderAppointed;
@@ -149,5 +150,13 @@ public interface OrderCustomerService {
 	public boolean saveOrderFixed(String fixId, String manageId, String modifiedId);
 	
 	
-	public List<SearchOrderCredit> getSearchOrderCreditList(String typeCode, int[] orderStatus);
+	public List<SearchOrderCredit> getSearchOrderCreditList(String typeCode, int[] orderStatus,String manageId);
+
+	public List<OrderCustomer> getMyCustomer(SearchCustomer searchCustomer,
+			String id, int i, int pageSize);
+
+	public int countMyCustomer(SearchCustomer searchCustomer, String id);
+
+	public List<SearchOrderCredit> getMyCustomerSearchOrderCreditList(
+			String typeCode, int[] orderStatus, String manageId);
 }

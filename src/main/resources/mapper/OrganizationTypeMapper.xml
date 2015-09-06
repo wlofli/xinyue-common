@@ -45,4 +45,7 @@
 		select otypeid id , name name , number number from m_organization_type where name = #{name}
 	</select>
 	
+	<select id="findTypes" resultType="com.xinyue.manage.model.OrganizationType">
+		select otypeid id , name name , number number from m_organization_type where deleted=0 
+	</select>
 </mapper>

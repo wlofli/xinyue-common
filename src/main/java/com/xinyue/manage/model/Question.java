@@ -16,7 +16,70 @@ public class Question {
 	private String answerContent;
 	private String answerCreatetime;
 	
+	private String createid;
+	private String cityid;//用于提交
+	private String city;
+	private String province;
+	private String provinceid;//用于提交
+	private String email;
+	private String telphone;
+	private String questionerType;
+	private String orgid;
 	
+	public String getOrgid() {
+		return orgid;
+	}
+	public void setOrgid(String orgid) {
+		this.orgid = orgid;
+	}
+	public String getQuestionerType() {
+		return questionerType;
+	}
+	public void setQuestionerType(String questionerType) {
+		this.questionerType = questionerType;
+	}
+	public String getCreateid() {
+		return createid;
+	}
+	public void setCreateid(String createid) {
+		this.createid = createid;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getTelphone() {
+		return telphone;
+	}
+	public void setTelphone(String telphone) {
+		this.telphone = telphone;
+	}
+	public String getCityid() {
+		return cityid;
+	}
+	public void setCityid(String cityid) {
+		this.cityid = cityid;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getProvinceid() {
+		return provinceid;
+	}
+	public void setProvinceid(String provinceid) {
+		this.provinceid = provinceid;
+	}
 	public String getAnswerCreatetime() {
 		return answerCreatetime;
 	}
@@ -64,6 +127,18 @@ public class Question {
 	}
 	public void setQuestType(String questType) {
 		this.questType = questType;
+	}
+	@Override
+	public String toString() {
+		return "Question [id=" + id + ", title=" + title + ", content="
+				+ content + ", createtime=" + createtime + ", answerNum="
+				+ answerNum + ", questType=" + questType + ", answerContent="
+				+ answerContent + ", answerCreatetime=" + answerCreatetime
+				+ ", createid=" + createid + ", cityid=" + cityid + ", city="
+				+ city + ", province=" + province + ", provinceid="
+				+ provinceid + ", email=" + email + ", telphone=" + telphone
+				+ ", questionerType=" + questionerType + ", orgid=" + orgid
+				+ "]";
 	}
 	
 }

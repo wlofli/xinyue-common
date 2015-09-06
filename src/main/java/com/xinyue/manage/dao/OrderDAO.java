@@ -111,6 +111,12 @@ public interface OrderDAO {
     
     public void deleteDocument(@Param("documentId")String document, @Param("id")String orderId);
     
+    /**初始化订单
+     * add by lzc     date: 2015年9月2日
+     * @param order
+     * @return
+     */
+    public int addOrder(Order order);
     
     /**
 	 * add by lzc     date: 2015年7月30日
@@ -158,5 +164,5 @@ public interface OrderDAO {
 	 */
 	public int addFastOrder(HashMap<String, Object> map);
 
-
+	
 }

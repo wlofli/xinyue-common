@@ -69,5 +69,9 @@ public interface AdvertisingService {
 	public final static String REAL_PATH = CommonFunction.getValue("upload.path");
 	public final static String SHOW_PATH = CommonFunction.getValue("down.path")+"moko/images/";
 
+	//add by mzj start
 	public List<Advertising> getIndexAD();
+
+	public Advertising findAdByType(int type);
+	//add by mzj end
 }

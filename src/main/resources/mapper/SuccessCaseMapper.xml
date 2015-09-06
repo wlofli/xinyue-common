@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.SuccessCaseDAO">
+	<select id="findSuccessCasesByManagerId" parameterType="String" resultType="com.xinyue.manage.model.SuccessCase">
+		select 
+		    sc.id as id,
+		    sc.product_id as productId,
+		    sc.applicant_company as applicantCompany,
+		    sc.loan_amount as loanAmount,
+		    sc.loan_date as loanDate,
+		    sc.loan_days as loanDays,
+		    sc.description as description,
+		    pi.name as productName
+		from
+		    c_success_case sc,
+		    m_product_info pi
+		where
+		    sc.product_id = pi.id
+		        and sc.credit_manager_id = #{managerId}
+		order by sc.order_number;
+	</select>
+	
+	<select id="getCountByManagerId" parameterType="com.xinyue.manage.beans.SuccessCaseSearch" resultType="int">
+		select
+			count(sc.id)
+		from
+			c_success_case sc,
+		    m_product_info pi
+		where
+			sc.product_id = pi.id
+			and credit_manager_id=#{managerId}
+			<if test="productName != ''">
+			and pi.name like concat(concat('%', #{productName}),'%')
+			</if>
+			<if test="amountStart !=''">
+			and sc.loan_amount<![CDATA[ >= ]]>#{amountStart}
+			</if>
+			<if test="amountEnd !=''">
+			and sc.loan_amount<![CDATA[ <= ]]>#{amountEnd}
+			</if>
+			<if test="dateStart !=''">
+			and sc.loan_date<![CDATA[ >= ]]>#{dateStart}
+			</if>
+			<if test="dateEnd !=''">
+			and sc.loan_date<![CDATA[ <= ]]>#{dateEnd}
+			</if>
+	</select>
+	
+	<select id="getSuccessCaseList" parameterType="com.xinyue.manage.beans.SuccessCaseSearch" resultType="com.xinyue.manage.model.SuccessCase">
+		select 
+			sc.id as id,
+		    pi.name as productName,
+		    sc.applicant_company as applicantCompany,
+		    si.select_value as loanType,
+		    sc.loan_amount as loanAmount,
+		    sc.loan_date as loanDate,
+		    sc.loan_period as loanPeriod,
+		    sc.loan_days as loanDays,
+		    ap.name as loanProvince,
+		    ac.name as loanCity
+		from
+		    c_success_case sc,
+		    m_product_info pi,
+		    m_area_province ap,
+		    m_area_city ac,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'loan_type') si
+		where
+		    sc.product_id = pi.id
+		        and sc.loan_type = si.select_key
+		        and sc.loan_province = ap.code
+		        and sc.loan_city = ac.code
+				<if test="productName != ''">
+				and pi.name like concat(concat('%', #{productName}),'%')
+				</if>
+				<if test="amountStart !=''">
+				and sc.loan_amount<![CDATA[ >= ]]>#{amountStart}
+				</if>
+				<if test="amountEnd !=''">
+				and sc.loan_amount<![CDATA[ <= ]]>#{amountEnd}
+				</if>
+				<if test="dateStart !=''">
+				and sc.loan_date<![CDATA[ >= ]]>#{dateStart}
+				</if>
+				<if test="dateEnd !=''">
+				and sc.loan_date<![CDATA[ <= ]]>#{dateEnd}
+				</if>
+		order by sc.order_number
+		limit #{index} , 10;
+	</select>
+	
+	<update id="deleteCaseById" parameterType="list">
+		<foreach collection="ids" item="id" separator=";">
+			update 
+				c_success_case 
+			set
+				deleted=1,
+				modified_time=now(),
+				modified_id=#{managerId}
+			where
+				id=#{id}
+		</foreach>
+	</update>
+	
+	<select id="getSuccessCaseByCaseId" parameterType="String" resultType="com.xinyue.manage.model.SuccessCase">
+		select 
+		    id as id,
+		    product_id as productId,
+		    applicant_company as applicantCompany,
+		    loan_amount as loanAmount,
+		    date_format(loan_date, '%Y-%m-%d') as loanDate,
+		    loan_period as loanPeriod,
+		    loan_days as loanDays,
+		    loan_type as loanType,
+		    loan_province as loanProvince,
+		    loan_city as loanCity,
+		    month_interest as monthInterest,
+		    order_number as orderNumber,
+		    description as description
+		from
+		    c_success_case
+		where
+		    id = #{caseId};
+	</select>
+	
+	<insert id="addCase" parameterType="com.xinyue.manage.model.SuccessCase">
+		insert into 
+			c_success_case
+		values(
+			#{id},
+			#{creditManagerId},
+			#{productId},
+			#{applicantCompany},
+			#{loanAmount},
+			#{loanDate},
+			#{loanPeriod},
+			#{loanDays},
+			#{loanType},
+			#{loanProvince},
+			#{loanCity},
+			#{monthInterest},
+			#{orderNumber},
+			#{description},
+			0,
+			now(),
+			now(),
+			#{creditManagerId},
+			#{creditManagerId}
+		);
+	</insert>
+	
+	<update id="updateCase" parameterType="com.xinyue.manage.model.SuccessCase">
+		update c_success_case
+		set
+			credit_manager_id=#{creditManagerId},
+			product_id=#{productId},
+			applicant_company=#{applicantCompany},
+			loan_amount=#{loanAmount},
+			loan_date=#{loanDate},
+			loan_period=#{loanPeriod},
+			loan_days=#{loanDays},
+			loan_type=#{loanType},
+			loan_province=#{loanProvince},
+			loan_city=#{loanCity},
+			month_interest=#{monthInterest},
+			order_number=#{orderNumber},
+			description=#{description},
+			modified_time=now()
+		where 
+			id=#{id};
+	</update>
+</mapper>

@@ -14,7 +14,7 @@ public class FastProductCompany {
 	private String parpersType;//证件类型
 	private String papersNumber;//证件号码
 	private String businessLicenseNumber;//营业执照注册号
-	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date registerTime;//公司成立时间
 	private double registerFund;//注册资金
 	private String companyType;//企业性质

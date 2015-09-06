@@ -35,7 +35,7 @@
 		SELECT s.substation_code as code,s.substation_name as partName,p.name as provinceName,
 			c.name as cityName,s.first_letter as pinyin,s.hot as hot,
 			cw.name as location
-		FROM moke.m_city_substation_info s
+		FROM m_city_substation_info s
 		LEFT JOIN m_area_province p ON s.province_id = p.code
 		LEFT JOIN m_area_city c ON s.city_id = c.code
 		LEFT JOIN m_chinese_word_info cw ON p.location = cw.code
@@ -100,7 +100,7 @@
 		SELECT s.substation_code as code,s.substation_name as partName,p.name as provinceName,
 			c.name as cityName,s.first_letter as pinyin,s.hot as hot,
 			cw.name as location
-		FROM moke.m_city_substation_info s
+		FROM m_city_substation_info s
 		LEFT JOIN m_area_province p ON s.province_id = p.code
 		LEFT JOIN m_area_city c ON s.city_id = c.code
 		LEFT JOIN m_chinese_word_info cw ON p.location = cw.code
@@ -174,5 +174,15 @@
 	
 	<select id="findCityCodeByName" parameterType="String" resultType="String">
 		select code from m_area_city where name like concat(concat('%',#{cityName}),'%');
+	</select>
+	
+	<select id="findServerZones" resultType="com.xinyue.manage.model.City">
+		select
+			code,
+			name
+		from
+			m_area_city
+		where
+			server_zone=1;
 	</select>
 </mapper>

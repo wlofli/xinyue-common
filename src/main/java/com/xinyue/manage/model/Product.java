@@ -12,15 +12,25 @@ import java.util.List;
  */
 public class Product implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4343638966384719267L;
 	private String id;//编号
 	private String name;//产品名称
 	private ProductType type;//产品类型
-	private BankInfo bank;//所属银行
+	private String productTypeName;
+	private BankInfo bank;//所属银行-----------更改后台删掉
+	private String orgName;//机构名称
 	private String orgid;//机构id
-	private Double credit;//贷款额度
+	private String credit;//贷款额度 
+	private int creditFrom;
+	private int creditTo;
+	
+
 	private String content;//内容
 	private String code;//产品编号
-	private String area;//适用地区
+	private String area;//适用地区 
 	private Boolean recommend;//推荐标志位
 	private String logo;//缩略图
 	private Date downTime;//下架时间
@@ -33,7 +43,31 @@ public class Product implements Serializable {
 	private String modifiedUser;//修改者
 	private List<ProductFile> file;//对应文件申请资料
 	private String typeName;
-	
+
+	public String getProductTypeName() {
+		return productTypeName;
+	}
+	public void setProductTypeName(String productTypeName) {
+		this.productTypeName = productTypeName;
+	}
+	public String getOrgName() {
+		return orgName;
+	}
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+	public int getCreditFrom() {
+		return creditFrom;
+	}
+	public void setCreditFrom(int creditFrom) {
+		this.creditFrom = creditFrom;
+	}
+	public int getCreditTo() {
+		return creditTo;
+	}
+	public void setCreditTo(int creditTo) {
+		this.creditTo = creditTo;
+	}
 	public String getOrgid() {
 		return orgid;
 	}
@@ -154,10 +188,10 @@ public class Product implements Serializable {
 	public void setAddTime(Date addTime) {
 		this.addTime = addTime;
 	}
-	public Double getCredit() {
+	public String getCredit() {
 		return credit;
 	}
-	public void setCredit(Double credit) {
+	public void setCredit(String credit) {
 		this.credit = credit;
 	}
 	
@@ -181,18 +215,20 @@ public class Product implements Serializable {
 		
 		return status;
 	}
-	
 	@Override
 	public String toString() {
 		return "Product [id=" + id + ", name=" + name + ", type=" + type
-				+ ", bank=" + bank + ", credit=" + credit + ", content="
-				+ content + ", code=" + code + ", area=" + area
-				+ ", recommend=" + recommend + ", logo=" + logo + ", downTime="
-				+ downTime + ", addTime=" + addTime + ", deleted=" + deleted
-				+ ", status=" + status + ", createdTime=" + createdTime
-				+ ", modifiedTime=" + modifiedTime + ", createUser="
-				+ createUser + ", modifiedUser=" + modifiedUser + ", file="
-				+ file + "]";
+				+ ", productTypeName=" + productTypeName + ", bank=" + bank
+				+ ", orgName=" + orgName + ", orgid=" + orgid + ", credit="
+				+ credit + ", creditFrom=" + creditFrom + ", creditTo="
+				+ creditTo + ", content=" + content + ", code=" + code
+				+ ", area=" + area + ", recommend=" + recommend + ", logo="
+				+ logo + ", downTime=" + downTime + ", addTime=" + addTime
+				+ ", deleted=" + deleted + ", status=" + status
+				+ ", createdTime=" + createdTime + ", modifiedTime="
+				+ modifiedTime + ", createUser=" + createUser
+				+ ", modifiedUser=" + modifiedUser + ", file=" + file
+				+ ", typeName=" + typeName + "]";
 	}
 	
 }

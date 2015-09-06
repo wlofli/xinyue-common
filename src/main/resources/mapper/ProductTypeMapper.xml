@@ -9,6 +9,14 @@
 		from m_product_type where deleted = 0 
 	</select>
 	
+	<select id="findProductTypeByList" resultType="com.xinyue.manage.model.ProductType">
+		select 
+			id id , 
+			name name
+		from m_product_type where deleted = 0 and status = 1
+	</select>
+	
+	
 	<select id="findTypeFirst" resultType="com.xinyue.manage.model.ProductType" parameterType="com.xinyue.manage.beans.ProductTypeInfo">
 		select 
 			id id,
@@ -54,7 +62,7 @@
 	
 	<insert id="addTypeFirst" parameterType="com.xinyue.manage.model.ProductType">
 		insert into m_product_type(id , name , status , created_time , created_id , parent_id)
-		 values(uuid() , #{name} , #{status} , now() , #{createUser} , #{parentid})
+		 values(replace(uuid() , '-','') , #{name} , #{status} , now() , #{createUser} , #{parentid})
 	</insert>
 	
 	

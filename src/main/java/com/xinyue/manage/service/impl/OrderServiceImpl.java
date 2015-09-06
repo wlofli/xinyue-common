@@ -727,8 +727,7 @@ System.out.println(holds.get(1).getEducation());
 			throw new RuntimeException();
 		}
 	}
-
-
+	
 	@Override
 	public List<SelectInfo> getCreditMangerList() {
 		// TODO Auto-generated method stub
@@ -736,7 +735,7 @@ System.out.println(holds.get(1).getEducation());
 	}
 	
 	@Override
-	public boolean addFastOrderTypeTwo(String tel,
+	public boolean addFastOrderTypeTwo(String stepOneData,
 			FastProductApplicant applicantFast, FastProductCompany companyFast) {
 		
 		int result = 0;
@@ -764,7 +763,12 @@ System.out.println(holds.get(1).getEducation());
 			map.put("province", applicantFast.getRegisterProvince());
 			map.put("city", applicantFast.getRegisterCity());
 			map.put("zone", applicantFast.getRegisterZone());
-			map.put("phone", tel);
+			map.put("phone", stepOneData.split("&")[0]);
+			if (stepOneData.split("&").length>2) {
+				map.put("mark", stepOneData.split("&")[1]);
+			}else {
+				map.put("mark", "");
+			}
 			map.put("applicantFastId", applicantId);
 			map.put("companyFastId", companyId);
 			
@@ -779,6 +783,25 @@ System.out.println(holds.get(1).getEducation());
 			throw new RuntimeException();
 		}
 		return false;
+	}
+
+
+	@Override
+	public void addOrder(Order order) {
+		// TODO Auto-generated method stub
+//		订单初始化
+		order.setApplicantSave(0);
+		order.setBusinessSave(0);
+		order.setCompanySave(0);
+		order.setDebtSave(0);
+		order.setDocumentSave(0);
+		order.setStatus("0");
+		try {
+			orderDAO.addOrder(order);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RuntimeException();
+		}
 	}
 	
 }

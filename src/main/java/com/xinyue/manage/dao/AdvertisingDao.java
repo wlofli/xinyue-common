@@ -78,5 +78,9 @@ public interface AdvertisingDao{
 	 */
 	public  void updateOverdue();
 
+	//add by maozj start
 	public List<Advertising> getIndexAD();
+
+	public List<Advertising> findAdByType(int type);
+	//add by maozj end
 }

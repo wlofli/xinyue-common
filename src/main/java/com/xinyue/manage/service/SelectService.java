@@ -30,6 +30,14 @@ public interface SelectService {
 	//mzj add 2015/06/03 start
 	public List<SelectInfo> findSelectByType(String code);
 	
+	/**获取部分的键值对
+	 * add by lzc     date: 2015年9月1日
+	 * @param code
+	 * @param number ->需要的键集合
+	 * @return
+	 */
+	public List<SelectInfo> findSelectByTypePart(String code, int[] number);
+	
 	/**
 	 * 检索省
 	 * @return

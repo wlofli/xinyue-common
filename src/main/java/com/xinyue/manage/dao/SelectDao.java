@@ -30,6 +30,14 @@ public interface SelectDao {
 	public String showValue(Select select);
 	
 	List<SelectInfo> findSelectByType(String type);
+	
+	/**获取部分键值对
+	 * add by lzc     date: 2015年9月1日
+	 * @param code
+	 * @param number ->键集合
+	 * @return
+	 */
+	List<SelectInfo> findSelectByTypePart(@Param("code")String code, @Param("list")int[] number);
 
 	/**
 	 * 查找省

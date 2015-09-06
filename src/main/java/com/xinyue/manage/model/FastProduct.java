@@ -30,7 +30,7 @@ public class FastProduct {
 	private Date modifiedTime;
 	private String remark;
 	private String receiver;
-	private Date receiveTime;
+	private Date receiveTime;//放款时间
 	
 	
 	

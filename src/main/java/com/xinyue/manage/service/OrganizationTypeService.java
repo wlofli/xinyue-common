@@ -22,4 +22,12 @@ public interface OrganizationTypeService {
 	public boolean saveOrganizationType(OrganizationType otype , String modifyUser);
 	
 	public OrganizationType findTypeById(String id);
+
+	//2015/08/12 茅 追加 START
+	/**
+	 * 获取机构类型
+	 * @return
+	 */
+	public List<OrganizationType> findTypes();
+	//2015/08/12 茅 追加 END
 }

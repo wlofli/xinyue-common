@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.OrderTrackDAO">
+<resultMap id="track" type="com.xinyue.manage.model.OrderTrack" >
+	<result column="id" property="id" />
+	<result column="order_id" property="orderId" />
+	<result column="order_type" property="orderType" />
+	<result column="status" property="status" />
+	<result column="price" property="price" />
+	<result column="info" property="info" />
+	<result column="remark" property="remark" />
+	<result column="deleted" property="deleted" />
+	<result column="created_time" property="createdTime" />
+	<result column="created_id" property="createdId" />
+</resultMap>
+
+
+<insert id="addOrderTrack" parameterType="com.xinyue.manage.model.OrderTrack">
+	insert into
+		m_order_track
+	(id,order_id,order_type,status,price,info,remark,deleted,created_time,created_id)
+	values
+	(#{id},#{orderId},#{orderType},#{status},#{price},#{info},#{remark},0,now(),#{createdId})
+</insert>
+
+<select id="getOrderTrackList" resultMap="track">
+	select 
+<!-- 		t.id, -->
+		t.order_id,
+		t.order_type,
+		t.info,
+		s.select_value as status,
+		t.price,
+		t.remark,
+		t.created_time
+		
+	from m_order_track t
+	left join m_select_info s on s.select_key = t.status and s.type_code = 'order_status'
+	where 
+	 t.order_id = #{orderid} and t.order_type =#{type} and t.deleted = 0
+	<if test="pageSize != 0 ">
+	limit #{pageNo},#{pageSize}
+	</if>
+	order by created_time desc
+</select>
+
+
+
+
+</mapper>

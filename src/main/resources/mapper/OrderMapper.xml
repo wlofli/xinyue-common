@@ -92,6 +92,17 @@
 		<result column="time" property="upLoadTime"/>
 	</resultMap>
 	
+	
+	<insert id="addOrder" parameterType="com.xinyue.manage.model.Order">
+		insert into 
+			m_order_info
+		(id,member_id,bank,link_phone,code,product_info,`status`,applicant_person,deleted,created_id,created_time,
+		modified_id,modified_time,applicant_save,business_save,company_save,debt_save,document_save,credit_manage_id)
+		values
+		(#{id},#{memberId},#{bank},#{linkPhone},#{code},#{productInfo},#{status},#{applicantPerson},0,#{createdId},now(),
+		#{modifiedId},now(),#{applicantSave},#{businessSave},#{companySave},#{debtSave},#{documentSave},#{creditManageId})
+	</insert>
+	
 	<select id="getOrder" resultMap="order">
 			SELECT
 				o.id,
@@ -524,7 +535,14 @@
 		</if>
 		<if test="order.status == 10">
 			,credit_real = #{order.creditReal},
-			audite_time =now(),
+			<choose>
+				<when test="order.auditeTime == null || order.auditeTime== ''">
+					audite_time =now(),
+				</when>
+				<otherwise>
+					audite_time = #{order.auditeTime},
+				</otherwise>
+			</choose>
 			remark= #{order.remark}
 		
 		</if>
@@ -730,6 +748,7 @@
 			area_province,
 			area_city,
 			area_zone,
+			remark,
 			contact_phone,
 			deleted,
 			created_time,
@@ -744,6 +763,7 @@
 		#{province},
 		#{city},
 		#{zone},
+		#{mark},
 		#{phone},
 		0,
 		now(),
@@ -753,9 +773,4 @@
 	);
 	</insert>
 	<!-- add by mzj 2015/08/26 end   -->
-	
-	
-
-	
-	
 </mapper>

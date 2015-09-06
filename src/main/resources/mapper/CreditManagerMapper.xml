@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.CreditManagerDAO">
+	<select id="getManagerCount" resultType="int">
+		select count(*) from c_manager_info where deleted=0;
+	</select>
+	
+	<select id="findCmanagersByConditions" parameterType="hashmap" resultType="com.xinyue.manage.model.CreditManagerInfo">
+	select 
+	    mi.id as creditManagerId,
+	    mi.real_name as personName,
+	    ci.half_img as personImg,
+	    mi.star_level as starLevel,
+	    oi.name as organization,
+	    concat(ap.name,ac.name) as serverZone,
+	    mi.good_business as goodBusiness,
+	    count(di.id) as applyCount,
+	    case
+	        when ci.id is null then 0
+	        else 1
+	    end as realNameStatus,
+	    oi.id as organizationId
+	from
+	    c_manager_info mi
+	        left join
+	    c_certification_info ci ON ci.userid = mi.id and ci.deleted = 0
+	        left join
+	    m_organization_info oi ON oi.number = mi.organization
+	        left join
+	    m_area_city ac ON ac.code = mi.city
+	        left join
+	    m_area_province ap ON ap.code = mi.province
+	        left join
+	    m_order_info di ON di.blank_audite_person = mi.id
+	where 1=1
+		<if test="goodBusiness != '' and goodBusiness != null">
+		and mi.good_business like concat(concat('%', #{goodBusiness}),'%') 
+		</if>
+		<if test="serverZone != '' and serverZone != null">
+		and mi.city = #{serverZone}
+		</if>
+		<if test="organizationType != '' and organizationType != null">
+		and oi.genre = #{organizationType}
+		</if>
+		<if test="isAuth == true and isAuth != null">
+		and ci.userid is not null
+		</if>
+		<if test="managerId !='' and managerId != null">
+		and mi.id= #{managerId}
+		</if>
+	group by mi.id desc
+	<choose>
+		<when test="orderType != 0">
+			order by mi.last_login_time desc
+		</when>
+		<otherwise>
+			order by mi.star_level desc
+		</otherwise>
+	</choose>
+	<if test="index != ''">
+	limit #{index},10
+	</if>
+	;
+	</select>
+	
+	<select id="getCmanagersCountByConditions" parameterType="hashmap" resultType="int">
+	select 
+	    count(*)
+	from
+		(select 
+		    count(mi.id)
+		from
+		    c_manager_info mi
+		        left join
+		    c_certification_info ci ON ci.userid = mi.id and ci.deleted = 0
+		        left join
+		    m_organization_info oi ON oi.number = mi.organization
+		where 1=1
+			<if test="goodBusiness != '' and goodBusiness != null">
+			and mi.good_business like concat(concat('%', #{goodBusiness}),'%') 
+			</if>
+			<if test="serverZone != '' and serverZone != null">
+			and mi.city = #{serverZone}
+			</if>
+			<if test="organizationType != '' and organizationType != null">
+			and oi.genre = #{organizationType}
+			</if>
+			<if test="isAuth == true and isAuth != null">
+			and ci.userid is not null
+			</if>
+			<if test="managerId !='' and managerId != null">
+			and mi.id= #{managerId}
+			</if>
+		group by mi.id desc) t;
+	</select>
+	
+	<sql id="searchC">
+		<if test="creditManagerName != ''">
+	    and mi.real_name like concat(concat('%', #{creditManagerName}),'%')
+	    </if>
+	    <if test="sex !=''">
+	    and mi.sex = #{sex}
+	    </if>
+	    <if test="telPhone != ''">
+	    and mi.tel_number = #{telPhone}
+	    </if>
+	    <if test="province !=''">
+	    and mi.province like concat(substring(#{province},1,2),'%')
+	    </if>
+	    <if test="city !=''">
+	    and mi.city like concat(substring(#{city},1,2),'%')
+	    </if>
+	    <if test="organization !=''">
+	    and mi.organization = #{organization}
+	    </if>
+	    <if test="registerTimeStart !=''">
+	    and mi.created_time <![CDATA[>]]> #{registerTimeStart}
+	    </if>
+	    <if test="registerTimeEnd !=''">
+	    and mi.created_time <![CDATA[<]]> #{registerTimeEnd}
+	    </if>
+	    <if test="serverStar !=''">
+	    and mi.star_level = #{serverStar}
+	    </if>
+	</sql>
+	
+	<select id="getManagerCountByConditions" parameterType="com.xinyue.manage.beans.SearchCreditManager" resultType="int">
+	select 
+	    count(*)
+	from
+	    c_manager_info mi
+	where
+	    mi.deleted = 0
+	    <include refid="searchC"></include>
+	    ;
+	</select>
+	
+	<sql id="sortC">
+		order by 
+		<choose>
+			<when test="sortCustomerAmount ==1">
+				count(di.id)
+			</when>
+			<when test="sortCustomerAmount ==2">
+				count(di.id) desc
+			</when>
+			<when test="sortSuccessCase ==1">
+				count(sc.id)
+			</when>
+			<when test="sortSuccessCase ==2">
+				count(sc.id) desc
+			</when>
+			<when test="sortRemaind ==1">
+				count(ro.remaining_sum)
+			</when>
+			<when test="sortRemaind ==2">
+				count(ro.remaining_sum) desc
+			</when>
+			<otherwise>
+				mi.id
+			</otherwise>
+		</choose>
+	</sql>
+	<select id="getMangerListByConditions" parameterType="com.xinyue.manage.beans.SearchCreditManager" resultType="com.xinyue.manage.model.CreditManager">
+	select 
+	    mi.id as id,
+	    mi.real_name as realName,
+	    case mi.sex
+	        when 1 then '男'
+	        when 2 then '女'
+	        when 3 then '保密'
+	    end as sex,
+	    mi.tel_number as tel,
+	    mi.email as email,
+	    mi.star_level as star,
+	    ap.name as province,
+	    ac.name as city,
+	    oi.name as organization,
+	    count(di.id) as customerAmount,
+	    count(sc.id) as successCaseAmount,
+	    ro.remaining_sum as moneyRemaind,
+	    mi.status as status,
+	    date_format(mi.created_time, '%Y-%m-%d') as registerDate
+	from
+	    c_manager_info mi
+	        left join
+	    m_area_province ap ON ap.code = mi.province
+	        left join
+	    m_area_city ac ON ac.code = mi.city
+	        left join
+	    m_organization_info oi ON oi.number = mi.organization
+	        left join
+	    m_order_info di ON di.blank_audite_person = mi.id
+	        left join
+	    c_success_case sc ON sc.credit_manager_id = mi.id
+	        left join
+	    m_reward_outline ro ON ro.user_id = mi.id
+	where 
+		mi.deleted = 0
+		<include refid="searchC"></include>
+	group by mi.id
+	<include refid="sortC"></include>
+	limit #{(jumpPage-1)*10},10
+	;
+	</select>
+	
+	<update id="deleteCreditManagers" parameterType="List">
+		<foreach collection="ids" item="id" index="index" separator=";">
+			update c_manager_info 
+			set 
+			    deleted = 0
+			where
+			    id = #{id}
+		</foreach>
+	</update>
+	
+	<update id="lockCreditmanagers" parameterType="List">
+		<foreach collection="ids" item="id" index="index" separator=";">
+			update c_manager_info 
+			set 
+			    status = #{status}
+			where
+			    id = #{id}
+		</foreach>
+	</update>
+</mapper>

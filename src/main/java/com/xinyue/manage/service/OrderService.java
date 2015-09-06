@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.xinyue.manage.beans.BusinessInfos;
 import com.xinyue.manage.beans.HoldInfos;
+import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Applicant;
@@ -15,6 +16,7 @@ import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.FastProductApplicant;
 import com.xinyue.manage.model.FastProductCompany;
 import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.OrderAppointed;
 import com.xinyue.manage.model.RealEstate;
 
 /**
@@ -174,7 +176,9 @@ public interface OrderService {
 	 * @param companyFast
 	 * @return
 	 */
-	public boolean addFastOrderTypeTwo(String tel,
+	public boolean addFastOrderTypeTwo(String stepOneData,
 			FastProductApplicant applicantFast, FastProductCompany companyFast);
+
 	
+	public void addOrder(Order order);
 }

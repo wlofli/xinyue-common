@@ -18,6 +18,7 @@ public class FastProductApplicant {
 	private String registerZone;//区
 	private String twoYearCredit;//俩年内信用
 	private String houseType;//名下房产类型
+	
 	public String getApplicantFastId() {
 		return applicantFastId;
 	}
@@ -90,7 +91,6 @@ public class FastProductApplicant {
 	public void setHouseType(String houseType) {
 		this.houseType = houseType;
 	}
-	
 	
 	
 	

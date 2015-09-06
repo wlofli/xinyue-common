@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.xinyue.manage.beans.OrderCustomer;
 import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrderCredit;
 import com.xinyue.manage.dao.OrderCustomerDAO;
@@ -256,9 +257,29 @@ System.out.println(orderTabName);
 
 	@Override
 	public List<SearchOrderCredit> getSearchOrderCreditList(String typeCode,
-			int[] orderStatus) {
+			int[] orderStatus, String manageId) {
 		// TODO Auto-generated method stub
-		return orderCustomerDAO.getSearchOrderCredit(typeCode, orderStatus);
+		return orderCustomerDAO.getSearchOrderCredit(typeCode, orderStatus, manageId);
+	}
+
+	@Override
+	public List<OrderCustomer> getMyCustomer(SearchCustomer searchCustomer,
+			String manageId, int pageNo, int pageSize) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getMyCustomer(manageId, searchCustomer, pageNo, pageSize);
+	}
+
+	@Override
+	public int countMyCustomer(SearchCustomer searchCustomer, String manageId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.countMyCustomer(manageId, searchCustomer);
+	}
+
+	@Override
+	public List<SearchOrderCredit> getMyCustomerSearchOrderCreditList(
+			String typeCode, int[] orderStatus, String manageId) {
+		// TODO Auto-generated method stub
+		return orderCustomerDAO.getMyCustomerSearchOrderCredit(typeCode, orderStatus, manageId);
 	}
 
 

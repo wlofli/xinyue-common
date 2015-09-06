@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.xinyue.manage.beans.OrderCustomer;
+import com.xinyue.manage.beans.OrderInfo;
 import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrderCredit;
-import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.OrderAppointed;
 import com.xinyue.manage.model.OrderAuction;
 import com.xinyue.manage.model.OrderFixed;
@@ -57,7 +58,12 @@ public interface OrderCustomerDAO {
 	
 	void deleteOrderCustomer(@Param("orderId")String orderId,@Param("tabName")String tabName,
 			@Param("modifiedId")String modifiedId,@Param("type")int type);
-	
+	/**数字形式
+	 * add by lzc     date: 2015年9月1日
+	 * @param tabName
+	 * @param id
+	 * @return
+	 */
 	String getOrderType(@Param("tabName")String tabName,@Param("id")String id);
 	
 	public OrderFixed getOrderFixedById(@Param("id")String id);
@@ -67,6 +73,8 @@ public interface OrderCustomerDAO {
 	public OrderAuction getOrderAuction(@Param("orderId")String orderId, @Param("type")int type);
 	
 	public OrderAppointed getOrderAppointed(@Param("orderId")String orderId, @Param("type")int type);
+	
+	public OrderAppointed getOrderAppointById(@Param("id")String id);
 	
 	public OrderLowPrice getOrderLowPrice(@Param("orderId")String orderId, @Param("type")int type);
 	
@@ -112,7 +120,45 @@ public interface OrderCustomerDAO {
 	
 	public int countFixedListByPage(@Param("search")SearchCustomer searchCustomer);
 	
+	/**推送客户快速筛选部分
+	 * add by lzc     date: 2015年8月31日
+	 * @param typeCode
+	 * @param statusList
+	 * @param manageId
+	 * @return
+	 */
+	public List<SearchOrderCredit> getSearchOrderCredit(@Param("typeCode")String typeCode, @Param("list")int[] statusList,@Param("manageId")String manageId);
 	
-	public List<SearchOrderCredit> getSearchOrderCredit(@Param("typeCode")String typeCode, @Param("list")int[] statusList);
+	/**获取我的客户列表
+	 * add by lzc     date: 2015年8月28日
+	 * @param manageId
+	 * @param searchCustomer
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	public List<OrderCustomer> getMyCustomer(@Param("manageId")String manageId,
+			@Param("search")SearchCustomer searchCustomer,@Param("pageNo")int pageNo, @Param("pageSize")int pageSize);
+	
+	
+	public int countMyCustomer(@Param("manageId")String manageId,
+			@Param("search")SearchCustomer searchCustomer);
+	
+	
+	public List<SearchOrderCredit> getMyCustomerSearchOrderCredit(@Param("typeCode")String typeCode, @Param("list")int[] statusList,@Param("manageId")String manageId);
+	/**根据立即领取与订单获取orderInfo
+	 * add by lzc     date: 2015年9月1日
+	 * @param customerId
+	 * @return
+	 */
+	public OrderInfo getOrderInfoByFixedOrder(@Param("customerId")String customerId);
+	
+	public OrderInfo getOrderInfoByFixedFast(@Param("customerId")String customerId);
+
+	public OrderInfo getOrderInfoByAppointedOrder(@Param("customerId")String customerId);
+
+	public OrderInfo getOrderInfoByAppointedFast(@Param("customerId")String customerId);
+	
+	
 	
 }
