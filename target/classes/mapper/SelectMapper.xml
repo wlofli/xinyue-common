@@ -83,5 +83,20 @@
 		from
 			 m_product_info	
 	</select>
+	
+	
+	<select id="findSelectByTypePart" resultType="com.xinyue.manage.beans.SelectInfo">
+		SELECT 
+		    select_key as `key`, select_value as `value`
+		FROM
+		    m_select_info
+		WHERE
+		    type_code = #{code} and select_key in 
+		    <foreach collection="list"  item="id" open="(" close=")" separator=",">
+		    	#{id}
+		    </foreach>
+		ORDER BY select_key;
+	
+	</select>
 
 </mapper>

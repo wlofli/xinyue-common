@@ -210,7 +210,14 @@
 				</if>
 				<if test="fspdt.status == 10">
 					,credit_real = #{fspdt.creditReal},
-					receive_time =now(),
+					<choose>
+						<when test="fspdt.receiveTime == null  || fspdt.receiveTime == ''">
+							receive_time = now(),
+						</when>
+						<otherwise>
+							receive_time = #{fspdt.receiveTime},
+						</otherwise>
+					</choose>
 					remark= #{fspdt.remark},
 					receiver = #{name}
 				</if>

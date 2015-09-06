@@ -68,7 +68,7 @@
 			date_format(a.created_time,'%Y-%m-%d') as auth_time,
 			s1.select_value as auth_status,
 			s.select_value as auth_type
-		FROM moke.m_authentication_info a
+		FROM m_authentication_info a
 		 LEFT JOIN m_industry_info t ON t.code=a.industry
 		 LEFT JOIN m_member_info m ON m.realname_info=a.id
 		 LEFT JOIN m_license_info l ON l.id=m.license_info

@@ -161,11 +161,16 @@
 	
 	<select id="getOrganizations" resultMap="selectResult">
 		SELECT 
-		    number as skey, name as svalue
+		    id as skey, name as svalue
 		FROM
 		    m_organization_info
 		where
 		    deleted = 0
 		order by number;
+	</select>
+	
+	<!-- youwh -->
+	<select id="getOrgs" resultMap="selectResult">
+		SELECT id as skey, name as svalue FROM m_organization_info where deleted = 0
 	</select>
 </mapper>
