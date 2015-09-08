@@ -45,6 +45,14 @@ public class CreditManager implements Serializable{
 	private String status = "";
 	
 	private String registerDate = "";
+	
+	private String password = "";
+	
+	private String invitationCode = "";
+	
+	private String birthday = "";
+	
+	private String goodBusiness = "";
 	//add by mzj end 2015/08/28
 	
 
@@ -249,6 +257,62 @@ public class CreditManager implements Serializable{
 	 */
 	public void setRegisterDate(String registerDate) {
 		this.registerDate = registerDate;
+	}
+
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * @param password the password to set
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * @return the invitationCode
+	 */
+	public String getInvitationCode() {
+		return invitationCode;
+	}
+
+	/**
+	 * @param invitationCode the invitationCode to set
+	 */
+	public void setInvitationCode(String invitationCode) {
+		this.invitationCode = invitationCode;
+	}
+
+	/**
+	 * @return the birthday
+	 */
+	public String getBirthday() {
+		return birthday;
+	}
+
+	/**
+	 * @param birthday the birthday to set
+	 */
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+
+	/**
+	 * @return the goodBusiness
+	 */
+	public String getGoodBusiness() {
+		return goodBusiness;
+	}
+
+	/**
+	 * @param goodBusiness the goodBusiness to set
+	 */
+	public void setGoodBusiness(String goodBusiness) {
+		this.goodBusiness = goodBusiness;
 	}
 
 	

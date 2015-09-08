@@ -14,6 +14,15 @@ public class GlobalConstant {
 	public static final String SESSION_BIND_ALIPAY_CODE = "session_bind_alipay_code";//用于绑定支付宝验证码
 	public static final String SESSION_BIND_BANK_CODE = "session_bind_bank_code";//用于绑定银行卡验证码
 	public static final String USER = "admin";
+	
+	/**add by lzc
+	 * //普通会员类型
+	 */
+	public static final String USER_TYPE_MEMBER = "m";
+	/**add by lzc
+	 * //信贷经理类型
+	 */
+	public static final String USER_TYPE_CREDIT = "c";
 
 	public static final String TYPE_CITY = "tc";
 	

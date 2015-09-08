@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.ServicerDAO">
+<resultMap  id="servicer" type="com.xinyue.manage.model.Servicer" >
+	<result column="id"  property="id"/>
+	<result column="name"  property="name"/>
+	<result column="phone"  property="phone"/>
+	<result column="tel"  property="tel"/>
+	<result column="deleted"  property="deleted"/>
+	<result column="created_time"  property="createdTime"/>
+	<result column="mofidied_time"  property="mofidiedTime"/>
+	<result column="created_id"  property="createdId"/>
+	<result column="modified_id"  property="modifiedId"/>
+	<result column="wechat"  property="weChat"/>
+	<result column="sex"  property="sex"/>
+</resultMap>
+
+
+
+<select id="getServicerById" parameterType="string" resultMap="servicer">
+	select * from m_servicer_info where id =#{id}
+</select>
+
+
+</mapper>

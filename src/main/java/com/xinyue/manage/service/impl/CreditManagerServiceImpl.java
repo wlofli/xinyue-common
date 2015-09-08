@@ -3,17 +3,22 @@ package com.xinyue.manage.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.xinyue.authe.util.Md5;
+import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.SearchCreditManager;
 import com.xinyue.manage.dao.CreditManagerDAO;
+import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
 import com.xinyue.manage.service.CreditManagerService;
+import com.xinyue.manage.util.SecurityUtils;
 /**
  * 信贷经理服务层
  * @author MK)茅
@@ -92,6 +97,8 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 		List<CreditManager> list = null;
 		
 		try {
+			
+			sc.setIndex((sc.getJumpPage()-1)*10);
 			list = creditManagerDAO.getMangerListByConditions(sc);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -131,7 +138,7 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 	}
 
 	@Override
-	public boolean lockCreditmanagers(String managerIds, String status) {
+	public boolean updateCreditmanagers(String managerIds, String status) {
 		try {
 			//信贷经理ID分离
 			String[] temp = managerIds.split("~");
@@ -143,7 +150,7 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 			}
 			
 			//数据持久化
-			int result = creditManagerDAO.lockCreditmanagers(list,status);
+			int result = creditManagerDAO.updateCreditmanagers(list,status);
 			
 			if (result > 0) {
 				return true;
@@ -153,5 +160,89 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean saveCreditManager(CreditManager creditManager) {
+		
+		try {
+			String uuid = UUID.randomUUID().toString().replace("-", "");
+			creditManager.setId(uuid);
+			
+			//密码加密
+			creditManager.setPassword(Md5.encodeByMD5(creditManager.getPassword()));
+			
+			while (true) {
+				//邀请码生成
+				String invitationCode = SecurityUtils.randomStr(6);
+				
+				int checkResult=creditManagerDAO.checkInvitationCode(invitationCode);
+				
+				if (checkResult == 0) {
+					creditManager.setInvitationCode(invitationCode);
+					break;
+				}
+			}
+			
+			int result = creditManagerDAO.saveCreditManager(creditManager);
+			if (result > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return false;
+	}
+
+	@Override
+	public CreditManager getCreditManagerById(String managerId) {
+		
+		return creditManagerDAO.getCreditManagerById(managerId);
+	}
+
+	@Override
+	public AuthenticationCM getAuthenticationById(String managerId) {
+		
+		return creditManagerDAO.getAuthenticationById(managerId);
+	}
+
+	@Override
+	public int getInvitationMemberCount(String managerId) {
+		
+		return creditManagerDAO.getInvitationMemberCount(managerId);
+	}
+
+	@Override
+	public List<InvitationMemberInfo> getInvitationMemberInfo(String managerId,int page) {
+		
+		return creditManagerDAO.getInvitationMemberInfo(managerId,(page-1)*10);
+	}
+
+	@Override
+	public int getInvitationMemberRecords(String managerId) {
+		
+		return creditManagerDAO.getInvitationMemberRecords(managerId);
+	}
+
+	@Override
+	public int getInvitationManagerCount(String managerId) {
+		
+		return creditManagerDAO.getInvitationManagerCount(managerId);
+	}
+
+	@Override
+	public List<InvitationMemberInfo> getInvitationManagerInfo(
+			String managerId, int page) {
+		
+		return creditManagerDAO.getInvitationManagerInfo(managerId,(page-1)*10);
+	}
+
+	@Override
+	public int getInvitationManagerRecords(String managerId) {
+		
+		return creditManagerDAO.getInvitationManagerRecords(managerId);
+	}
+	
+	
 
 }

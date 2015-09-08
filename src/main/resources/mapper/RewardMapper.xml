@@ -27,6 +27,7 @@
 		<result column="reward_amount" property="rewardAmount" />
 		<result column="reward_time" property="rewardTime" />
 		<result column="current_amount" property="currentAmount" />
+		<result column="other_reward_amount" property="otherRewardAmount" />
 		<result column="deleted" property="deleted" />
 	</resultMap>
 
@@ -72,10 +73,10 @@
 	<insert id="addReward" parameterType="com.xinyue.manage.model.Reward">
 		insert into m_reward_info
 			(id,user_id,reward_type,reward_amount,reward_time,status,serical_number,
-				remark,deleted,user_type,current_amount)
+				remark,deleted,user_type,current_amount,other_reward_amount)
 		values
 			(#{id},#{userId},#{rewardType},#{rewardAmount},now(),#{status},#{sericalNumber}
-				#{remark},#{deleted},#{userType},#{currentAmount})
+				#{remark},#{deleted},#{userType},#{currentAmount},#{otherRewardAmount})
 	</insert>
 	
 	<select id="getRewardList" resultMap="reward">
@@ -85,7 +86,8 @@
 			   s.select_value as reward_type,
 			   r.reward_time,
 			   r.reward_amount,
-			   r.current_amount
+			   r.current_amount,
+			   r.other_reward_amount
 		from m_reward_info r
 		left join m_select_info s on s.select_key = r.reward_type and type_code = #{typeCode}
 		where r.user_id = #{userId} 
@@ -138,6 +140,11 @@
 	<select id="getRewardOutLine" parameterType="string" resultMap="outline">
 		select * from m_reward_outline
 			where user_id = #{userId}
+	</select>
+	
+	<select id="getRewardOutLineByuserId" resultMap="outline">
+		select * from m_reward_outline
+		where user_id = #{userId} and user_type = #{userType}
 	</select>
 	
 </mapper>

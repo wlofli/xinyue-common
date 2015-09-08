@@ -41,6 +41,8 @@ public class SearchCreditManager {
 	//页数
 	private int jumpPage = 1;
 	
+	private int index = 0;
+	
 	/**
 	 * 信贷经理ID
 	 */
@@ -374,6 +376,20 @@ public class SearchCreditManager {
 	 */
 	public void setOrderType(int orderType) {
 		this.orderType = orderType;
+	}
+
+	/**
+	 * @return the index
+	 */
+	public int getIndex() {
+		return index;
+	}
+
+	/**
+	 * @param index the index to set
+	 */
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 }

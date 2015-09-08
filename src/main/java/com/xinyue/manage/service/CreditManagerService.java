@@ -2,7 +2,9 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.SearchCreditManager;
+import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
 
@@ -14,10 +16,16 @@ import com.xinyue.manage.model.CreditManagerInfo;
  */
 public interface CreditManagerService {
 
-
 	List<CreditManagerInfo> findCmanagersByConditions(SearchCreditManager cmSearch);
 
 	CreditManagerInfo findCreditManagerInfoById(String managerId);
+	
+	/**
+	 * 信贷经理详情-基本信息(后台)
+	 * @param managerId
+	 * @return
+	 */
+	CreditManager getCreditManagerById(String managerId);
 
 	int getCmanagersCountByConditions(SearchCreditManager cmSearch);
 
@@ -47,5 +55,63 @@ public interface CreditManagerService {
 	 * @param status
 	 * @return
 	 */
-	boolean lockCreditmanagers(String managerIds, String status);
+	boolean updateCreditmanagers(String managerIds, String status);
+
+	/**
+	 * 信贷经理保存
+	 * @param creditManager
+	 * @return
+	 */
+	boolean saveCreditManager(CreditManager creditManager);
+
+	/**
+	 * 信贷经理认证信息
+	 * @param managerId
+	 * @return
+	 */
+	AuthenticationCM getAuthenticationById(String managerId);
+
+	/**
+	 * 普通会员推荐人数
+	 * @param managerId
+	 * @return
+	 */
+	int getInvitationMemberCount(String managerId);
+
+	/**
+	 * 普通会员推荐信息
+	 * @param managerId
+	 * @param page
+	 * @return
+	 */
+	List<InvitationMemberInfo> getInvitationMemberInfo(String managerId,int page);
+
+	/**
+	 * 普通会员推荐信息记录数
+	 * @param managerId
+	 * @return
+	 */
+	int getInvitationMemberRecords(String managerId);
+
+	/**
+	 * 信贷经理推荐人数
+	 * @param managerId
+	 * @return
+	 */
+	int getInvitationManagerCount(String managerId);
+
+	/**
+	 * 信贷经理推荐信息
+	 * @param managerId
+	 * @param i
+	 * @return
+	 */
+	List<InvitationMemberInfo> getInvitationManagerInfo(String managerId, int page);
+
+	/**
+	 * 信贷经理推荐信息记录数
+	 * @param managerId
+	 * @return
+	 */
+	int getInvitationManagerRecords(String managerId);
 }
