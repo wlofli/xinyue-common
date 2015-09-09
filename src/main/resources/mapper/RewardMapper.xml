@@ -9,7 +9,9 @@
 		<result column="consumption_total" property="consumptionTotal" />
 		<result column="reward_total" property="rewardTotal" />
 		<result column="withdraw_total" property="withdrawTotal" />
-		<result column="remaining_sum" property="remainingSum" />
+		<result column="cash_remain" property="cashRemain" />
+		<result column="reward_remain" property="rewardReamin" />
+		<result column="award_remain" property="awardRemain" />
 		<result column="created_id" property="createdId" />
 		<result column="modified_id" property="modifiedId" />
 		<result column="created_time" property="createdTime" />
@@ -56,10 +58,10 @@
 	<insert id="addOutline" parameterType="com.xinyue.manage.model.OutLine">
 		insert into m_reward_outline
 			(id,user_id,user_type,recharge_total,consumption_total,reward_total,withdraw_total,
-				remaining_sum,created_id,created_time,modified_id,modified_time)
+				cash_remain,reward_remain,award_remain,created_id,created_time,modified_id,modified_time)
 		values
 			(#{id},#{userId},#{userType},#{rechargeTotal},#{consumptionTotal},#{rewardTotal},#{withdrawTotal},
-				#{remainingSum},#{createdId},now(),#{modifiedId},now())
+				#{cashRemain},#{rewardRemain},#{awardRemain},#{createdId},now(),#{modifiedId},now())
 	</insert>
 	
 	<insert id="addWithdraw" parameterType="com.xinyue.manage.model.WithdrawMoney">
