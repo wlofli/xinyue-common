@@ -8,7 +8,7 @@ import java.util.Date;
 public class OutLine {
 	private String id;//主键
 	private String userId;//用户id
-	private String userType;
+	private String userType;//用户类型(m:普通会员 c:信贷经理)
 	private float rechargeTotal;//总充值金额
 	private float consumptionTotal;//总消费金额
 	private float rewardTotal;//总计奖励金额

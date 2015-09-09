@@ -19,9 +19,19 @@ public interface RewardDAO {
 	public void addWithdraw(WithdrawMoney withdraw);
 	
 	public void addReward(Reward reward);
-	
-	
+	/**用getRewardOutLineByuserId(String userId, String userType)代替
+	 * add by lzc     date: 2015年9月7日
+	 */
+	@Deprecated
 	public OutLine getRewardOutLine(String userId);
+	
+	/**
+	 * add by lzc     date: 2015年9月7日
+	 * @param userId 
+	 * @param userType (m:普通会员 c:信贷经理)
+	 * @return
+	 */
+	public OutLine getRewardOutLineByuserId(@Param("userId")String userId, @Param("userType")String userType);
 	
 	public List<Reward> getRewardList(@Param("userId")String userId, @Param("pageNo")int pageNo,
 			@Param("pageSize")int pageSize, @Param("searchReward")SearchReward searchReward,@Param("typeCode")String typeCode);

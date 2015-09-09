@@ -3,6 +3,7 @@ package com.xinyue.manage.service;
 import java.util.List;
 
 import com.xinyue.manage.beans.ProductInfo;
+import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Product;
 
 /**
@@ -60,5 +61,29 @@ public interface ProductService {
 	 * @return
 	 */
 	public List<Product> getListByRecommend(String Recommend);
+
+	/**
+	 * 根据信贷经理id查询对应产品
+	 * add by maozj
+	 * @param managerId 信贷经理id
+	 * @return 
+	 */
+	public List<SelectInfo> findProductsManagerId(String managerId);
+
+	/**
+	 * 根据信贷经理id查询产品
+	 * add by maozj
+	 * @param managerId
+	 * @return
+	 */
+	public List<Product> getProductsByManagerId(String managerId,int page);
+
+	/**
+	 * 根据信贷经理id查询产品数量
+	 * add by maozj
+	 * @param managerId
+	 * @return
+	 */
+	public int getProductsCountByManagerId(String managerId);
 	
 }

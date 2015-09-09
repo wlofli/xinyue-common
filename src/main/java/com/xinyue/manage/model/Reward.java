@@ -16,7 +16,17 @@ public class Reward {
 	private float rewardAmount;//奖励金额
 	private Date rewardTime;//时间
 	private float currentAmount;//当前金额
+	private float otherRewardAmount;//代金券奖励
 	private String deleted;
+	
+	
+	
+	public float getOtherRewardAmount() {
+		return otherRewardAmount;
+	}
+	public void setOtherRewardAmount(float otherRewardAmount) {
+		this.otherRewardAmount = otherRewardAmount;
+	}
 	public String getId() {
 		return id;
 	}

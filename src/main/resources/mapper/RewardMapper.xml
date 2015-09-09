@@ -9,7 +9,9 @@
 		<result column="consumption_total" property="consumptionTotal" />
 		<result column="reward_total" property="rewardTotal" />
 		<result column="withdraw_total" property="withdrawTotal" />
-		<result column="remaining_sum" property="remainingSum" />
+		<result column="cash_remain" property="cashRemain" />
+		<result column="reward_remain" property="rewardReamin" />
+		<result column="award_remain" property="awardRemain" />
 		<result column="created_id" property="createdId" />
 		<result column="modified_id" property="modifiedId" />
 		<result column="created_time" property="createdTime" />
@@ -27,6 +29,7 @@
 		<result column="reward_amount" property="rewardAmount" />
 		<result column="reward_time" property="rewardTime" />
 		<result column="current_amount" property="currentAmount" />
+		<result column="other_reward_amount" property="otherRewardAmount" />
 		<result column="deleted" property="deleted" />
 	</resultMap>
 
@@ -55,10 +58,10 @@
 	<insert id="addOutline" parameterType="com.xinyue.manage.model.OutLine">
 		insert into m_reward_outline
 			(id,user_id,user_type,recharge_total,consumption_total,reward_total,withdraw_total,
-				remaining_sum,created_id,created_time,modified_id,modified_time)
+				cash_remain,reward_remain,award_remain,created_id,created_time,modified_id,modified_time)
 		values
 			(#{id},#{userId},#{userType},#{rechargeTotal},#{consumptionTotal},#{rewardTotal},#{withdrawTotal},
-				#{remainingSum},#{createdId},now(),#{modifiedId},now())
+				#{cashRemain},#{rewardRemain},#{awardRemain},#{createdId},now(),#{modifiedId},now())
 	</insert>
 	
 	<insert id="addWithdraw" parameterType="com.xinyue.manage.model.WithdrawMoney">
@@ -72,10 +75,10 @@
 	<insert id="addReward" parameterType="com.xinyue.manage.model.Reward">
 		insert into m_reward_info
 			(id,user_id,reward_type,reward_amount,reward_time,status,serical_number,
-				remark,deleted,user_type,current_amount)
+				remark,deleted,user_type,current_amount,other_reward_amount)
 		values
 			(#{id},#{userId},#{rewardType},#{rewardAmount},now(),#{status},#{sericalNumber}
-				#{remark},#{deleted},#{userType},#{currentAmount})
+				#{remark},#{deleted},#{userType},#{currentAmount},#{otherRewardAmount})
 	</insert>
 	
 	<select id="getRewardList" resultMap="reward">
@@ -85,7 +88,8 @@
 			   s.select_value as reward_type,
 			   r.reward_time,
 			   r.reward_amount,
-			   r.current_amount
+			   r.current_amount,
+			   r.other_reward_amount
 		from m_reward_info r
 		left join m_select_info s on s.select_key = r.reward_type and type_code = #{typeCode}
 		where r.user_id = #{userId} 
@@ -138,6 +142,11 @@
 	<select id="getRewardOutLine" parameterType="string" resultMap="outline">
 		select * from m_reward_outline
 			where user_id = #{userId}
+	</select>
+	
+	<select id="getRewardOutLineByuserId" resultMap="outline">
+		select * from m_reward_outline
+		where user_id = #{userId} and user_type = #{userType}
 	</select>
 	
 </mapper>

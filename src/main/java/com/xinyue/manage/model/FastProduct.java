@@ -30,11 +30,11 @@ public class FastProduct {
 	private Date modifiedTime;
 	private String remark;
 	private String receiver;
-	private Date receiveTime;
+	private Date receiveTime;//放款时间
 	
 	
 	
-	private String orderStatus;//指定客户状态1.领取未开始2.未领取3.无人领取4.已领取
+	private String orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5重置
 	
 	
@@ -52,7 +52,22 @@ public class FastProduct {
 	private Double creditReal;//实际贷款
 	
 	
+	private String applicantFastId;//快速申贷申请人信息
+	private String companyFastId;//快速申贷公司信息
 	
+	
+	public String getApplicantFastId() {
+		return applicantFastId;
+	}
+	public void setApplicantFastId(String applicantFastId) {
+		this.applicantFastId = applicantFastId;
+	}
+	public String getCompanyFastId() {
+		return companyFastId;
+	}
+	public void setCompanyFastId(String companyFastId) {
+		this.companyFastId = companyFastId;
+	}
 	public Double getCreditReal() {
 		return creditReal;
 	}

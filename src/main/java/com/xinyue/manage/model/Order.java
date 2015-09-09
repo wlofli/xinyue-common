@@ -22,31 +22,27 @@ public class Order {
 	private String applicantInfo;//申请表id外键
 	private int    applicantSave;//申请表状态
 	private String ratingInfo;//评级表id外键
-	private String applicant;//申请人姓名
 	private String bank;//银行id外键
 	private String productInfo;//产品表外键
 	
-	private String province;//省
-	private String city;//市
-	private String zone;//区
-	
-	private String productName;//产品名称
-	private String productCode;//产品编号
-	
 	private String companyInfo;//申请单位
-	private String name;
 	private String code;//订单号
+	
+	private String linkPhone;//手机号
 	private String linkUserName;//用户名
 	
+	private String name;
+	private String applicant;//申请人姓名
 	private String applicatPerson;//申请人
+	
+	
 	private String orderNumber;//useless
 	private Double credit;//贷款额度
-	private String linkPhone;//手机号
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
 	private Date commitTime;//下单时间
 	private String status;//订单状态
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
-	private Date auditeTime;//放款实际
+	private Date auditeTime;//放款实际时间
 	private String auditePerson;
 	private String remark;//放款备注
 	
@@ -74,13 +70,49 @@ public class Order {
 	private Date modifiedTime;
 	
 	
-	private String orderStatus;//指定客户状态1.领取未开始2.未领取3.无人领取4.已领取
+	private String orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5人员主动操作
 	private Double creditReal;//实际贷款
 	
+	private String level;//评价星级
+	private String evaluateContent;//评价内容
+	private Date evaluationTime;//评价时间
+	
+	private String creditManageId;//信贷经理id
+	
+	//以下为非数据库字段
+	private String province;//省
+	private String city;//市
+	private String zone;//区
+	private String productName;//产品名称
+	private String productCode;//产品编号
 	
 	
 	
+	public String getCreditManageId() {
+		return creditManageId;
+	}
+	public void setCreditManageId(String creditManageId) {
+		this.creditManageId = creditManageId;
+	}
+	public Date getEvaluationTime() {
+		return evaluationTime;
+	}
+	public void setEvaluationTime(Date evaluationTime) {
+		this.evaluationTime = evaluationTime;
+	}
+	public String getLevel() {
+		return level;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
+	public String getEvaluateContent() {
+		return evaluateContent;
+	}
+	public void setEvaluateContent(String evaluateContent) {
+		this.evaluateContent = evaluateContent;
+	}
 	public int getDocumentSave() {
 		return documentSave;
 	}

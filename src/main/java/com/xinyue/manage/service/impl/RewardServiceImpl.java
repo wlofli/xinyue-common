@@ -38,9 +38,16 @@ public class RewardServiceImpl  implements RewardService{
 	}
 
 	@Override
+	@Deprecated
 	public OutLine getOutLine(String userId) {
 		// TODO Auto-generated method stub
 		return rewardDAO.getRewardOutLine(userId);
+	}
+	
+	@Override
+	public OutLine getOutLine(String userId, String userType) {
+		// TODO Auto-generated method stub
+		return rewardDAO.getRewardOutLineByuserId(userId, userType);
 	}
 
 	@Override
@@ -60,5 +67,7 @@ public class RewardServiceImpl  implements RewardService{
 		// TODO Auto-generated method stub
 		return rewardDAO.countRewardList(userId, searchReward);
 	}
+
+	
 
 }

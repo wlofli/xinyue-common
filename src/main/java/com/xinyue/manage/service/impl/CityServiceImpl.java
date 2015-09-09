@@ -253,4 +253,9 @@ public class CityServiceImpl implements CityService {
 		return cityInfoDAO.findCityCodeByName(cityName);
 	}
 
+	@Override
+	public List<City> findServerZones() {
+		return cityInfoDAO.findServerZones();
+	}
+
 }

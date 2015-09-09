@@ -2,6 +2,8 @@ package com.xinyue.manage.model;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 /**
  * author lzc
  * 2015年6月30日下午4:01:38
@@ -13,7 +15,7 @@ public class OrderAppointed {
 	private String creditName;//信贷经理姓名
 	private String creditPhone;//手机号
 	private String blank;//所属机构
-	private double price;//获得价格
+	private Double price;//获得价格
 	private int deleted;
 	private String createdId;
 	private Date createdTime;
@@ -22,6 +24,85 @@ public class OrderAppointed {
 	private String orderId;//订单外键
 	private int type;//1.订单2快速申贷
 	private String manageId;//信贷经理外键
+	
+	
+	
+	
+	
+	private Double credit;//贷款金额
+	private String limitDate;//贷款期限
+	private String applicantName;//申贷人姓名
+	private String applicantPhone;//申贷人电话
+	private String companyName;//借款单位
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	private Date applicantTime;//申贷时间
+	
+	private String code;//订单编号
+	private String status;//订单状态
+	private String productName;//产品名称
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public Double getCredit() {
+		return credit;
+	}
+	public void setCredit(Double credit) {
+		this.credit = credit;
+	}
+	public String getLimitDate() {
+		return limitDate;
+	}
+	public void setLimitDate(String limitDate) {
+		this.limitDate = limitDate;
+	}
+	public String getApplicantName() {
+		return applicantName;
+	}
+	public void setApplicantName(String applicantName) {
+		this.applicantName = applicantName;
+	}
+	public String getApplicantPhone() {
+		return applicantPhone;
+	}
+	public void setApplicantPhone(String applicantPhone) {
+		this.applicantPhone = applicantPhone;
+	}
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	public Date getApplicantTime() {
+		return applicantTime;
+	}
+	public void setApplicantTime(Date applicantTime) {
+		this.applicantTime = applicantTime;
+	}
 	public String getId() {
 		return id;
 	}
@@ -46,10 +127,10 @@ public class OrderAppointed {
 	public void setBlank(String blank) {
 		this.blank = blank;
 	}
-	public double getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(double price) {
+	public void setPrice(Double price) {
 		this.price = price;
 	}
 	public int getDeleted() {

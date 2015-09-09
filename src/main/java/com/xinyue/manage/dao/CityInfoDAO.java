@@ -47,4 +47,6 @@ public interface CityInfoDAO {
 	String findCityByCode(String code);
 
 	String findCityCodeByName(String cityName);
+
+	List<City> findServerZones();
 }

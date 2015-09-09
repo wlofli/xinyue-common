@@ -1,11 +1,11 @@
 package com.xinyue.manage.service.impl;
 
-import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -23,8 +23,11 @@ import com.xinyue.manage.model.Applicant;
 import com.xinyue.manage.model.Business;
 import com.xinyue.manage.model.CompanyBase;
 import com.xinyue.manage.model.Control;
+import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.Debt;
 import com.xinyue.manage.model.Document;
+import com.xinyue.manage.model.FastProductApplicant;
+import com.xinyue.manage.model.FastProductCompany;
 import com.xinyue.manage.model.Hold;
 import com.xinyue.manage.model.Order;
 import com.xinyue.manage.model.RealEstate;
@@ -71,7 +74,7 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public Order getOrderInfo(String id) {
 		// TODO Auto-generated method stub
-		return orderDAO.getOrderInfo(id,GlobalConstant.ORDER_STATUS);
+		return orderDAO.getOrderInfo(id,GlobalConstant.ORDER_MEMBER_STATUS);
 	}
 
 
@@ -168,7 +171,6 @@ public class OrderServiceImpl implements OrderService{
 		}
 	}
 
-
 	@Override
 	public boolean addOrUpdateApplicant(Applicant applicant, String orderId,
 			String modifiedId,int state) {
@@ -179,6 +181,16 @@ public class OrderServiceImpl implements OrderService{
 			map.put("name", applicant.getName());
 			map.put("phone", applicant.getPhone());
 			map.put("email", applicant.getEmail());
+			if (applicant.getTwoYearCredit().equals("")) {
+				map.put("twoYearCredit", null);
+			} else {
+				map.put("twoYearCredit", applicant.getTwoYearCredit());
+			}
+			if(applicant.getCreditPurpose().equals("")){
+				map.put("creditPurpose", null);
+			}else {
+				map.put("creditPurpose", applicant.getCreditPurpose());
+			}
 			if (applicant.getLimitDate().equals("")) {
 				map.put("limitDate", null);
 			}else {
@@ -688,16 +700,108 @@ System.out.println(holds.get(1).getEducation());
 		// TODO Auto-generated method stub
 		return orderDAO.getDocumentCount(orderId);
 	}
+
+
+	@Override
+	public boolean updateOrderEvaluate(Order order, String modifiedId) {
+		// TODO Auto-generated method stub
+		try {
+			orderDAO.updateOrderEvaluate(order, modifiedId);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+
+	@Override
+	public CreditManager getCreditManager(String name) {
+		// TODO Auto-generated method stub
+		try {
+			return orderDAO.getCreditManager(name);
+		} catch (Exception e) {
+			// TODO: handle exception
+			//可能会出现信贷经理同名情形,查询 1 but found n
+			log.error(e.toString());
+			throw new RuntimeException();
+		}
+	}
 	
+	@Override
+	public List<SelectInfo> getCreditMangerList() {
+		// TODO Auto-generated method stub
+		return orderDAO.getCreditManagerList();
+	}
+	
+	@Override
+	public boolean addFastOrderTypeTwo(String stepOneData,
+			FastProductApplicant applicantFast, FastProductCompany companyFast) {
+		
+		int result = 0;
+		
+		SimpleDateFormat sf = new SimpleDateFormat("yyMMddHHmmss");
+		
+		try {
+			//生成申请人信息
+			String applicantId = UUID.randomUUID().toString().replace("-", "");
+			applicantFast.setApplicantFastId(applicantId);
+			result = orderDAO.addFastApplicant(applicantFast);
+			
+			//生成公司信息
+			String companyId = UUID.randomUUID().toString().replace("-", "");
+			companyFast.setCompanyFastId(companyId);
+			result = orderDAO.addFastCompany(companyFast);
+			
+			//生成快速订单
+			String fastId = UUID.randomUUID().toString().replace("-", "");
+			String orderId = "F"+sf.format(new Date());
+			HashMap<String, Object> map = new HashMap<>();
+			map.put("id", fastId);
+			map.put("company", companyFast.getCompanyName());
+			map.put("code", orderId);
+			map.put("province", applicantFast.getRegisterProvince());
+			map.put("city", applicantFast.getRegisterCity());
+			map.put("zone", applicantFast.getRegisterZone());
+			map.put("phone", stepOneData.split("&")[0]);
+			if (stepOneData.split("&").length>2) {
+				map.put("mark", stepOneData.split("&")[1]);
+			}else {
+				map.put("mark", "");
+			}
+			map.put("applicantFastId", applicantId);
+			map.put("companyFastId", companyId);
+			
+			result = orderDAO.addFastOrder(map);
+			
+			if (result > 0) {
+				return true;
+			}
+			
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new RuntimeException();
+		}
+		return false;
+	}
+
+
+	@Override
+	public void addOrder(Order order) {
+		// TODO Auto-generated method stub
+//		订单初始化
+		order.setApplicantSave(0);
+		order.setBusinessSave(0);
+		order.setCompanySave(0);
+		order.setDebtSave(0);
+		order.setDocumentSave(0);
+		order.setStatus("0");
+		try {
+			orderDAO.addOrder(order);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RuntimeException();
+		}
+	}
 	
 }
-
-		
-	
-
-	
-	
-
-
-
-

@@ -77,4 +77,10 @@ public class OrganizationTypeServiceImpl implements OrganizationTypeService {
 		// TODO Auto-generated method stub
 		return tdao.findTypeById(id);
 	}
+
+	@Override
+	public List<OrganizationType> findTypes() {
+		
+		return tdao.findTypes();
+	}
 }

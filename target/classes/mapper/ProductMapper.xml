@@ -108,6 +108,16 @@
 		
 		where id = #{id} 
 	</select>
+	<select id="findProductById" resultType="com.xinyue.manage.model.Product">
+		select p.id id , p.name name , concat_ws('' , a.name , c.name , z.name ) area , concat_ws('-' , p.credit_from , p.credit_to) credit, 
+		t.name productTypeName , i.name orgName from m_product_info p 
+		left join m_product_type t on p.type = t.id and t.deleted = 0 and t.status = 1 
+		left join m_area_province a on a.code  = p.province_id 
+		left join m_area_city c on c.code = p.city_id 
+		left join m_area_zone z on z.code = p.area_id 
+		left join m_organization_info i on i.id = p.bank 
+		where p.deleted = 0 and p.status = 2 and p.id = #{proid}
+	</select>
 	
 	<resultMap type="com.xinyue.manage.model.Product" id="pro_profile">
 		<id property="id" column="id"/>
@@ -211,5 +221,57 @@
      <select id="getListByRecommend" resultType="com.xinyue.manage.model.Product">
      	select * from m_product_info
      	where deleted = 0 and recommend = #{recommend}
+     </select>
+     
+     <!-- add by maozj -->
+     <resultMap type="com.xinyue.manage.beans.SelectInfo" id="productsResult">
+     	<result property="id" column="key"/>
+     	<result property="name" column="value"/>
+     </resultMap>
+     <select id="findProductsManagerId" parameterType="String" resultMap="productsResult">
+		select 
+		    pi.id, pi.name
+		from
+		    m_product_info pi,
+		    c_manager_info mi
+		where
+		    mi.organization = pi.bank
+		        and pi.deleted = 0
+		        and mi.id = #{managerId};
+     </select>
+     
+     <select id="getProductsByManagerId" parameterType="hashmap" resultType="com.xinyue.manage.model.Product">
+     select 
+	     pi.id as id,
+	     pi.name as name,
+	     pi.credit_from as creditFrom,
+	     pi.credit_to as creditTo,
+	     pt.name as productTypeName,
+	     concat_ws('/', pi.file_dir, pi.file_name) as logo
+	 from
+	     m_product_info pi,
+	     c_manager_info mi,
+	     m_product_type pt
+	 where
+	     pi.deleted = 0 and pt.deleted = 0
+	     	 and pt.id = pi.type
+	         and mi.organization = pi.bank
+	         and mi.id = #{managerId}
+	 order by pi.modified_id desc
+	 limit #{index},2;
+     </select>
+     
+     <select id="getProductsCountByManagerId" parameterType="String" resultType="int">
+     select 
+	     count(pi.id)
+	 from
+	     moke.m_product_info pi,
+	     c_manager_info mi,
+	     m_product_type pt 
+	 where
+	     pi.deleted = 0 and pt.deleted = 0
+	     	 and pt.id = pi.type
+	         and mi.organization = pi.bank
+	         and mi.id = #{managerId};
      </select>
 </mapper>

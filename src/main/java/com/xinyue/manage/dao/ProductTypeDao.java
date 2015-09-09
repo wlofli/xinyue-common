@@ -16,7 +16,7 @@ import com.xinyue.manage.model.ProductType;
 public interface ProductTypeDao {
 
 	public List<ProductType> findProductTypeList();
-	
+	public List<ProductType> findProductTypeByList();
 	public List<ProductType> findTypeFirst(ProductTypeInfo pt);
 	
 	public int getTypeFirstCount();

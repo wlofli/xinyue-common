@@ -4,14 +4,19 @@ import java.util.List;
 
 import com.xinyue.manage.beans.BusinessInfos;
 import com.xinyue.manage.beans.HoldInfos;
+import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Applicant;
 import com.xinyue.manage.model.CompanyBase;
 import com.xinyue.manage.model.Control;
+import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.Debt;
 import com.xinyue.manage.model.Document;
+import com.xinyue.manage.model.FastProductApplicant;
+import com.xinyue.manage.model.FastProductCompany;
 import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.OrderAppointed;
 import com.xinyue.manage.model.RealEstate;
 
 /**
@@ -154,4 +159,26 @@ public interface OrderService {
 	
 	public int getDocumentCount(String orderId);
 	
+	public boolean updateOrderEvaluate(Order order, String modifiedId);
+
+	public CreditManager getCreditManager(String name);
+	/**返回所有信贷经理列表
+	 * add by lzc     date: 2015年8月26日
+	 * @return  key->id ,value->name
+	 */
+	public List<SelectInfo> getCreditMangerList();
+	
+	/**
+	 * 快速申贷第二类
+	 * add by mzj
+	 * @param tel
+	 * @param applicantFast
+	 * @param companyFast
+	 * @return
+	 */
+	public boolean addFastOrderTypeTwo(String stepOneData,
+			FastProductApplicant applicantFast, FastProductCompany companyFast);
+
+	
+	public void addOrder(Order order);
 }

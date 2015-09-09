@@ -86,4 +86,6 @@ public interface OrganizationDao {
 	//add by mzj 2015/07/06 start
 	public List<SelectInfo> getOrganizations();
 	//add by mzj 2015/07/06 end
+	
+	public List<SelectInfo> getOrgs();
 }

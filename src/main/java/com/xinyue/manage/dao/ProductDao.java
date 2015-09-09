@@ -1,12 +1,14 @@
 package com.xinyue.manage.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.ProductInfo;
+import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Product;
-import com.xinyue.manage.model.ProductType;
+import com.xinyue.manage.model.ProductFile;
 
 /**
  * 
@@ -43,7 +45,8 @@ public interface ProductDao {
 	 */
 	public void updateUnShelve(@Param("list") List<String> list, @Param("modifyUser") String modifyUser);
 	
-	
+	public List<ProductFile> findProductFileList(@Param("id")String pid);
+	public List<Product> findProductById(@Param("pid")String pid);
 	/**
 	 * 根据id查寻
 	 * @param id
@@ -53,7 +56,6 @@ public interface ProductDao {
 	
 	
 	public void addProduct(Product pro);
-	
 	
 	public void updateProduct(Product pro);
 	
@@ -67,4 +69,28 @@ public interface ProductDao {
 	 * @return
 	 */
 	public List<Product> getListByRecommend(@Param("recommend")String recommend);
+
+	/**
+	 * 根据信贷经理查找产品(1)
+	 * add by maozj
+	 * @param managerId
+	 * @return
+	 */
+	public List<SelectInfo> findProductsManagerId(String managerId);
+
+	/**
+	 * 根据信贷经理查找产品(2)
+	 * add by maozj
+	 * @param map
+	 * @return
+	 */
+	public List<Product> getProductsByManagerId(HashMap<String,Object> map);
+
+	/**
+	 * 根据信贷经理id查询产品数量
+	 * add by maozj
+	 * @param managerId
+	 * @return
+	 */
+	public int getProductsCountByManagerId(String managerId);
 }

@@ -14,6 +14,15 @@ public class GlobalConstant {
 	public static final String SESSION_BIND_ALIPAY_CODE = "session_bind_alipay_code";//用于绑定支付宝验证码
 	public static final String SESSION_BIND_BANK_CODE = "session_bind_bank_code";//用于绑定银行卡验证码
 	public static final String USER = "admin";
+	
+	/**add by lzc
+	 * //普通会员类型
+	 */
+	public static final String USER_TYPE_MEMBER = "m";
+	/**add by lzc
+	 * //信贷经理类型
+	 */
+	public static final String USER_TYPE_CREDIT = "c";
 
 	public static final String TYPE_CITY = "tc";
 	
@@ -31,11 +40,35 @@ public class GlobalConstant {
 	
 	//add by lzc
 	public static final String RET_JSON_RESULT = "result";//json格式返回的名称
-		
+	public static final String RET_MESSAGE = "message";//json格式的消息
+	
 	public static final String SUB_CITY_INFO = "sub_city_info";
 	public static final String SUB_CITY_NAME = "city_name";
 	
 	public static final String INDEX_TYPE = "index_type";
+	
+	//add by mzj start
+	public static final String FAST_APPLICANT_STEP_ONE = "fast_applicant_step_one";
+	
+	public static final String FAST_APPLICANT_STEP_TWO = "fast_applicant_step_two";
+	/**
+	 * 职业
+	 */
+	public static final String PROFESSION_TYPE = "profession_type";
+	/**
+	 * 房产类型
+	 */
+	public static final String HOUSE_TYPE = "house_type";
+	/**
+	 * 贷款额度
+	 */
+	public static final String LOAN_AMOUNT = "loan_amount";
+	
+	public static final String LOAN_PERIOD = "loan_period";
+	
+	public static final String STAR_LEVEL = "star_level";
+	
+	//add by mzj end
 	
 	/**
 	 * 未登陆或登陆超时
@@ -48,6 +81,7 @@ public class GlobalConstant {
 	public static final int PAGE_SIZE_FIFTY = 50;
 	public static final int PAGE_SIZE_NEWLIST = 28;
 	public static final int PAGE_SIZE_SHOW_PICTURE = 4;
+	public static final int PAGE_SIZE_FIXED = 8;
 	
 	//add by lzc 2015年7月22日11:21:02
 	public static final int PAGE_SIZE_ONE = 1;
@@ -169,6 +203,14 @@ public class GlobalConstant {
 	 * 两年内信用
 	 */
 	public static final String COMPANY_CREDIT_TYPE = "credit_type";
+	/**add by lzc
+	 * 申贷用途
+	 */
+	public static final String COMPANY_CREDIT_PURPOSE = "credit_purpose";
+	/**
+	 * 贷款类型
+	 */
+	public static final String LOAN_TYPE = "loan_type";
 	
 	
 	
@@ -193,6 +235,13 @@ public class GlobalConstant {
 	public static final String ORDER_INIT_NUMBER = "2";//订单初始化
 //	public static final String ORDER_SEARCH_TIME = "order_search_time";//订单排序,升序,降序
 	
+	//信贷:客户条件
+		public static final String CUSTOMER_COLLERTAOR = "customer_collateral";
+		public static final String CUSTOMER_CREDIT = "customer_credit";
+		
+		
+		public static final int[] ORDER_CONDITION = {6,7,8,9,10,11};//信贷界面部分状态
+		
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info
 	

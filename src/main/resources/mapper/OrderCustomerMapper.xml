@@ -15,6 +15,16 @@
 		<result column="order_id" property="orderId" />
 		<result column="type" property="type" />
 		<result column="manage_id" property="manageId" />
+		<result column="credit" property="credit" />
+		<result column="limit_date" property="limitDate" />
+		<result column="applicant_name" property="applicantName" />
+		<result column="applicant_phone" property="applicantPhone" />
+		<result column="company_name" property="companyName" />
+		<result column="applicant_time" property="applicantTime" />
+		<result column="code" property="code" />
+		<result column="status" property="status" />
+		<result column="product_name" property="productName" />
+		
 	</resultMap>
 	<resultMap type="com.xinyue.manage.model.OrderAuction" id="auction">
 		<result column="id" property="id" />
@@ -46,6 +56,20 @@
 		<result column="order_id" property="orderId" />
 		<result column="type" property="type" />
 		<result column="manage_id" property="manageId" />
+		<result column="company_type" property="companyType" />
+		<result column="person_num" property="personNum" />
+		<result column="sales" property="sales" />
+		<result column="run_year" property="runYear" />
+		<result column="credit" property="credit" />
+		<result column="guarantee_type" property="guaranteeType" />
+		<result column="two_year_credit" property="twoYearCredit" />
+		<result column="collateral" property="collateral" />
+		<result column="limit_date" property="limitDate" />
+		<result column="total_vat" property="totalVat" />
+		<result column="applicant_name" property="applicantName" />
+		<result column="image" property="image" />
+		
+		
 	</resultMap>
 	<resultMap type="com.xinyue.manage.model.OrderLowPrice" id="lowprice">
 		<result column="id" property="id" />
@@ -65,18 +89,35 @@
 		<result column="type" property="type" />
 		<result column="manage_id" property="manageId" />
 	</resultMap>
-	
 <!-- 	<resultMap type="com.xinyue.manage.beans.SelectInfo" id="select"> -->
 <!-- 		<result column="key" property="key" /> -->
 <!-- 		<result column="value" property="value" /> -->
 <!-- 	</resultMap> -->
-		
+
+
+	<resultMap type="com.xinyue.manage.beans.OrderCustomer" id="customer">
+		<result column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="code" property="code" />
+		<result column="applicant_name" property="applicantName" />
+		<result column="product_name" property="productName" />
+		<result column="applicant_phone" property="applicantPhone" />
+		<result column="credit" property="credit" />
+		<result column="limit_date" property="limitDate" />
+		<result column="company_name" property="companyName" />
+		<result column="applicant_time" property="applicantTime" />
+		<result column="order_type" property="orderType" />
+		<result column="status" property="status" />
+	
+	</resultMap>
 	
 	<insert id="addOrderAppointed" parameterType="com.xinyue.manage.model.OrderAppointed">
 		insert into c_order_appoint (id,credit_name,credit_phone,blank,price,deleted,created_id,
-					created_time,modified_id,modified_time,order_id,type,manage_id)
+					created_time,modified_id,modified_time,order_id,type,manage_id,
+					credit,limit_date,applicant_name,applicant_phone,company_name,applicant_time)
 			values (#{id},#{creditName},#{creditPhone},#{blank},#{price},#{deleted},#{createdId},
-					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId},
+					#{credit},#{limitDate},#{applicantName},#{applicantPhone},#{companyName},#{applicantTime})
 	
 	</insert>
 	<insert id="addOrderAuction" parameterType="com.xinyue.manage.model.OrderAuction">
@@ -87,9 +128,14 @@
 	</insert>
 	<insert id="addOrderFixed" parameterType="com.xinyue.manage.model.OrderFixed">
 		insert into c_order_fixed (id,price,start_time,end_time,deleted,created_id,
-					created_time,modified_id,modified_time,order_id,type,manage_id)
+					created_time,modified_id,modified_time,order_id,type,manage_id,
+					company_type,person_num,sales,run_year,credit,guarantee_type,
+					two_year_credit,collateral,limit_date,total_vat
+					)
 			values (#{id},#{price},#{startTime},#{endTime},#{deleted},#{createdId},
-					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId})
+					now(),#{modifiedId},now(),#{orderId},#{type},#{manageId},
+					#{companyType},#{personNum},#{sales},#{runYear},#{credit},#{guaranteeType},
+					#{twoYearCredit},#{collateral},#{limitDate},#{totalVat})
 	</insert>
 	<insert id="addOrderLowPrice" parameterType="com.xinyue.manage.model.OrderLowPrice">
 		insert into c_order_lowprice (id,max_price,min_price,per_minus,miniute,now_price,start_time,end_time,
@@ -109,13 +155,38 @@
 	<update id="updateOrderType">
 		update 
 			${tabName} 
-		 set order_type = #{orderType},
-		 	 order_status = #{orderStatus},
+		 set
+		 <if test="orderType != null and orderType != ''">
+		 	order_type = #{orderType},
+		 </if>
+		 <if test="orderStatus != null and orderStatus != ''">
+		 	order_status = #{orderStatus},
+		 </if>
+		 <if test="status != null and status != ''">
 		 	 status = #{status},
+		 </if>
 		 	 modified_time = now(),
 		 	 modified_id = #{modifyId}
 		 where id = #{id} and deleted = 0
 	</update>
+	
+	<update id="updateOrderCustomerManageId">
+		update
+			${tabName}
+		set
+			manage_id = #{manageId},
+			modified_time = now(),
+			modified_id = #{modifiedId}
+		where id = #{id} and deleted = 0
+	</update>
+	
+	
+	<select id="getOrderFixedById" resultMap="fixed">
+		select * 
+			from c_order_fixed
+		where
+			id = #{id} and deleted = 0
+	</select>
 	
 	<select id="getOrderFixed" resultMap="fixed">
 		select * 
@@ -139,6 +210,13 @@
 		where 
 			order_id = #{orderId} and deleted = 0 and type = #{type}
 	
+	</select>
+	
+	<select id="getOrderAppointById" resultMap="appointed">
+		select *
+			from c_order_appoint
+		where
+			id = #{id} and deleted = 0
 	</select>	
 	
 	<select id="getOrderLowPrice" resultMap="lowprice">
@@ -157,7 +235,734 @@
 	 	where id = #{id} and deleted = 0
 	 
 	 </select>
-			
+	 
+	 <select id="getOrderAppointedFromOrder" resultMap="appointed">
+	 	select 
+	 		o.credit,
+	 		a.deadline as limit_date,
+	 		a.name as applicant_name,
+	 		a.phone as applicant_phone,
+	 		l.company_name as company_name,
+	 		o.created_time as applicant_time
+	 	from m_order_info       	o
+	 	left join m_applicant_info  a  on o.applicant_info = a.id
+	 	left join m_license_info 	l  on o.license_info = l.id
+	 	where o.id = #{orderId}
+	 </select>
+	 
+	 <select id="getOrderAppointedFromFastProduct" resultMap="appointed">
+	 	select 
+	 		a.loan_amount as credit,
+	 		a.loan_period as limit_date ,
+	 		f.contact_name as applicant_name,
+	 		f.contact_phone as applicant_phone,
+	 		c.company_name as conpany_name,
+	 		f.created_time as applicant_time
+	 	from m_product_fast_info f
+	 	left join m_applicant_fast_info a on f.applicant_fast_id = a.applicant_fast_id
+	 	left join m_company_fast_info   c on f.company_fast_id = c.company_fast_id
+	 	where f.id = #{fastId}
+	 
+	 
+	 
+	 </select>
+	 
+	 
+	 <select id="getOrderFixedFromOrder" resultMap="fixed">
+	 	select 
+	 		l.business_registration_type as company_type,
+	 		c.person_num as person_num,
+	 		b.sales,
+	 		timestampdiff(year, c.business_start_time , now()) as run_year,
+	 		o.credit,
+	 		a.guarantee as guarantee_type,
+	 		a.two_year_credit as two_year_credit,
+	 		d.guaranty as collateral,
+	 		a.deadline as limit_date,
+	 		b.vat_amount as total_vet
+	 	from m_order_info       	o
+	 	left join m_debt_info   	d  on o.debt_info = d.id
+<!-- 	 	left join m_select_info 	s  on s.select_key = d.guaranty and s.type_code = 'collateral_type' -->
+	 	left join m_license_info 	l  on o.license_info = l.id
+<!-- 	 	left join m_select_info 	s1 on s1.select_key = l.business_registration_type and s1.type_code = 'business_type' -->
+	 	left join m_control_info 	c  on o.control_info = c.id 
+		left join m_business_info   b  on o.id = b.target_id and b.target_type = '2' and b.year = '2015'
+		left join m_applicant_info  a  on o.applicant_info = a.id
+<!-- 		left join m_select_info     s2 on s2.select_key = a.two_year_credit and s2.type_code ='credit_type' -->
+<!-- 		left join m_select_info     s3 on s3.select_key = a.guarantee and s3.type_code = 'guarantee_type' -->
+	 	where o.id = #{orderId}
+	 </select>
+	 
+	 <select id="getOrderFixedFromFastProduct" resultMap="fixed">
+	 	select
+	 		f.id,
+	 		c.company_type as company_type,
+	 		c.staff_number as person_num,
+	 		c.year_turnover as sales,
+	 		a.management_life as run_year,
+	 		a.loan_amount as credit,
+	 		a.two_year_credit as two_year_credit,
+	 		a.loan_period as limit_date 
+	 	from m_product_fast_info f
+	 	left join m_applicant_fast_info a on f.applicant_fast_id = a.applicant_fast_id
+	 	left join m_company_fast_info   c on f.company_fast_id = c.company_fast_id
+	 	where id = #{fastId}
+	 </select>
+	 
+	 <select id="getFixedListByPage" resultMap="fixed">
+	 	select 
+	 		f.id,
+	 		f.price,
+	 		f.start_time,
+	 		f.end_time,
+	 		f.order_id,
+	 		s2.select_value as company_type,
+	 		f.person_num,
+	 		f.sales,
+	 		f.run_year,
+	 		f.credit,
+	 		s3.select_value as guarantee_type,
+	 		s.select_value as two_year_credit,
+	 		s1.select_value as collateral,
+	 		f.limit_date,
+	 		f.total_vat,
+	 		a.name as applicant_name
+	 		from c_order_fixed f
+	 	left join  m_select_info s  on s.select_key = f.two_year_credit and s.type_code = 'credit_type'
+	 	left join  m_select_info s1 on s1.select_key = f.collateral and s1.type_code = 'collateral_type'
+	 	left join  m_select_info s3 on s3.select_key = f.guarantee_type and s3.type_code = 'guarantee_type'
+	 	left join  m_select_info s2 on s2.select_key = f.company_type and s2.type_code = 'business_type'
+	 	
+	 	
+	 	left join  m_order_info  o  on o.id = f.order_id 
+	 	left join  m_applicant_info a on o.applicant_info = a.id
+	 	where f.deleted = 0 and f.manage_id is null and f.type = 1
+	 	<if test="search.collateral != null and search.collateral != 0">
+	 		and #{search.collateral} = f.collateral
+	 	</if>
+	 	<if test="search.twoYearCredit != null and search.twoYearCredit != 0">
+	 		and #{search.twoYearCredit} = f.two_year_credit
+	 	</if>
+	 	
+	 	union all
+	 	
+<!-- 	 	product_fast_info -->
+	 	
+	 	select 
+	 		f.id,
+	 		f.price,
+	 		f.start_time,
+	 		f.end_time,
+	 		f.order_id,
+	 		s2.select_value as company_type,
+	 		f.person_num,
+	 		f.sales,
+	 		f.run_year,
+	 		f.credit,
+	 		s3.select_value as guarantee_type,
+	 		s.select_value as two_year_credit,
+	 		s1.select_value as collateral,
+	 		f.limit_date,
+	 		f.total_vat,
+	 		fa.contact_name as applicant_name
+	 		from c_order_fixed f
+	 	left join  m_select_info s  on s.select_key = f.two_year_credit and s.type_code = 'credit_type'
+	 	left join  m_select_info s1 on s1.select_key = f.collateral and s1.type_code = 'collateral_type'
+	 	left join  m_select_info s3 on s3.select_key = f.guarantee_type and s3.type_code = 'guarantee_type'
+	 	left join  m_select_info s2 on s2.select_key = f.company_type and s2.type_code = 'business_type'
+	 	
+	 	left join m_product_fast_info  fa on fa.id = f.order_id
+	 	
+	 	
+	 	where f.deleted = 0 and f.manage_id is null and f.type = 2
+	 	<if test="search.collateral != null and search.collateral != 0">
+	 		and #{search.collateral} = f.collateral
+	 	</if>
+	 	<if test="search.twoYearCredit != null and search.twoYearCredit != 0">
+	 		and #{search.twoYearCredit} = f.two_year_credit
+	 	</if>
+	 	limit #{pageNo}, #{pageSize}
+	 </select>
+	 
+	 <select id="countFixedListByPage" resultType="int">
+	 	select count(*)
+	 		from c_order_fixed f
+	 	where f.deleted = 0 and f.manage_id is null
+	 	<if test="search.collateral != null and search.collateral != 0">
+	 		and #{search.collateral} = f.collateral
+	 	</if>
+	 	<if test="search.twoYearCredit != null and search.twoYearCredit != 0">
+	 		and #{search.twoYearCredit} = f.two_year_credit
+	 	</if>
+	 
+	 </select>
 	
+<!-- orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送	 -->
+<!-- orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始 -->	
+	<select id="getAppointedListByManageId" resultMap="appointed">
+		select a.*,
+			o.code as code,
+			s.select_value as `status`,
+			d.`name` as product_name
+		from
+			c_order_appoint a
+		left join m_order_info     o   on o.id = a.order_id  
+		left join m_product_info   d   on d.id = o.product_info
+		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
+		where a.deleted = 0 and a.type = '1'
+		and o.deleted = 0 and o.order_type = '4'  and o.order_status != '1'
+		and manage_id = #{manageId}
+		<choose>
+		<when test="search.status != null and search.status != ''">
+<!-- 		快速筛选 -->
+			and o.status = #{search.status}
+		</when>
+		<otherwise>
+			<if test="search.startTime != null and search.startTime !=''">
+			and a.applicant_time > #{search.startTime}
+			</if>
+			<if test="search.endTime != null and search.endTime != ''">
+				<![CDATA[
+					and a.applicant_time < #{search.endTime}
+				]]>
+			</if>
+			<if test="search.code != null and search.code != ''">
+				and o.code like '%' #{search.code} '%'
+			</if>
+			<if test="search.applicantPhone != null and search.applicantPhone != ''">
+				and a.applicant_phone like '%' #{search.applicantPhone} '%'
+			</if>
+			<if test="search.applicantName != null and search.applicantName != ''">
+				and a.applicant_name like '%' #{search.applicantName} '%'
+			</if>
+			<if test="search.product != null and search.product != ''">
+				and o.product_info = #{search.product}
+			</if>
+		</otherwise>
+		</choose>
+		
+		<if test="search.product == null || search.product == ''">
+			union all
+			<!-- 	 	product_fast_info -->	
+			
+			
+			select a.*,
+				f.code as code,
+				s.select_value as `status`,
+				null as product_name
+			from
+				c_order_appoint a
+			left join m_product_fast_info  f on f.id = a.order_id  
+			left join m_select_info    s   on s.select_key = f.status and s.type_code = 'order_status'
+			where a.deleted = 0 and a.type = '2'
+			and f.deleted = 0 and f.order_type = '4' and f.order_status != '1'
+			and manage_id = #{manageId}
+			<choose>
+				<when test="search.status != null and search.status != ''">
+	<!-- 			快速筛选 -->
+					and f.status = #{search.status}
+				</when>
+				<otherwise>
+					<if test="search.startTime != null and search.startTime !=''">
+						and a.applicant_time > #{search.startTime}
+					</if>
+					<if test="search.endTime != null and search.endTime != ''">
+						<![CDATA[
+							and a.applicant_time < #{search.endTime}
+						]]>
+					</if>
+					<if test="search.code != null and search.code != ''">
+							and f.code like '%' #{search.code} '%'	
+					</if>
+					<if test="search.applicantPhone != null and search.applicantPhone != ''">
+						and a.applicant_phone like '%' #{search.applicantPhone} '%'
+					</if>
+					<if test="search.applicantName != null and search.applicantName != ''">
+						and a.applicant_name like '%' #{search.applicantName} '%'
+					</if>
+				</otherwise>
+			</choose>
+		</if>
+		
+		limit #{pageNo}, #{pageSize}
+	</select>
+	
+	<select id="countAppointedListByManageId" resultType="int">
+		select count(*)
+			from c_order_appoint a
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '4'
+		left join m_product_fast_info  f on f.id = a.order_id  and f.deleted = 0 and f.order_type = '4' and f.order_status = '4'
+		where a.deleted = 0 
+		and manage_id = #{manageId}
+		<choose>
+		<when test="search.status != null and search.status != ''">
+<!-- 		快速筛选 -->
+			and (o.status = #{search.status} || f.status = #{search.status})
+		</when>
+		<otherwise>
+			<if test="search.startTime != null and search.startTime !=''">
+			and a.applicant_time > #{search.startTime}
+			</if>
+			<if test="search.endTime != null and search.endTime != ''">
+				<![CDATA[
+					and a.applicant_time < #{search.endTime}
+				]]>
+			</if>
+			<if test="search.code != null and search.code != ''">
+				and o.code like '%' #{search.code} '%'
+			</if>
+			<if test="search.applicantPhone != null and search.applicantPhone != ''">
+				and a.applicant_phone like '%' #{search.applicantPhone} '%'
+			</if>
+			<if test="search.applicantName != null and search.applicantName != ''">
+				and a.applicant_name like '%' #{search.applicantName} '%'
+			</if>
+			<if test="search.product != null and search.product != ''">
+				and o.product_info = #{search.product}
+			</if>
+		</otherwise>
+		</choose>
+	</select>
+	
+<!-- orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送	 -->
+<!-- orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始 -->
+	<select id="getSearchOrderCredit" resultType="com.xinyue.manage.beans.SearchOrderCredit">
+		<foreach collection="list" index="i" item="id"  separator="union all">
+		
+		select select_key as `key`,
+			   select_value as value,
+			   ((SELECT	count(*)
+				FROM
+					c_order_appoint f
+				LEFT JOIN m_order_info o on o.id = f.order_id and o.order_type = '4'  
+				WHERE
+					o.deleted = 0 and o.status = #{id} and o.order_status != 1
+					AND f.type = 1 and f.deleted = 0   and f.manage_id = #{manageId}
+				)+(
+				SELECT	count(*)
+				FROM
+					c_order_appoint f
+				LEFT JOIN m_product_fast_info o on o.id = f.order_id and o.order_type = '4' 
+				WHERE
+				    o.deleted = 0   and o.`status` = #{id} and o.order_status != 1
+				    AND f.type = 2 and f.deleted = 0   and f.manage_id = #{manageId}
+				)) as num
+		from m_select_info
+		where 
+			type_code = #{typeCode} 
+			and select_key = #{id}
+			</foreach>
+	</select>
 
+
+<!-- 立即领取快速申贷条件 -->
+<sql id="getMyCustomerConditionByFastOrderFixed">
+<choose>
+<!-- 		快速筛选条件 -->
+		<when test="search.status != null and search.status != ''">
+			and o.status = #{search.status}
+		</when>
+		<!-- 高级筛选条件	 -->
+		<otherwise>
+			<if test="search.startTime != null and search.startTime !=''">
+			and o.created_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+				and o.created_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.code != null and search.code != ''">
+			and o.code like '%' #{search.code} '%'
+		</if>
+		<if test="search.applicantPhone != null and search.applicantPhone != ''">
+			and o.contact_phone like '%' #{search.applicantPhone} '%'
+		</if>
+		<if test="search.applicantName != null and search.applicantName != ''">
+			and o.contact_name like '%' #{search.applicantName} '%'
+		</if>
+		
+<!-- 		产品条件 -->
+		<if test="search.product != null and search.product != ''">
+			and o.product_info = #{search.product}
+		</if>
+<!-- 		获客来源条件 -->
+		<if test="search.orderType != null and search.orderType != ''">
+			and o.order_type = #{search.orderType}
+		</if>
+		</otherwise>
+	</choose>
+</sql>
+
+
+<!-- 立即领取订单条件 -->
+<sql id="getMyCustomerConditionByOrderFixed">
+<choose>
+<!-- 		快速筛选条件 -->
+		<when test="search.status != null and search.status != ''">
+			and o.status = #{search.status}
+		</when>
+		<!-- 高级筛选条件	 -->
+		<otherwise>
+			<if test="search.startTime != null and search.startTime !=''">
+			and o.created_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+				and o.created_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.code != null and search.code != ''">
+			and o.code like '%' #{search.code} '%'
+		</if>
+		<if test="search.applicantPhone != null and search.applicantPhone != ''">
+			and ap.phone like '%' #{search.applicantPhone} '%'
+		</if>
+		<if test="search.applicantName != null and search.applicantName != ''">
+			and ap.name like '%' #{search.applicantName} '%'
+		</if>
+		
+<!-- 		产品条件 -->
+		<if test="search.product != null and search.product != ''">
+			and o.product_info = #{search.product}
+		</if>
+<!-- 		获客来源条件 -->
+		<if test="search.orderType != null and search.orderType != ''">
+			and o.order_type = #{search.orderType}
+		</if>
+		</otherwise>
+	</choose>
+</sql>
+
+<!-- 指定推送条件 -->
+	<sql id="getMyCustomerConditionByAppoint">
+	<choose>
+<!-- 		快速筛选条件 -->
+		<when test="search.status != null and search.status != ''">
+			and o.status = #{search.status}
+		</when>
+		<!-- 高级筛选条件	 -->
+		<otherwise>
+			<if test="search.startTime != null and search.startTime !=''">
+			and a.applicant_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+				and a.applicant_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.code != null and search.code != ''">
+			and o.code like '%' #{search.code} '%'
+		</if>
+		<if test="search.applicantPhone != null and search.applicantPhone != ''">
+			and a.applicant_phone like '%' #{search.applicantPhone} '%'
+		</if>
+		<if test="search.applicantName != null and search.applicantName != ''">
+			and a.applicant_name like '%' #{search.applicantName} '%'
+		</if>
+		
+<!-- 		产品条件 -->
+		<if test="search.product != null and search.product != ''">
+			and o.product_info = #{search.product}
+		</if>
+<!-- 		获客来源条件 -->
+		<if test="search.orderType != null and search.orderType != ''">
+			and o.order_type = #{search.orderType}
+		</if>
+		</otherwise>
+	</choose>
+	</sql>
+	
+<!-- add by lzc此方法非常恶心,需要分为订单表与快速申贷表俩种情况,外加立即领取与指定推送俩种情况,2*2=4种情况 以后可能变成2*4=8种情况  
+orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5人员主动操作
+orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始
+type;//1.订单2快速申贷 -->
+	<select id="getMyCustomer" resultMap="customer">
+<!-- 	订单指定推送 -->
+		select
+			a.id,
+			o.order_type as type,
+			o.code as code,
+			a.applicant_name as applicant_name,
+			d.`name` as product_name,
+			a.applicant_phone as applicant_phone,
+			a.credit as credit,
+			a.limit_date as limit_date,
+			a.company_name as company_name,
+			a.applicant_time as applicant_time,
+			s1.select_value as order_type,
+			s.select_value as `status`
+		from
+			c_order_appoint a
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+		left join m_product_info   d   on d.id = o.product_info
+		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
+		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
+		where a.deleted = 0 and a.type = '1'
+		and a.manage_id = #{manageId}
+		<include refid="getMyCustomerConditionByAppoint"></include>
+<!-- 		订单立即领取 -->
+		union all
+		select
+			a.id,
+			o.order_type as type,
+			o.code as code,
+			ap.name as applicant_name,
+			d.`name` as product_name,
+			ap.phone as applicant_phone,
+			a.credit as credit,
+			a.limit_date as limit_date,
+			l.company_name as company_name,
+			o.created_time as applicant_time,
+			s1.select_value as order_type,
+			s.select_value as `status`
+		from
+			c_order_fixed a
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+		left join m_product_info   d   on d.id = o.product_info
+		left join m_license_info   l   on o.license_info = l.id
+		left join m_applicant_info ap  on ap.id = o.applicant_info 
+		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
+		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
+		where a.deleted = 0 and a.type = '1'
+		and a.manage_id = #{manageId}
+		<include refid="getMyCustomerConditionByOrderFixed"></include>
+<!-- 		快速申贷指定推送 -->
+		<if test="search.product == null || search.product == ''">
+			union all
+			select
+				a.id,
+				o.order_type as type,
+				o.code as code,
+				a.applicant_name as applicant_name,
+				NULL as product_name,
+				a.applicant_phone as applicant_phone,
+				a.credit as credit,
+				a.limit_date as limit_date,
+				a.company_name as company_name,
+				a.applicant_time as applicant_time,
+				s1.select_value as order_type,
+				s.select_value as `status`
+			from
+				c_order_appoint a
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+			left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
+			left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
+			where a.deleted = 0 and a.type = '2'
+			and a.manage_id = #{manageId}	
+			<include refid="getMyCustomerConditionByAppoint"></include>
+	<!-- 快速申贷立即领取 -->
+			union all
+			select
+				a.id,
+				o.order_type as type,
+				o.code as code,
+				o.contact_name as applicant_name,
+				NULL as product_name,
+				o.contact_phone as applicant_phone,
+				a.credit as credit,
+				a.limit_date as limit_date,
+				o.company as company_name,
+				o.created_time as applicant_time,
+				s1.select_value as order_type,
+				s.select_value as `status`
+			from
+				c_order_fixed a
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+			left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
+			left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
+			where a.deleted = 0 and a.type = '2'
+			and a.manage_id = #{manageId}	
+			<include refid="getMyCustomerConditionByFastOrderFixed"></include>
+		</if>
+		limit #{pageNo}, #{pageSize}
+	</select>
+	
+	<select id="countMyCustomer" resultType="int">
+		select ((select count(*)
+		from 
+			c_order_appoint a
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+<!-- 		left join m_product_info   d   on d.id = o.product_info -->
+<!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
+<!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
+		where a.deleted = 0 and a.type = '1'
+		and a.manage_id = #{manageId}
+		<include refid="getMyCustomerConditionByAppoint"></include>)
+		+(select count(*)
+		from
+			c_order_fixed a
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+<!-- 		left join m_product_info   d   on d.id = o.product_info -->
+<!-- 		left join m_license_info   l   on o.license_info = l.id -->
+		left join m_applicant_info ap  on ap.id = o.applicant_info 
+<!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
+<!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
+		where a.deleted = 0 and a.type = '1'
+		and a.manage_id = #{manageId}
+		<include refid="getMyCustomerConditionByOrderFixed"></include>)
+		<if test="search.product == null || search.product == ''">
+			+(select count(*)
+			from c_order_appoint a
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+	<!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
+	<!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
+			where a.deleted = 0 and a.type = '2'
+			and a.manage_id = #{manageId}	
+			<include refid="getMyCustomerConditionByAppoint"></include>)
+			+(select count(*)
+			from c_order_fixed a
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+	<!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
+	<!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
+			where a.deleted = 0 and a.type = '2'
+			and a.manage_id = #{manageId}	
+			<include refid="getMyCustomerConditionByFastOrderFixed"></include>)
+		</if>
+		)
+		as num
+	</select>
+	
+	
+	<select id="getMyCustomerSearchOrderCredit" resultType="com.xinyue.manage.beans.SearchOrderCredit">
+		<foreach collection="list" index="i" item="id"  separator="union all">
+		select select_key as `key`,
+			   select_value as value,
+			   ((
+<!-- 			   订单指定推送 -->
+			    SELECT	count(*)
+				FROM
+					c_order_appoint f
+				LEFT JOIN m_order_info o on o.id = f.order_id and o.order_type = '4' and o.deleted = 0 
+				WHERE
+					o.deleted = 0 and o.`status` = #{id} and o.order_status = 1
+					AND f.type = 1 and f.deleted = 0   and f.manage_id = #{manageId}
+				)+(
+<!-- 				快速申贷指定推送 -->
+				SELECT	count(*)
+				FROM
+					c_order_appoint f
+				LEFT JOIN m_product_fast_info o on o.id = f.order_id and o.order_type = '4' and o.deleted = 0 
+				WHERE
+					o.deleted = 0   and o.`status` = #{id} and o.order_status = 1
+					AND f.type = 2 and f.deleted = 0 and f.manage_id = #{manageId}
+				)+(
+<!-- 				订单立即领取 -->
+				SELECT	count(*)
+				FROM
+					c_order_fixed f
+				LEFT JOIN m_order_info o on o.id = f.order_id and o.order_type = '1' and o.deleted = 0  
+				WHERE
+					o.deleted = 0 and o.`status` = #{id} and o.order_status = 1
+					AND f.type = 1 and f.deleted = 0   and f.manage_id = #{manageId}
+				)+(
+<!-- 				快速申贷立即领取 -->
+				SELECT	count(*)
+				FROM
+					c_order_fixed f
+				LEFT JOIN m_product_fast_info o on o.id = f.order_id and o.order_type = '1' and o.deleted = 0 
+				WHERE
+					o.deleted = 0   and o.`status` = #{id} and o.order_status = 1
+					AND f.type = 2 and f.deleted = 0 and f.manage_id = #{manageId}
+				)) as num
+		from m_select_info
+		where 
+			type_code = #{typeCode} 
+			and select_key = #{id}
+			</foreach>
+	</select>
+	
+	
+	
+	
+	<select id="getOrderInfoByFixedOrder" resultType="com.xinyue.manage.beans.OrderInfo">
+		select
+			o.id as id,
+			c.type as type,
+			d.`name` as productName,
+			b.name as organization,
+			c.credit as credit,
+			c.limit_date as limitDate,
+			ap.name as applicantName,
+			ap.phone as applicantPhone,
+			l.company_name as companyName,
+			o.created_time as applicantTime,
+			o.status,
+			o.blank_audite_remark as remark,
+			o.credit_real as creditReal,
+			o.audite_time as receiveTime
+		from c_order_fixed c
+		left join m_order_info     o   on o.id = c.order_id and o.deleted = 0
+		left join m_product_info   d   on d.id = o.product_info
+		left join m_bank_info      b   on o.bank = b.id
+		left join m_license_info   l   on o.license_info = l.id
+		left join m_applicant_info ap  on ap.id = o.applicant_info 
+		where c.id = #{customerId} and c.deleted = 0 and c.type = 1
+	</select>
+	
+	<select id="getOrderInfoByFixedFast" resultType="com.xinyue.manage.beans.OrderInfo">
+		select
+			o.id as id,
+			c.type as type,
+			NULL as productName,
+			NULL as organization,
+			c.credit as credit,
+			c.limit_date as limitDate,
+			o.contact_name as applicantName,
+			o.contact_phone as applicantPhone,
+			o.company as companyName,
+			o.created_time as applicantTime,
+			o.status,
+			o.blank_audite_remark as remark,
+			o.credit_real as creditReal,
+			o.receive_time as receiveTime
+		from c_order_fixed c
+		left join m_product_fast_info     o   on o.id = c.order_id and o.deleted = 0
+		where c.id = #{customerId} and c.deleted = 0 and c.type = 2
+	</select>
+	
+	<select id="getOrderInfoByAppointedOrder" resultType="com.xinyue.manage.beans.OrderInfo">
+		select
+			o.id as id,
+			c.type as type,
+			d.`name` as productName,
+			b.name as organization,
+			c.credit as credit,
+			c.limit_date as limitDate,
+			c.applicant_name as applicantName,
+			c.applicant_phone as applicantPhone,
+			c.company_name as companyName,
+			c.applicant_time as applicantTime,
+			o.status,
+			o.blank_audite_remark as remark,
+			o.credit_real as creditReal,
+			o.audite_time as receiveTime
+		from c_order_appoint c
+		left join m_order_info     o   on o.id = c.order_id and o.deleted = 0
+		left join m_product_info   d   on d.id = o.product_info
+		left join m_bank_info      b   on o.bank = b.id
+		where c.id = #{customerId} and c.deleted = 0 and c.type = 1
+	</select>
+	
+	<select id="getOrderInfoByAppointedFast" resultType="com.xinyue.manage.beans.OrderInfo">
+		select
+			o.id as id,
+			c.type as type,
+			NULL as productName,
+			NULL as organization,
+			c.credit as credit,
+			c.limit_date as limitDate,
+			c.applicant_name as applicantName,
+			c.applicant_phone as applicantPhone,
+			c.company_name as companyName,
+			c.applicant_time as applicantTime,
+			o.status,
+			o.blank_audite_remark as remark,
+			o.credit_real as creditReal,
+			o.receive_time as receiveTime
+		from c_order_appoint c
+		left join m_product_fast_info     o   on o.id = c.order_id and o.deleted = 0
+		where c.id = #{customerId} and c.deleted = 0 and c.type = 2
+	</select>
+	
 </mapper>

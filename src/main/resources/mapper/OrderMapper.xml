@@ -49,6 +49,10 @@
 		<result column="control_info" property="controlInfo"/>
 		<result column="city" property="city"/>
 		<result column="zone" property="zone"/>
+		<result column="level" property="level"/>
+		<result column="evaluate_content" property="evaluateContent"/>
+		<result column="evaluation_time" property="evaluationTime"/>
+		
 <!-- 		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association> -->
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
 		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
@@ -88,6 +92,16 @@
 		<result column="time" property="upLoadTime"/>
 	</resultMap>
 	
+	
+	<insert id="addOrder" parameterType="com.xinyue.manage.model.Order">
+		insert into 
+			m_order_info
+		(id,member_id,bank,link_phone,code,product_info,`status`,applicant_person,deleted,created_id,created_time,
+		modified_id,modified_time,applicant_save,business_save,company_save,debt_save,document_save,credit_manage_id)
+		values
+		(#{id},#{memberId},#{bank},#{linkPhone},#{code},#{productInfo},#{status},#{applicantPerson},0,#{createdId},now(),
+		#{modifiedId},now(),#{applicantSave},#{businessSave},#{companySave},#{debtSave},#{documentSave},#{creditManageId})
+	</insert>
 	
 	<select id="getOrder" resultMap="order">
 			SELECT
@@ -158,7 +172,15 @@
 			o.document_save,
 			o.debt_save,
 			o.applicant_info,
-			o.credit_real,
+			o.created_time,
+			o.audite_time,
+			o.tax_audite_time,
+			o.tax_audite_person,
+			o.blank_audite_person,
+			o.blank_audite_time,
+			o.level,
+			o.evaluate_content,
+			o.evaluation_time,
 			p.`name` AS province,
 			c.`name` AS city,
 			z.`name` AS zone
@@ -168,11 +190,17 @@
 			LEFT JOIN m_select_info    s ON o.status = s.select_key AND s.type_code = #{typeCode}
 			LEFT JOIN m_bank_info      b ON o.bank = b.id
 			LEFT JOIN m_product_info   d ON d.id = o.product_info
-			LEFT JOIN m_area_province  p ON m.area_province = p.id
-			LEFT JOIN m_area_city      c ON m.area_city = c.id
-			LEFT JOIN m_area_zone      z ON m.area_zone = z.id
+			LEFT JOIN m_area_province  p ON m.area_province = p.`code`
+			LEFT JOIN m_area_city      c ON m.area_city = c.`code`
+			LEFT JOIN m_area_zone      z ON m.area_zone = z.`code`
 			where o.id = #{id}
 	</select>
+	
+	<!-- 	后台status不包含0 -->
+	<sql id="backStatusList">
+		and o.status in (select select_key from m_select_info where  type_code = 'order_status')
+	
+	</sql>
 	
 	<select id="getListByPage" resultMap="order">
 		SELECT
@@ -217,6 +245,7 @@
 		LEFT JOIN m_bank_info      b ON o.bank = b.id
 		LEFT JOIN m_product_info   d ON d.id = o.product_info
 		where o.deleted = 0
+		<include refid="backStatusList"></include>
 		<if test="order.code != null and order.code != ''">
 			and o.code like '%' #{order.code} '%'
 		</if>
@@ -240,6 +269,8 @@
 		</if>
 		limit #{pageNo}, #{pageSize}
 	</select>
+	
+	
 <!-- 	orderride-> getListByPage -->
 	<select id="getListByStatus" resultMap="order">
 		SELECT
@@ -284,6 +315,7 @@
 		LEFT JOIN m_bank_info      b ON o.bank = b.id
 		LEFT JOIN m_product_info   d ON d.id = o.product_info
 		where o.deleted = 0
+		<include refid="backStatusList"></include>
 		<if test="order.code != null and order.code != ''">
 			and o.code like '%' #{order.code} '%'
 		</if>
@@ -373,8 +405,9 @@
 	</select>
 
 	<select id="getCount" resultType="int">
-		select count(*) from m_order_info
+		select count(*) from m_order_info o
 		where deleted = 0
+		<include refid="backStatusList"></include>
 		<if test="order.id != null and order.id != ''">
 			and id like '%' #{order.id} '%'
 		</if>
@@ -393,8 +426,9 @@
 	</select>
 	
 	<select id="getCountByStatus" resultType="int">
-		select count(*) from m_order_info
-		where deleted = 0
+		select count(*) from m_order_info o
+		where deleted = 0 
+		<include refid="backStatusList"></include>
 		<if test="order.id != null and order.id != ''">
 			and id like '%' #{order.id} '%'
 		</if>
@@ -501,7 +535,14 @@
 		</if>
 		<if test="order.status == 10">
 			,credit_real = #{order.creditReal},
-			audite_time =now(),
+			<choose>
+				<when test="order.auditeTime == null || order.auditeTime== ''">
+					audite_time =now(),
+				</when>
+				<otherwise>
+					audite_time = #{order.auditeTime},
+				</otherwise>
+			</choose>
 			remark= #{order.remark}
 		
 		</if>
@@ -529,6 +570,17 @@
 		</foreach>
 	</update>
 	
+	<update id="updateOrderEvaluate">
+		update m_order_info
+			set modified_time = now(),
+			modified_id = #{modifiedId},
+			level = #{order.level},
+			evaluate_content = #{order.evaluateContent},
+			evaluation_time = now()
+		where id = #{order.id}
+	
+	</update>
+	
 	
 	<update id="updateOrderDetail">
 		update m_order_info
@@ -537,6 +589,8 @@
 		    <include refid="updateOrderDetailInfo" />
 		where id = #{orderId}
 	</update>
+	
+	
 	
 	
 	<sql id="updateOrderDetailInfo">
@@ -626,5 +680,97 @@
 		where order_id = #{orderId}
 	</select>
 	
-
+	<select id="getCreditManager" resultType="com.xinyue.manage.model.CreditManager">
+		select id,tel_number as tel, real_name as realName,
+			organization
+		from c_manager_info
+		where real_name = #{name}
+	
+	</select>
+	<select id="getCreditManagerList" resultMap="selectInfo">
+		select id as `key`,
+			   real_name as value
+		from c_manager_info	
+	</select>
+	
+	<!-- add by mzj 2015/08/26 start -->
+	<insert id="addFastApplicant" parameterType="com.xinyue.manage.model.FastProductApplicant">
+	insert into 
+		m_applicant_fast_info 
+	values(
+		#{applicantFastId},
+		#{loanAmount},
+		#{loanPeriod},
+		#{profession},
+		#{monthManagement},
+		#{monthCashIncome},
+		#{managementLife},
+		#{registerProvince},
+		#{registerCity},
+		#{registerZone},
+		#{twoYearCredit},
+		#{houseType}
+	);
+	</insert>
+	
+	<insert id="addFastCompany" parameterType="com.xinyue.manage.model.FastProductCompany">
+	insert into 
+		m_company_fast_info 
+	values(
+		#{companyFastId},
+		#{companyName},
+		#{legalRepresentative},
+		#{parpersType},
+		#{papersNumber},
+		#{businessLicenseNumber},
+		#{registerTime},
+		#{registerFund},
+		#{companyType},
+		#{industry},
+		#{registerAddress},
+		#{factBusinessArea},
+		#{yearTurnover},
+		#{yearInvoice},
+		#{assetLiability},
+		#{businessGrowth},
+		#{yearNetProfit},
+		#{staffNumber},
+		#{personInformation}
+	);
+	</insert>
+	
+	<insert id="addFastOrder" parameterType="hashmap">
+	insert into
+		m_product_fast_info(
+			id,
+			company,
+			code,
+			area_province,
+			area_city,
+			area_zone,
+			remark,
+			contact_phone,
+			deleted,
+			created_time,
+			modified_time,
+			applicant_fast_id,
+			company_fast_id
+		)
+	values(
+		#{id},
+		#{company},
+		#{code},
+		#{province},
+		#{city},
+		#{zone},
+		#{mark},
+		#{phone},
+		0,
+		now(),
+		now(),
+		#{applicantFastId},
+		#{companyFastId}
+	);
+	</insert>
+	<!-- add by mzj 2015/08/26 end   -->
 </mapper>

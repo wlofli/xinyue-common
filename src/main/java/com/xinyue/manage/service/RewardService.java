@@ -21,7 +21,18 @@ public interface RewardService {
 	
 	public int countRewardList(String userId,SearchReward searchReward);
 	
+	
+	@Deprecated
 	public OutLine getOutLine(String userId);
+	
+	
+	/**
+	 * add by lzc     date: 2015年9月7日
+	 * @param userId 用户id
+	 * @param userType 用户类型
+	 * @return
+	 */
+	public OutLine getOutLine(String userId, String userType);
 	
 	public boolean addWithdraw(String userId, Reward reward);
 

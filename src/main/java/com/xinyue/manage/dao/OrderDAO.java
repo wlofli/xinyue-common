@@ -7,7 +7,10 @@ import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.Document;
+import com.xinyue.manage.model.FastProductApplicant;
+import com.xinyue.manage.model.FastProductCompany;
 import com.xinyue.manage.model.Order;
 
 /**
@@ -68,6 +71,13 @@ public interface OrderDAO {
 	 */
 	public boolean updateOrder(@Param("order")Order order);
 	
+	/**更新订单评价信息
+	 * add by lzc     date: 2015年8月14日
+	 * @param order
+	 * @return
+	 */
+	public boolean updateOrderEvaluate(@Param("order")Order order, @Param("modifiedId")String modifiedId);
+	
 	
 	
 	/**
@@ -101,6 +111,12 @@ public interface OrderDAO {
     
     public void deleteDocument(@Param("documentId")String document, @Param("id")String orderId);
     
+    /**初始化订单
+     * add by lzc     date: 2015年9月2日
+     * @param order
+     * @return
+     */
+    public int addOrder(Order order);
     
     /**
 	 * add by lzc     date: 2015年7月30日
@@ -111,5 +127,42 @@ public interface OrderDAO {
 	
 	public int getDocumentCount(String orderId);
 
+	/**根据信贷经理姓名获取信贷经理信息
+	 * add by lzc     date: 2015年8月25日
+	 * @param name
+	 * @return
+	 */
+	public CreditManager getCreditManager(@Param("name")String name);
+	
+	/**返回信贷经理列表
+	 * add by lzc     date: 2015年8月26日
+	 * @return key->id value->name
+	 */
+	public List<SelectInfo> getCreditManagerList();
+	
+	/**
+	 * 追加快速申贷申请人信息
+	 * add by mzj 2015/8/26
+	 * @param applicantFast
+	 * @return
+	 */
+	public int addFastApplicant(FastProductApplicant applicantFast);
 
+	/**
+	 * 追加快速申贷公司信息
+	 * add by mzj 2015/8/26
+	 * @param companyFast
+	 * @return
+	 */
+	public int addFastCompany(FastProductCompany companyFast);
+
+	/**
+	 * 追加快速申贷订单
+	 * add by mzj 2015/8/26
+	 * @param map
+	 * @return
+	 */
+	public int addFastOrder(HashMap<String, Object> map);
+
+	
 }

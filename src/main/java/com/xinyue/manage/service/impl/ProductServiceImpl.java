@@ -1,6 +1,7 @@
 package com.xinyue.manage.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.ProductInfo;
+import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.ProductDao;
 import com.xinyue.manage.dao.ProductFileDao;
 import com.xinyue.manage.model.Product;
@@ -122,6 +124,31 @@ public class ProductServiceImpl implements ProductService{
 	public List<Product> getListByRecommend(String Recommend) {
 		// TODO Auto-generated method stub
 		return pdao.getListByRecommend(Recommend);
+	}
+
+
+	@Override
+	public List<SelectInfo> findProductsManagerId(String managerId) {
+		
+		return pdao.findProductsManagerId(managerId);
+	}
+
+
+	@Override
+	public List<Product> getProductsByManagerId(String managerId,int page) {
+		
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("managerId", managerId);
+		map.put("index", page-1);
+		
+		return pdao.getProductsByManagerId(map);
+	}
+
+
+	@Override
+	public int getProductsCountByManagerId(String managerId) {
+		
+		return pdao.getProductsCountByManagerId(managerId);
 	}
 	
 }

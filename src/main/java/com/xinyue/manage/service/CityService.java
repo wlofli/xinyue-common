@@ -5,6 +5,7 @@ import java.util.List;
 import com.xinyue.manage.beans.CityInfo;
 import com.xinyue.manage.beans.SearchCity;
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.model.City;
 import com.xinyue.manage.model.Province;
 import com.xinyue.manage.model.SubStation;
 
@@ -49,4 +50,10 @@ public interface CityService {
 	 * @return
 	 */
 	String findCityCodeByName(String cityName);
+
+	/**
+	 * 获取城市
+	 * @return
+	 */
+	List<City> findServerZones();
 }
