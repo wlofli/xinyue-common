@@ -7,6 +7,8 @@ import com.xinyue.manage.beans.SearchCreditManager;
 import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
+import com.xinyue.manage.model.MoneyOutline;
+import com.xinyue.manage.model.Order;
 
 /**
  * 信贷经理服务层
@@ -114,4 +116,34 @@ public interface CreditManagerService {
 	 * @return
 	 */
 	int getInvitationManagerRecords(String managerId);
+
+	/**
+	 * 资金账户
+	 * @param managerId
+	 * @return
+	 */
+	MoneyOutline getMoneyAccountByManagerId(String managerId);
+
+	/**
+	 * 信贷经理详情-服务评级列表
+	 * @param managerId
+	 * @param star 
+	 * @param page 
+	 * @return
+	 */
+	List<Order> getServerRatingByManagerId(String managerId, int page, int star);
+
+	/**
+	 * 信贷经理详情-服务评级数量
+	 * @param managerId
+	 * @return
+	 */
+	int getServerRatingCount(String managerId);
+
+	/**
+	 * 信贷经理详情-服务评级综合
+	 * @param managerId
+	 * @return
+	 */
+	int getServerStar(String managerId);
 }

@@ -14,7 +14,9 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.BusinessInfos;
+import com.xinyue.manage.beans.CustomerInfo;
 import com.xinyue.manage.beans.HoldInfos;
+import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.CompanyInfoDAO;
@@ -716,10 +718,10 @@ System.out.println(holds.get(1).getEducation());
 	}
 
 	@Override
-	public CreditManager getCreditManager(String name) {
+	public CreditManager getCreditManagerByName(String name) {
 		// TODO Auto-generated method stub
 		try {
-			return orderDAO.getCreditManager(name);
+			return orderDAO.getCreditManagerByName(name);
 		} catch (Exception e) {
 			// TODO: handle exception
 			//可能会出现信贷经理同名情形,查询 1 but found n
@@ -802,6 +804,29 @@ System.out.println(holds.get(1).getEducation());
 			// TODO: handle exception
 			throw new RuntimeException();
 		}
+	}
+
+	@Override
+	public List<CustomerInfo> getCustomerInfoByCondition(
+			SearchCustomer searchCustomer) {
+		
+		List<CustomerInfo> infos = orderDAO.getCustomerInfoByCondition(searchCustomer);
+		
+		return infos;
+	}
+
+
+	@Override
+	public int getCustomerInfoCountByCondition(SearchCustomer searchCustomer) {
+		
+		return orderDAO.getCustomerInfoCountByCondition(searchCustomer);
+	}
+
+
+	@Override
+	public CustomerInfo getOrderTrackByOrderId(String id) {
+		
+		return orderDAO.getOrderTrackByOrderId(id);
 	}
 	
 }

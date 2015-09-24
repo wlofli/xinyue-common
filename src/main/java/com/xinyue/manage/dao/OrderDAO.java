@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.xinyue.manage.beans.CustomerInfo;
+import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrder;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.CreditManager;
@@ -132,7 +134,7 @@ public interface OrderDAO {
 	 * @param name
 	 * @return
 	 */
-	public CreditManager getCreditManager(@Param("name")String name);
+	public CreditManager getCreditManagerByName(@Param("name")String name);
 	
 	/**返回信贷经理列表
 	 * add by lzc     date: 2015年8月26日
@@ -163,6 +165,30 @@ public interface OrderDAO {
 	 * @return
 	 */
 	public int addFastOrder(HashMap<String, Object> map);
+
+	/**
+	 * 信贷经理详情-客户信息（后台）
+	 * add by mzj 2015/9/10
+	 * @param searchCustomer
+	 * @return
+	 */
+	public List<CustomerInfo> getCustomerInfoByCondition(
+			SearchCustomer searchCustomer);
+
+	/**
+	 * 信贷经理详情-客户信息数量（后台）
+	 * add by mzj 2015/9/10
+	 * @param searchCustomer
+	 * @return
+	 */
+	public int getCustomerInfoCountByCondition(SearchCustomer searchCustomer);
+
+	/**
+	 * 信贷经理详情-客户信息-订单跟踪明细（后台）
+	 * @param id
+	 * @return
+	 */
+	public CustomerInfo getOrderTrackByOrderId(String id);
 
 	
 }

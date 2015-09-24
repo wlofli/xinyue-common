@@ -680,7 +680,7 @@
 		where order_id = #{orderId}
 	</select>
 	
-	<select id="getCreditManager" resultType="com.xinyue.manage.model.CreditManager">
+	<select id="getCreditManagerByName" resultType="com.xinyue.manage.model.CreditManager">
 		select id,tel_number as tel, real_name as realName,
 			organization
 		from c_manager_info
@@ -773,4 +773,138 @@
 	);
 	</insert>
 	<!-- add by mzj 2015/08/26 end   -->
+	
+	<!-- add by mzj 2015/9/11 start-->
+	<select id="getCustomerInfoByCondition" parameterType="com.xinyue.manage.beans.SearchCustomer" resultType="com.xinyue.manage.beans.CustomerInfo">
+		select 
+		    oi.id as id,
+		    oi.code as orderId,
+		    ai.name as applicant,
+		    pi.name as productName,
+		    ai.phone as applicantTel,
+		    ai.amount as loanAmount,
+		    ai.deadline as loanLimit,
+		    li.company_name as company,
+		    date_format(oi.created_time,'%Y-%m-%d') as applicantDate,
+		    s1.select_value as orderStatus,
+		    s2.select_value as orderType
+		from
+		    m_order_info oi,
+		    m_product_info pi,
+		    m_applicant_info ai,
+		    m_license_info li,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'order_member_status') s1,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'order_type') s2
+		where
+		    oi.product_info = pi.id
+		        and oi.applicant_info = ai.id
+		        and li.id = oi.license_info
+		        and oi.status = s1.select_key
+		        and oi.order_type = s2.select_key
+		        and oi.credit_manager_id = #{managerId}
+		        <if test="startTime != '' and startTime != null">
+		        and oi.created_time <![CDATA[>=]]> #{startTime}
+		        </if>
+		        <if test="endTime != '' and endTime != null">
+		        and oi.created_time <![CDATA[<=]]> #{endTime}
+		        </if>
+		        <if test="product != '' and product != null">
+		        and pi.id = #{product}
+		        </if>
+		        <if test="applicantPhone != '' and applicantPhone != null">
+		        and ai.phone like concat(concat('%',#{applicantPhone}),'%')
+		        </if>
+		        <if test="applicantName != '' and applicantName !=null">
+		        and ai.name like concat(concat('%',#{applicantName}),'%')
+		        </if>
+		        <if test="status != '' and status != null">
+		        and oi.status = #{status}
+		        </if>
+		        <if test="orderType != '' and orderType != null">
+		        and oi.order_type = #{orderType}
+		        </if>
+		order by oi.created_time desc
+		limit #{index} , 8;	
+	</select>
+	
+	<select id="getCustomerInfoCountByCondition" parameterType="com.xinyue.manage.beans.SearchCustomer" resultType="int">
+		select 
+		    count(oi.id)
+		from
+		    m_order_info oi,
+		    m_product_info pi,
+		    m_applicant_info ai,
+		    m_license_info li
+		where
+		    oi.product_info = pi.id
+		        and oi.applicant_info = ai.id
+		        and li.id = oi.license_info
+		        and oi.credit_manager_id = #{managerId}
+		        <if test="startTime != '' and startTime != null">
+		        and oi.created_time <![CDATA[>=]]> #{startTime}
+		        </if>
+		        <if test="endTime != '' and endTime != null">
+		        and oi.created_time <![CDATA[<=]]> #{endTime}
+		        </if>
+		        <if test="product != '' and product != null">
+		        and pi.id = #{product}
+		        </if>
+		        <if test="applicantPhone != '' and applicantPhone != null">
+		        and ai.phone like concat(concat('%',#{applicantPhone}),'%')
+		        </if>
+		        <if test="applicantName != '' and applicantName !=null">
+		        and ai.name like concat(concat('%',#{applicantName}),'%')
+		        </if>
+		        <if test="status != '' and status != null">
+		        and oi.status = #{status}
+		        </if>
+		        <if test="orderType != '' and orderType != null">
+		        and oi.order_type = #{orderType}
+		        </if>
+	</select>
+	
+	<select id="getOrderTrackByOrderId" parameterType="String" resultType="com.xinyue.manage.beans.CustomerInfo">
+		select 
+			oi.id as id,
+		    pi.id as productId,
+		    pi.name as productName,
+		    org.name as organization,
+		    os.select_value as orderStatus,
+		    ai.amount as loanAmount,
+		    ai.deadline as loanLimit,
+		    ai.name as applicant,
+		    ai.phone as applicantTel,
+		    li.company_name as company,
+		    date_format(oi.created_time, '%Y-%m-%d') applicantDate
+		from
+		    m_order_info oi,
+		    m_product_info pi,
+		    m_organization_info org,
+		    m_applicant_info ai,
+		    m_license_info li,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'order_member_status') os
+		where
+		    oi.product_info = pi.id
+		        and oi.bank = org.number
+		        and oi.status = os.select_key
+		        and oi.applicant_info = ai.id
+		        and oi.license_info = li.id
+		        and oi.id = #{id};	
+	</select>
+	<!-- add by mzj 2015/9/11 end-->
 </mapper>

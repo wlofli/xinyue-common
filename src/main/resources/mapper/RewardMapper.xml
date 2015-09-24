@@ -10,7 +10,7 @@
 		<result column="reward_total" property="rewardTotal" />
 		<result column="withdraw_total" property="withdrawTotal" />
 		<result column="cash_remain" property="cashRemain" />
-		<result column="reward_remain" property="rewardReamin" />
+		<result column="reward_remain" property="rewardRemain" />
 		<result column="award_remain" property="awardRemain" />
 		<result column="created_id" property="createdId" />
 		<result column="modified_id" property="modifiedId" />
@@ -25,12 +25,21 @@
 		<result column="reward_type" property="rewardType" />
 		<result column="serical_number" property="sericalNumber" />
 		<result column="remark" property="remark" />
-		<result column="source" property="source" />
+<!-- 		<result column="source" property="source" /> -->
 		<result column="reward_amount" property="rewardAmount" />
 		<result column="reward_time" property="rewardTime" />
 		<result column="current_amount" property="currentAmount" />
 		<result column="other_reward_amount" property="otherRewardAmount" />
+		<result column="other_award_amount" property="otherAwardAmount" />
+		<result column="status" property="status" />
 		<result column="deleted" property="deleted" />
+		<result column="recommend_user_name" property="recommendUserName" />
+		<result column="recommend_user_phone" property="recommendUserPhone" />
+		<result column="user_name" property="userName" />
+		<result column="user_phone" property="userPhone" />
+		<result column="province" property="province" />
+		<result column="city" property="city" />
+		<result column="zone" property="zone" />
 	</resultMap>
 
 	<resultMap type="com.xinyue.manage.model.WithdrawMoney" id="withdraw">
@@ -39,10 +48,23 @@
 		<result column="user_type" property="userType" />
 		<result column="serical_number" property="sericalNumber" />
 		<result column="current_amount" property="currentAmount" />
+		<result column="other_reward_amount" property="otherRewardAmount" />
+		<result column="other_award_amount" property="otherAwardAmount" />
 		<result column="withdraw_amount" property="withdrawAmount" />
 		<result column="withdraw_time" property="withdrawTime" />
 		<result column="remark" property="remark" />
 		<result column="deleted" property="deleted" />
+		<result column="audite_person" property="auditePerson" />
+		<result column="audite_time" property="auditeTime" />
+		<result column="audite_remark" property="auditeRemark" />
+		<result column="pay_person" property="payPerson" />
+		<result column="pay_time" property="payTime" />
+		<result column="pay_remark" property="payRemark" />
+		<result column="user_name" property="userName" />
+		<result column="user_phone" property="userPhone" />
+		<result column="user_status" property="userStatus" />
+		
+		
 		<association column="withdraw_type"  property="withdrawType" javaType="String" select="getWithdrawType"></association>
 		<association column="status"  property="status" javaType="String" select="getWithdrawStatus"></association>
 	</resultMap>
@@ -75,11 +97,122 @@
 	<insert id="addReward" parameterType="com.xinyue.manage.model.Reward">
 		insert into m_reward_info
 			(id,user_id,reward_type,reward_amount,reward_time,status,serical_number,
-				remark,deleted,user_type,current_amount,other_reward_amount)
+				remark,deleted,user_type,current_amount,other_reward_amount,
+				other_award_amount,recommend_user_name,recommend_user_phone)
 		values
 			(#{id},#{userId},#{rewardType},#{rewardAmount},now(),#{status},#{sericalNumber}
-				#{remark},#{deleted},#{userType},#{currentAmount},#{otherRewardAmount})
+				#{remark},#{deleted},#{userType},#{currentAmount},#{otherRewardAmount},
+				#{otherAwardAmount},#{recommendUserName},#{recommendUserPhone})
 	</insert>
+	
+	<select id="getAllAwardRemain" resultType="double">
+		select sum(reward_remain)
+		from m_reward_outline
+	</select>
+	
+	<select id="getAllReward" resultType="double">
+		select sum(reward_amount)
+		from m_reward_info
+		where deleted = 0
+	</select>
+	
+	<select id="getAllWithdraw" resultType="double">
+		select sum(withdraw_amount)
+		from m_withdraw_money_info
+		where deleted = 0 and status = 1
+	</select>
+	
+	<sql id="rewardCondition">
+		<if test="search.startTime != null and search.startTime != ''">
+			and r.reward_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+			and r.reward_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.minPrice != null and search.minPrice != ''">
+			and r.reward_amount >= #{search.minPrice}
+		</if>
+		<if test="search.maxPrice != null and search.maxPrice != ''">
+		<![CDATA[
+			and r.reward_amount <= #{search.maxPrice}
+		]]>
+		</if>
+		<if test="search.phone != null and search.phone != ''">
+			and (cm.tel_number like '%' #{search.phone} '%' OR m.contact_phone like '%' #{search.phone} '%' )
+		</if>
+		<if test="search.name != null and search.name != ''">
+			and (cm.real_name like '%' #{search.name} '%'  OR m.contact_name like '%' #{search.name} '%' )
+		</if>
+		<if test="search.source != null and search.source != ''">
+			and r.reward_type = #{search.source}
+		</if>
+		<if test="search.province != null and search.province != ''">
+			and (cm.province = #{search.province} OR  m.area_province = #{search.province})
+		</if>
+		<if test="search.city != null and search.city != ''">
+			and (cm.city = #{search.city} OR  m.area_city = #{search.city})
+		</if>
+		<if test="search.status != null and search.status != ''">
+<!-- 			1普通会员2信贷经理 -->
+			<if test="search.status == 1">
+				and r.user_type = 'm'
+			</if>
+			<if test="search.status == 2">
+				and r.user_type = 'c'
+			</if>
+		</if>
+	</sql>
+	
+	<select id="getRewardListByCondition" resultMap="reward">
+		select
+			concat_ws('',cm.real_name,m.contact_name) as user_name,
+			concat_ws('',cm.tel_number,m.contact_phone) as user_phone,
+			r.user_type	   as user_type,
+			concat_ws('',p.name,p1.name) as province,
+			concat_ws('',c.name,c1.name) as city,
+			z1.name as zone,
+			r.reward_time,
+			s.select_value as reward_type,
+			r.id,
+			r.recommend_user_name,
+			r.recommend_user_phone,
+			r.remark,
+			r.serical_number,
+			r.reward_amount,
+			r.other_award_amount
+		from m_reward_info r
+		left join m_select_info    s on s.select_key = r.reward_type  and s.type_code = 'reward_source'
+		left join c_manager_info    cm on r.user_id = cm.id and r.user_type = 'c'
+		left join m_area_province  p on p.code = cm.province
+		left join m_area_city      c on c.code = cm.city
+		left join m_member_info    m on r.user_id = m.id and r.user_type = 'm'
+		<if test="search.zone != null and search.zone != ''">
+			and   m.area_zone = #{search.zone}
+		</if>
+		left join m_area_province  p1 on p1.code = m.area_province
+		left join m_area_city      c1 on c1.code = m.area_city
+		left join m_area_zone      z1 on z1.code = m.area_zone 
+		
+		where r.deleted = 0 
+		<include refid="rewardCondition"></include>
+		order by r.reward_time
+		limit #{pageNo}, #{pageSize}
+	</select>
+	
+	<select id="countRewardListByCondition" resultType="int">
+		select
+			count(*)
+		from m_reward_info r
+		left join c_manager_info    cm on r.user_id = cm.id and r.user_type = 'c'
+		left join m_member_info    m on r.user_id = m.id and r.user_type = 'm'
+		<if test="search.zone != null and search.zone != ''">
+			and   m.area_zone = #{search.zone}
+		</if>
+		where r.deleted = 0 
+		<include refid="rewardCondition"></include>
+	</select>
 	
 	<select id="getRewardList" resultMap="reward">
 		select r.id,
@@ -89,10 +222,13 @@
 			   r.reward_time,
 			   r.reward_amount,
 			   r.current_amount,
-			   r.other_reward_amount
+			   r.other_reward_amount,
+			   r.other_award_amount,
+			   r.recommend_user_name,
+			   r.recommend_user_phone
 		from m_reward_info r
 		left join m_select_info s on s.select_key = r.reward_type and type_code = #{typeCode}
-		where r.user_id = #{userId} 
+		where deleted = 0 and  r.user_id = #{userId} 
 			<if test="searchReward.startTime != null">
 				and reward_time > #{searchReward.startTime}
 			</if>
@@ -106,7 +242,7 @@
 	<select id="countRewardList" resultType="int">
 		select count(*)
 		from m_reward_info r
-		where r.user_id = #{userId} 
+		where deleted = 0 and  r.user_id = #{userId} 
 			<if test="searchReward.startTime != null">
 				and reward_time > #{searchReward.startTime}
 			</if>
@@ -115,15 +251,158 @@
 			</if>
 	</select>
 	
+	<sql id="withdrawCondition">
+		<if test="search != null">
+			<if test="search.startTime != null and search.startTime != ''">
+				and w.withdraw_time > #{search.startTime}
+			</if>
+			<if test="search.endTime != null and search.endTime != ''">
+				<![CDATA[
+				and w.withdraw_time < #{search.endTime}
+				]]>
+			</if>
+			<if test="search.minPrice != null and search.minPrice != ''">
+				and w.withdraw_amount >= #{search.minPrice}
+			</if>
+			<if test="search.maxPrice != null and search.maxPrice != ''">
+			<![CDATA[
+				and w.withdraw_amount <= #{search.maxPrice}
+			]]>
+			</if>
+			<if test="search.phone != null and search.phone != ''">
+				and (c.tel_number like '%' #{search.phone} '%' OR m.contact_phone like '%' #{search.phone} '%' )
+			</if>
+			<if test="search.status != null and search.status != ''">
+				and w.status = #{search.status}				
+			</if>
+		</if>
+	
+	</sql>
+	
+	<select id="getWithdrawListByCondition" resultMap="withdraw">
+		select
+			w.withdraw_time,
+			w.id,
+			concat_ws('',c.real_name, m.contact_name) as user_name,
+			concat_ws('',c.tel_number, m.contact_phone) as user_phone,
+			concat_ws('',s.select_value,s1.select_value) as user_status,
+			w.user_type,
+			w.withdraw_amount,
+			w.other_award_amount,
+			w.status
+		from m_withdraw_money_info w
+		left join c_manager_info c on w.user_id = c.id and user_type = 'c'
+		left join m_member_info  m on w.user_id = m.id and user_type = 'm'
+		left join m_select_info  s on s.select_key = c.status and s.type_code = 'user_status'
+		left join m_select_info  s1 on s1.select_key = m.status and s1.type_code = 'user_status'
+		where w.deleted = 0
+		<include refid="withdrawCondition"></include>
+		<if test="(search.timeSort != null and search.timeSort != '') or (search.amountSort != null and search.amountSort != '')">
+			order by
+			<if test="search.timeSort != null and search.timeSort != ''">
+				w.withdraw_time
+				<if test="search.timeSort == 2">
+				 desc
+				</if>
+				<if test="search.amountSort != null and search.amountSort != ''">
+					,
+				</if>
+			</if>
+			<if test="search.amountSort != null and search.amountSort != ''">
+				w.withdraw_amount
+				<if test="search.amountSort == 2">
+					desc
+				</if>
+			</if>
+		</if>
+		limit #{pageNo}, #{pageSize}	
+	</select>
+	
+	
+	<select id="countWithdrawListByCondition" resultType="int">
+		select
+			count(*)
+		from m_withdraw_money_info w
+		left join c_manager_info c on w.user_id = c.id and user_type = 'c'
+		left join m_member_info  m on w.user_id = m.id and user_type = 'm'
+		where w.deleted = 0
+		<include refid="withdrawCondition"></include>
+	</select>
+	
+	
+	<select id="getWithdrawInfoWithNum" resultType="com.xinyue.manage.beans.SearchOrderCredit">
+		<foreach collection="list" separator="union all" item="id">
+			select
+				s.select_key as `key`,
+				s.select_value as `value`,
+				(select count(*) from m_withdraw_money_info w
+				 where w.status = #{id}) as num
+			from m_select_info s 
+			where s.type_code = 'withdraw_status' and s.select_key = #{id}
+		</foreach>
+	</select>
+	
+	
+	<select id="getWithdrawMoneyById" parameterType="string" resultMap="withdraw">
+		select
+			w.withdraw_time,
+			w.id,
+			concat_ws('',c.real_name, m.contact_name) as user_name,
+			concat_ws('',c.tel_number, m.contact_phone) as user_phone,
+			concat_ws('',s.select_value,s1.select_value) as user_status,
+			w.user_type,
+			w.withdraw_amount,
+			w.other_award_amount,
+			w.other_reward_amount,
+			w.current_amount,
+			w.status,
+			w.withdraw_type,
+			w.serical_number,
+			w.remark,
+			w.audite_time,
+			w.audite_person,
+			w.audite_remark,
+			w.pay_person,
+			w.pay_time,
+			w.pay_remark
+		from m_withdraw_money_info w
+		left join c_manager_info c on w.user_id = c.id and user_type = 'c'
+		left join m_member_info  m on w.user_id = m.id and user_type = 'm'
+		left join m_select_info  s on s.select_key = c.status and s.type_code = 'user_status'
+		left join m_select_info  s1 on s1.select_key = m.status and s1.type_code = 'user_status'
+		where w.id = #{id}
+	</select>
+	
+	
+	<update id="updateWithdrawMoney"  >
+		update
+			m_withdraw_money_info
+		set
+			status = #{withdraw.status}
+			<if test="withdraw.auditePerson != null and withdraw.auditePerson != ''">
+				,audite_person = #{withdraw.auditePerson},
+				audite_time = now(),
+				audite_remark = #{withdraw.auditeRemark}
+			</if>
+			<if test="withdraw.payPerson != null and withdraw.payPerson != ''">
+				,pay_person = #{withdraw.payPerson},
+				pay_time = now(),
+				pay_remark = #{withdraw.payRemark}
+			</if>
+		where id = #{withdraw.id}
+	</update>
+	
+	
+	
 	<select id="getWithdrawList" resultMap="withdraw">
 		select * from m_withdraw_money_info
 		where user_id = #{userId}
 		<if test="searchReward.startTime != null">
 				and withdraw_time > #{searchReward.startTime}
-			</if>
-			<if test="searchReward.endTime != null">
-					<![CDATA[and withdraw_time < #{searchReward.endTime} ]]> 
-			</if>
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and withdraw_time < #{searchReward.endTime} ]]> 
+		</if>
 		order by withdraw_time desc
 		limit #{pageNo},#{pageSize}
 	</select>
@@ -133,10 +412,10 @@
 		where user_id = #{userId}
 		<if test="searchReward.startTime != null">
 				and withdraw_time > #{searchReward.startTime}
-			</if>
-			<if test="searchReward.endTime != null">
-					<![CDATA[and withdraw_time < #{searchReward.endTime} ]]> 
-			</if>
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and withdraw_time < #{searchReward.endTime} ]]> 
+		</if>
 	</select>
 	
 	<select id="getRewardOutLine" parameterType="string" resultMap="outline">
@@ -149,4 +428,233 @@
 		where user_id = #{userId} and user_type = #{userType}
 	</select>
 	
+	
+	<sql id="getDetailCondition">
+		where user_id = #{userId} and user_type = #{userType}
+		<if test=""></if>
+	</sql>
+	<select id="getDetailList" resultType="com.xinyue.manage.model.OutLine">
+		
+<!-- 		消费表 -->
+		select 
+			c.consumption_time as createdTime,
+			c.order_id as id,
+			c.consumption_amount as consumption,
+			0 as income,
+			c.current_amount as cashRemain,
+			c.other_award_amount as awardRemain,
+			c.other_reward_amount as rewardRemain
+		
+		from m_consumption_info c  
+		where user_id = #{userId} and user_type = #{userType}
+		<if test="searchReward.startTime != null">
+				and c.consumption_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and c.consumption_time < #{searchReward.endTime} ]]> 
+		</if>
+		union all
+<!-- 		奖励表 -->
+		select 
+			c.reward_time as createdTime,
+			c.id as id,
+			0 as consumption,
+			c.reward_amount as income,
+			c.current_amount as cashRemain,
+			c.other_award_amount as awardRemain,
+			c.other_reward_amount as rewardRemain
+		from m_reward_info c
+		where user_id = #{userId} and user_type = #{userType}
+		<if test="searchReward.startTime != null">
+				and c.reward_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and c.reward_time < #{searchReward.endTime} ]]> 
+		</if>
+		
+		union all
+<!-- 		充值表 -->
+		select
+			c.recharge_time as createdTime,
+			c.order_id as id,
+			0 as consumption,
+			c.recharge_amount as income,
+			c.current_amount as cashRemain,
+			c.other_award_amount as awardRemain,
+			c.other_reward_amount as rewardRemain
+		from m_recharge_info c
+		where user_id = #{userId} and user_type = #{userType}
+		<if test="searchReward.startTime != null">
+				and c.recharge_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and c.recharge_time < #{searchReward.endTime} ]]> 
+		</if>
+		order by createdTime
+		limit #{pageNo}, #{pageSize}
+		
+	</select>
+	
+	
+	<select id="countDetailList" resultType="int">
+		select (
+		(
+		select 
+			count(*)
+		from m_consumption_info c  
+		where user_id = #{userId} and user_type = #{userType}
+		<if test="searchReward.startTime != null">
+				and c.consumption_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and c.consumption_time < #{searchReward.endTime} ]]> 
+		</if>
+		)+(select 
+			count(*)
+		from m_reward_info r
+		where user_id = #{userId} and user_type = #{userType}
+		<if test="searchReward.startTime != null">
+				and r.reward_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and r.reward_time < #{searchReward.endTime} ]]> 
+		</if>
+		
+		)+(select
+			count(*)
+		from m_recharge_info i
+		where user_id = #{userId} and user_type = #{userType}
+		<if test="searchReward.startTime != null">
+				and i.recharge_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+				<![CDATA[and i.recharge_time < #{searchReward.endTime} ]]> 
+		</if>
+		
+		)) as num
+	</select>
+	
+		<update id="updateOutline" parameterType="com.xinyue.manage.model.OutLine">
+		update m_reward_outline
+		set 
+			recharge_total = #{rechargeTotal},
+			reward_total = #{rewardTotal},
+			consumption_total = #{consumptionTotal},
+			withdraw_total = #{withdrawTotal},
+			cash_remain = #{cashRemain},
+			reward_remain = #{rewardRemain},
+			award_remain = #{awardRemain},
+			modified_time = now(),
+			modified_id = #{modifiedId}
+		where user_id = #{userId} and user_type = #{userType}
+	</update>
+	
+	<select id="getRewardRecords" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="com.xinyue.manage.model.Reward">
+		SELECT 
+		    date_format(ri.reward_time, '%Y-%m-%d %H:%i') as rewardTime,
+		    s1.select_value as rewardType,
+		    ri.id as id,
+		    ri.recommend_user_name as recommendUserName,
+		    ri.recommend_user_phone as recommendUserPhone,
+		    ri.reward_amount as rewardAmount,
+		    ri.remark as remark,
+		    ri.serical_number as sericalNumber,
+		    ri.other_reward_amount as otherRewardAmount,
+		    ri.other_award_amount as otherAwardAmount
+		FROM
+		    m_reward_info ri,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'reward_source') s1
+		where
+		    ri.reward_type = s1.select_key
+		        and ri.deleted = 0
+		        and ri.user_id = #{managerId}
+		        and ri.user_type = 'c'
+		        <if test="timestart != ''">
+		        and ri.reward_time <![CDATA[>=]]> #{timestart} 
+		        </if>
+		        <if test="timeEnd != ''">
+		        and ri.reward_time <![CDATA[<=]]> #{timeEnd} 
+		        </if>
+		order by ri.reward_time desc
+		limit #{index} , 8;	
+	</select>
+	
+	<select id="getRewardRecordsCount" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="int">
+		select 
+		    count(ri.id)
+		from
+		    m_reward_info ri
+		where
+		    ri.deleted = 0
+		        and ri.user_id = #{managerId}
+		        and ri.user_type = 'c'
+		        <if test="timestart != ''">
+		        and ri.reward_time <![CDATA[>=]]> #{timestart} 
+		        </if>
+		        <if test="timeEnd != ''">
+		        and ri.reward_time <![CDATA[<=]]> #{timeEnd} 
+		        </if>
+		;
+	</select>
+	
+	<select id="getWithdrawMoneyRecords" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="com.xinyue.manage.model.WithdrawMoney">
+		select 
+		    date_format(wmi.withdraw_time, '%Y-%m-%d %H:%i') as withdrawTime,
+		    wmi.id as id,
+		    s1.select_value as withdrawType,
+		    wmi.withdraw_amount as withdrawAmount,
+		    s2.select_value as status,
+		    wmi.remark as remark,
+		    wmi.serical_number as sericalNumber,
+		    wmi.other_reward_amount as otherRewardAmount,
+		    wmi.other_award_amount as otherAwardAmount
+		from
+		    m_withdraw_money_info wmi,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'withdraw_type') s1,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'withdraw_status') s2
+		where
+		    wmi.withdraw_type = s1.select_key
+		        and s2.select_key = wmi.status
+		        and wmi.user_type = 'c'
+		        and wmi.user_id = #{managerId}
+		        <if test="timestart != ''">
+		        and wmi.withdraw_time <![CDATA[>=]]> #{timestart} 
+		        </if>
+		        <if test="timeEnd != ''">
+		        and wmi.withdraw_time <![CDATA[<=]]> #{timeEnd} 
+		        </if>
+		order by wmi.withdraw_time desc
+		limit #{index} , 8;	
+	</select>
+	
+	<select id="getWithdrawMoneyRecordsCount" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="int">
+		select 
+		    count(wmi.id)
+		from
+		    m_withdraw_money_info wmi
+		where
+		   wmi.user_type = 'c'
+		        and wmi.user_id = #{managerId}
+		        <if test="timestart != ''">
+		        and wmi.withdraw_time <![CDATA[>=]]> #{timestart} 
+		        </if>
+		        <if test="timeEnd != ''">
+		        and wmi.withdraw_time <![CDATA[<=]]> #{timeEnd} 
+		        </if>		
+	</select>
 </mapper>

@@ -40,12 +40,7 @@
 		from m_industry_info
 	</select>
 	
-	<select id="getOrgList" resultType="com.xinyue.manage.model.Select">
-		select 
-		otypeid dicKey,
-		name dicVal
-		from m_organization_type where deleted = 0
-	</select>
+
 
 	
 	<select id="findProvince" resultMap="selectResult" >

@@ -16,6 +16,7 @@ import com.xinyue.manage.model.OrderLowPrice;
 /**
  * author lzc
  * 2015年7月1日下午4:54:02
+ * 竞拍,指定推送,立即领取,最低低价表的操作
  */
 public interface OrderCustomerDAO {
 	/**

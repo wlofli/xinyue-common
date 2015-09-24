@@ -50,4 +50,11 @@ public interface SuccessCaseService {
 	 */
 	boolean saveCase(SuccessCase caseInfo);
 
+	/**
+	 * 后台信贷经理-详情-成功案例详细
+	 * @param id
+	 * @return
+	 */
+	SuccessCase getSuccessCaseDetailByCaseId(String id);
+
 }

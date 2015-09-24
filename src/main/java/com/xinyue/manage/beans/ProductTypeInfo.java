@@ -2,8 +2,6 @@ package com.xinyue.manage.beans;
 
 import java.io.Serializable;
 
-import com.xinyue.manage.util.GlobalConstant;
-
 /**
  * 
  * @author wenhai.you
@@ -12,47 +10,21 @@ import com.xinyue.manage.util.GlobalConstant;
  */
 public class ProductTypeInfo implements Serializable {
 
-	private int fstart = 0;
-	private int sstart = 0;
-	private int pageSize = GlobalConstant.PAGE_SIZE;
-	private int fpage = 1;
-	private int spage = 1;
+	private String fpage;
+	private String spage;
 	
-	public int getFstart() {
-		return fstart;
-	}
-	public void setFstart(int fstart) {
-		this.fstart = fstart;
-	}
-	public int getSstart() {
-		return sstart;
-	}
-	public void setSstart(int sstart) {
-		this.sstart = sstart;
-	}
-	public int getPageSize() {
-		return pageSize;
-	}
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
-	public int getFpage() {
+	public String getFpage() {
 		return fpage;
 	}
-	public void setFpage(int fpage) {
+	public void setFpage(String fpage) {
 		this.fpage = fpage;
 	}
-	public int getSpage() {
+	public String getSpage() {
 		return spage;
 	}
-	public void setSpage(int spage) {
+	public void setSpage(String spage) {
 		this.spage = spage;
 	}
-	@Override
-	public String toString() {
-		return "ProductTypeInfo [fstart=" + fstart + ", sstart=" + sstart
-				+ ", pageSize=" + pageSize + ", fpage=" + fpage + ", spage="
-				+ spage + "]";
-	}
+	
 	
 }

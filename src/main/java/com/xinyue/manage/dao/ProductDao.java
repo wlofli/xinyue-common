@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.xinyue.manage.beans.ProductInfo;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Product;
+import com.xinyue.manage.model.ProductContent;
 import com.xinyue.manage.model.ProductFile;
 
 /**
@@ -18,19 +19,9 @@ import com.xinyue.manage.model.ProductFile;
  */
 public interface ProductDao {
 
-	/**
-	 * 根据查询条件返回product
-	 * @param pinfo
-	 * @return
-	 */
-	public List<Product> findList(ProductInfo pinfo);
 	
-	/**
-	 * 根据查询条件返回记录数
-	 * @param pinfo
-	 * @return
-	 */
-	public int getCount(ProductInfo pinfo);
+	
+	
 	
 	/**
 	 * 更新上架时间
@@ -46,20 +37,12 @@ public interface ProductDao {
 	public void updateUnShelve(@Param("list") List<String> list, @Param("modifyUser") String modifyUser);
 	
 	public List<ProductFile> findProductFileList(@Param("id")String pid);
-	public List<Product> findProductById(@Param("pid")String pid);
-	/**
-	 * 根据id查寻
-	 * @param id
-	 * @return
-	 */
-	public Product getProductById(String id);
+	public Product findProductById(@Param("pid")String pid);
 	
 	
-	public void addProduct(Product pro);
 	
-	public void updateProduct(Product pro);
 	
-	public void updateStatus();
+	
 	
 	/**
 	 * 根据推荐标志获取产品信息
@@ -93,4 +76,77 @@ public interface ProductDao {
 	 * @return
 	 */
 	public int getProductsCountByManagerId(String managerId);
+	
+	
+	
+	//2015-09-11 ywh 以后 
+	/**
+	 * ywh 根据查询条件返回产品列表
+	 * @param pinfo
+	 * @return
+	 */
+	public List<Product> findProList(ProductInfo pinfo);
+	
+	/**
+	 * ywh 根据查询条件返回记录数
+	 * @param pinfo
+	 * @return
+	 */
+	public int getProCount(ProductInfo pinfo);
+	
+	
+	/**
+	 * ywh 根据产品标识符显示产品详情 后台
+	 * @param id
+	 * @return
+	 */
+	public Product getProductById(String id);
+	
+	
+	/**
+	 * ywh 后台 前台都可用根据产品标识符 加载选项设置
+	 * @return
+	 */
+	public ProductContent findOptionByProductid(String productid);
+	
+	
+	/**
+	 * ywh 保存选项设置
+	 * @param pc
+	 */
+	public void saveOption(ProductContent pc);
+	
+	
+	
+	/**
+	 * ywh 修改选项设置
+	 * @param pc
+	 */
+	public void updateOption(ProductContent pc);
+	
+	
+	/**
+	 * ywh 添加产品
+	 * @param pro
+	 */
+	public void addProduct(Product pro);
+	
+	
+	/**
+	 * ywh 修改产品
+	 * @param pro
+	 */
+	public void updateProduct(Product pro);
+	
+	
+	/**
+	 * ywh 自动更新产品状态  待上架   上架中   已下架
+	 */
+	public void updateStatus();
+	
+	/**
+	 * ywh 删除产品 
+	 * @param productid
+	 */
+	public void delPro(@Param("productid")String productid , @Param("modifyUser")String modifyUser);
 }

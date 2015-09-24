@@ -3,6 +3,7 @@ package com.xinyue.manage.service;
 import java.util.List;
 
 import com.xinyue.manage.beans.BusinessInfos;
+import com.xinyue.manage.beans.CustomerInfo;
 import com.xinyue.manage.beans.HoldInfos;
 import com.xinyue.manage.beans.SearchCustomer;
 import com.xinyue.manage.beans.SearchOrder;
@@ -16,7 +17,6 @@ import com.xinyue.manage.model.Document;
 import com.xinyue.manage.model.FastProductApplicant;
 import com.xinyue.manage.model.FastProductCompany;
 import com.xinyue.manage.model.Order;
-import com.xinyue.manage.model.OrderAppointed;
 import com.xinyue.manage.model.RealEstate;
 
 /**
@@ -161,7 +161,7 @@ public interface OrderService {
 	
 	public boolean updateOrderEvaluate(Order order, String modifiedId);
 
-	public CreditManager getCreditManager(String name);
+	public CreditManager getCreditManagerByName(String name);
 	/**返回所有信贷经理列表
 	 * add by lzc     date: 2015年8月26日
 	 * @return  key->id ,value->name
@@ -181,4 +181,29 @@ public interface OrderService {
 
 	
 	public void addOrder(Order order);
+
+	/**
+	 * 信贷经理详情-客户信息（后台）
+	 * add by mzj 2015/9/11
+	 * @param searchCustomer
+	 * @return
+	 */
+	public List<CustomerInfo> getCustomerInfoByCondition(
+			SearchCustomer searchCustomer);
+
+	/**
+	 * 信贷经理详情-客户信息（后台）
+	 * add by mzj 2015/9/11
+	 * @param searchCustomer
+	 * @return
+	 */
+	public int getCustomerInfoCountByCondition(SearchCustomer searchCustomer);
+
+	/**
+	 * 信贷经理详情-客户信息-订单跟踪明细（后台）
+	 * add by mzj 2015/9/18
+	 * @param id
+	 * @return
+	 */
+	public CustomerInfo getOrderTrackByOrderId(String id);
 }

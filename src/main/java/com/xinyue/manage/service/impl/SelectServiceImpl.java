@@ -67,12 +67,6 @@ public class SelectServiceImpl implements SelectService {
 		return sdao.getIndustryList();
 	}
 	
-	@Override
-	public List<Select> getOrgList() {
-		// TODO Auto-generated method stub
-		return sdao.getOrgList();
-	}
-
 
 	@Override
 	public List<SelectInfo> getProductList() {

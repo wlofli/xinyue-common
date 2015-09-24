@@ -17,6 +17,8 @@ import com.xinyue.manage.dao.CreditManagerDAO;
 import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
+import com.xinyue.manage.model.MoneyOutline;
+import com.xinyue.manage.model.Order;
 import com.xinyue.manage.service.CreditManagerService;
 import com.xinyue.manage.util.SecurityUtils;
 /**
@@ -241,6 +243,53 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 	public int getInvitationManagerRecords(String managerId) {
 		
 		return creditManagerDAO.getInvitationManagerRecords(managerId);
+	}
+
+	@Override
+	public MoneyOutline getMoneyAccountByManagerId(String managerId) {
+		
+		return creditManagerDAO.getMoneyAccountByManagerId(managerId);
+	}
+
+	@Override
+	public List<Order> getServerRatingByManagerId(String managerId, int page, int star) {
+		
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("managerId", managerId);
+		map.put("index", (page-1)*10);
+		map.put("star", star);
+		
+		return creditManagerDAO.getServerRating(map);
+	}
+
+	@Override
+	public int getServerRatingCount(String managerId) {
+		return creditManagerDAO.getServerRatingCount(managerId);
+	}
+
+	@Override
+	public int getServerStar(String managerId) {
+		
+		int result = 0;
+		
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("managerId", managerId);
+		map.put("index", "");
+		map.put("star", 0);
+		
+		List<Order> orders = creditManagerDAO.getServerRating(map);
+		
+		int size = orders.size();
+		int stars = 0;
+		for (int i = 0; i < size; i++) {
+			stars = stars + Integer.parseInt(orders.get(i).getLevel());
+		}
+		
+		if (size > 0) {
+			result = stars / size;
+		}
+		
+		return result;
 	}
 	
 	

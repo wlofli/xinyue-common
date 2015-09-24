@@ -3,6 +3,7 @@ package com.xinyue.manage.service;
 import java.util.List;
 
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.model.ProductType;
 import com.xinyue.manage.model.Select;
 
 /**
@@ -61,7 +62,6 @@ public interface SelectService {
 	
 	public List<Select> getIndustryList();
 	
-	public List<Select> getOrgList();
 	
 	
 	/**获取所有产品列表

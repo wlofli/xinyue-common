@@ -26,12 +26,6 @@ public class SuccessCase implements Serializable{
 	//2015/8/18 youwenhai
 	private String creditManagerName;
 	
-	public String getCreditManagerName() {
-		return creditManagerName;
-	}
-	public void setCreditManagerName(String creditManagerName) {
-		this.creditManagerName = creditManagerName;
-	}
 	/**
 	 * 产品ID
 	 */
@@ -297,5 +291,11 @@ public class SuccessCase implements Serializable{
 		this.productName = productName;
 	}
 	
+	public String getCreditManagerName() {
+		return creditManagerName;
+	}
+	public void setCreditManagerName(String creditManagerName) {
+		this.creditManagerName = creditManagerName;
+	}
 	
 }

@@ -1,7 +1,6 @@
 package com.xinyue.manage.beans;
 
 import java.io.Serializable;
-import java.sql.Date;
 
 import com.xinyue.manage.util.GlobalConstant;
 
@@ -16,7 +15,7 @@ public class ProductInfo implements Serializable {
 	private String productName;//产品名称
 	private String code;//产品编号
 	private String type;//产品类别
-	private String bank;//所属银行或贷款机构
+	private String org;//所属银行或贷款机构
 	private int sort;//上架时间
 	private int status; //状态
 	private int pageSize = GlobalConstant.PAGE_SIZE;//每页大小 
@@ -59,12 +58,6 @@ public class ProductInfo implements Serializable {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getBank() {
-		return bank;
-	}
-	public void setBank(String bank) {
-		this.bank = bank;
-	}
 	public int getSort() {
 		return sort;
 	}
@@ -77,12 +70,18 @@ public class ProductInfo implements Serializable {
 	public void setStatus(int status) {
 		this.status = status;
 	}
+	public String getOrg() {
+		return org;
+	}
+	public void setOrg(String org) {
+		this.org = org;
+	}
 	@Override
 	public String toString() {
 		return "ProductInfo [productName=" + productName + ", code=" + code
-				+ ", type=" + type + ", bank=" + bank + ", sort=" + sort
+				+ ", type=" + type + ", org=" + org + ", sort=" + sort
 				+ ", status=" + status + ", pageSize=" + pageSize + ", topage="
 				+ topage + ", start=" + start + "]";
 	}
-	
+
 }

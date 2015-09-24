@@ -7,170 +7,291 @@
 		<result column="svalue" property="value" />
 	</resultMap>
 
-	<select id="findPageData" resultType="com.xinyue.manage.model.Organization" 
-		parameterType="com.xinyue.manage.beans.OrganizationInfo">
-		select o.id id,
-			o.name name,
-			s.name genre,
-			o.number number,
-			site site,
-			postcode postcode,
-			linkman linkman,
-			i.select_value sex ,
-			position position,
-			telphone telphone,
-			fixed fixed ,
-			fax fax,
-			mail mail,
-			o.status status,
-			o.deleted deleted 
-		from m_organization_info o 
-		inner join  (select min(created_time) mintime , number from m_organization_info group by number) b on o.number = b.number and o.created_time = b.mintime 
-		left join m_organization_type s on o.genre = s.otypeid 
-		inner join m_select_info i on o.sex = i.select_key
-		where o.deleted = 0 and i.type_code = 'sex' 
-			<if test="name != null and name != ''"> and o.name like concat(#{name},'%')</if>
-			<if test="genre != null and genre != 0 "> and o.genre = #{genre}</if>
-			<if test="linkman != null and linkman != ''"> and o.linkman like concat(#{linkman} , '%')</if>
-			<if test="telphone != null and telphone != ''"> and o.telphone like concat(#{telphone},'%')</if>
-			<if test="status != null and status != ''"> and o.status = #{status}</if>
-		 limit #{start} , #{pageSize}
-	
-	</select>
-
-	<select id="getOrganizationCount" resultType="int"
-		parameterType="com.xinyue.manage.beans.OrganizationInfo">
-		select count(*)
-			from m_organization_info o 
-			inner join  (select min(created_time) mintime , number from m_organization_info group by number) b on o.number = b.number and o.created_time = b.mintime 
-			left join m_organization_type s on o.genre = s.otypeid 
-			inner join m_select_info i on o.sex = i.select_key
-			where o.deleted = 0 and i.type_code = 'sex' 
-			<if test="name != null and name != ''"> and o.name like concat(#{name},'%')</if>
-			<if test="genre != null and genre != 0 "> and o.genre = #{genre}</if>
-			<if test="linkman != null and linkman != ''"> and o.linkman like concat(#{linkman} , '%')</if>
-			<if test="telphone != null and telphone != ''"> and o.telphone like concat(#{telphone},'%')</if>
-			<if test="status != null and status != ''"> and o.status = #{status}</if>
-	</select>
-
-	<update id="updateEnable">
-		update m_organization_info set status = 0 , modified_time=now() , modified_id = #{modifyUser}
-		where number = 
-		<foreach collection="list" item="item" index="index" separator=" or number = "  >  
-	        #{item}  
-	    </foreach>
-	</update>
-	
-	<update id="updateDisable">
-		update m_organization_info set status = 1 , modified_time=now() , modified_id = #{modifyUser}
-		where number = 
-		<foreach collection="list" item="item" index="index" separator=" or number = "  >  
-	        #{item}  
-	    </foreach>
-	</update>
-	
-	<update id="updateMarker">
-		update m_organization_info set deleted = 1 , modified_time=now() , modified_id = #{modifyUser}
-		where number = 
-		<foreach collection="list" item="item" index="index" separator=" or number = "  >  
-	        #{item}  
-	    </foreach>
-	</update>
-	
-
-	
-	<insert id="addOrganization">
-		insert into m_organization_info
-		 (`id`, `name`, `genre`, `number`, `site`, `postcode`, `linkman`, `sex`, `position`, `telphone`, `fixed`, `fax`, `mail` , pinying , created_time , created_id , deleted)
+	<!-- ywh 添加机构信息 -->
+	<insert id="addOrg">
+		insert into m_organization_info 
+		 (id, name, genre,number, site, province_id , city_id , zone_id , postcode, pinying , created_time , modified_time , modified_id , created_id , deleted , status)
 		VALUES 
-		 (uuid() , #{org.name} , #{org.genre} , #{org.number} , #{org.site} , #{org.postcode} , #{org.linkman} , #{org.sex} , #{org.position} , #{org.telphone} , #{org.fixed} , #{org.fax} , #{org.mail} , #{org.pinyin},now() , #{createUser} , 0);
+		 (replace(uuid(),'-' , ''), #{org.name} , #{org.genre} , #{org.number} , #{org.site} ,#{org.provinceid} , #{org.cityid} , #{org.zoneid},
+		  #{org.postcode} , #{org.pinyin},now() ,now(), #{createUser} , #{createUser} , 0 , #{org.status});
 		
 	</insert>
 	
-	<update id="updateOrganization">
-		update m_organization_info set 
-			name = #{org.name}, 
-			genre = #{org.genre}, 
-			number =#{org.number} , 
-			site = #{org.site}, 
-			postcode = #{org.postcode},
-			linkman =  #{org.linkman}, 
-			sex = #{org.sex}, 
-			position = #{org.position}, 
-			telphone = #{org.telphone}, 
-			fixed = #{org.fixed}, 
-			fax = #{org.fax}, 
-			mail =#{org.mail} ,
-			pinying=#{org.pinyin},
-			modified_time = now(),
-			modified_id = #{modifyUser}
-		where id = #{org.id}
-	</update>
 	
-	<select id="findListByNumber" resultType="com.xinyue.manage.model.Organization">
-		select
-			o.id id,
-			o.name name,
-			s.name genre,
-			o.number number,
-			site site,
-			postcode postcode,
-			linkman linkman,
-			i.select_Value sex ,
-			position position,
-			telphone telphone,
-			fixed fixed ,
-			fax fax,
-			mail mail,
-			status status,
-			o.deleted deleted
-		from m_organization_info o 
-			left join m_organization_type s on o.genre = s.otypeid 
-			inner join m_select_info i on o.sex = i.select_key 
-		where o.deleted = 0  and i.type_code = 'sex' and 
-		o.number = #{number} 
-	</select>
-	
-	<select id="editListByNumber" resultType="com.xinyue.manage.model.Organization">
-		select
-			o.id id,
-			o.name name,
-			o.genre genre,
-			o.number number,
-			site site,
-			postcode postcode,
-			linkman linkman,
-			i.select_key sex ,
-			position position,
-			telphone telphone,
-			fixed fixed ,
-			fax fax,
-			mail mail,
-			status status,
-			o.deleted deleted
-		from m_organization_info o 
-			left join m_organization_type s on o.genre = s.otypeid 
-			inner join m_select_info i on o.sex = i.select_key 
-		where o.deleted = 0  and i.type_code = 'sex' and 
-		o.number = #{number} 
-	</select>
 	
 	<select id="findOrgNameByPinying" resultType="com.xinyue.manage.model.Organization">
 		select * from m_organization_info where deleted = 0 and status = 0 and pinying like concat(#{pinying} , '%') or name like concat(#{pinying} , '%') group by number
 	</select>
-	
+	<!-- and status = 0 ywh -->
 	<select id="getOrganizations" resultMap="selectResult">
 		SELECT 
 		    id as skey, name as svalue
 		FROM
 		    m_organization_info
 		where
-		    deleted = 0
+		    deleted = 0 and status = 0 
 		order by number;
 	</select>
 	
-	<!-- youwh -->
+	<!-- ywh 修改联系人 -->
+	<update id="updateOrgLinkMan" parameterType="com.xinyue.manage.model.LinkMan">
+		update m_linkman_info set name = #{name} , sex = #{sex} , position = #{position} , 
+			telphone = #{telphone} , fixed = #{fixed} , fax = #{fax} , mail = #{mail} where id = #{id}
+	</update>
+	
+	<!-- ywh 添加联系人 -->
+	<insert id="addOrgLinkMan" parameterType="com.xinyue.manage.model.LinkMan">
+		insert into m_linkman_info(name , sex , position , telphone , fixed , fax , mail , orgid) 
+		values(#{name} , #{sex} , #{position} , #{telphone} , #{fixed} , #{fax} , #{mail} , #{orgid})
+	</insert>
+	
+	<!--ywh 2015-09-08下显示店铺设置信息 和 显示机构基本信息和联系人信息 -->
+	<select id="findShop" resultMap="orgResultMap">
+		select 
+		o.* , c.id statid , c.substation_name subName ,t.id ptypeid , t.name typeName , 
+		concat_ws('' , a.name , b.name , z.name ) address , m.select_value  scaleName , d.name  genreName ,
+		i.id linkmanid , i.name linkName , i.sex , si.select_value sexName ,i.telphone ,  i.position , i.fixed , i.fax, i.mail 
+		from m_organization_info o 
+		left join m_organization_type d on d.otypeid = o.genre and d.deleted = 0 
+		left join m_linkman_info i on i.orgid = o.id 
+		left join m_select_info si on si.select_key = i.sex and si.type_code = 'sex' 
+		left join m_select_info m  on m.select_key = o.genre and m.type_code = 'org_scale' 
+		left join m_area_province a on a.code = o.province_id 
+		left join m_area_city b on b.code = o.city_id 
+		left join m_area_zone z on z.code = o.zone_id 
+		left join m_substation_org s on s.org_id = o.id 
+		left join m_city_substation_info c on s.stat_id = c.id 
+		left join m_org_product_type p on p.org_id = o.id 
+		left join m_product_type t on t.id = p.ptype_id where o.id = #{orgid}
+	</select>
+	<resultMap type="com.xinyue.manage.model.Organization" id="orgResultMap">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="number" column="number"/>
+		<result property="postcode" column="postcode"/>
+		<result property="shortName" column="shortName"/>
+		<result property="genre" column="genre"/>
+		<result property="genreName" column="genreName"/>
+		<result property="establish" column="establish"/>
+		<result property="scale" column="scale"/>
+		<result property="status" column="status"/>
+		<result property="scaleName" column="scaleName"/>
+		<result property="provinceid" column="province_id"/>
+		<result property="cityid" column="city_id"/>
+		<result property="cid" column="city_id"/>
+		<result property="zoneid" column="zone_id"/>
+		<result property="zid" column="zone_id"/>
+		<result property="site" column="site"/>
+		<result property="address" column="address"/>
+		<result property="domain" column="domain"/>
+		<result property="regNum" column="reg_Num"/>
+		<result property="capital" column="capital"/>
+		<result property="pv" column="pv"/>
+		<result property="introduce" column="introduce"/>
+		<result property="description" column="description"/>
+		<result property="image" column="org_img"/>
+		<result property="notice" column="notice"/>
+		<collection property="stat" ofType="com.xinyue.manage.model.SubStation">
+			<id property="id" column="statid"/>
+			<result property="subName" column="subName"/>
+		</collection>
+		<collection property="ptype" ofType="com.xinyue.manage.model.ProductType">
+			<id property="id" column="ptypeid"/>
+			<result property="name" column="typeName"/>
+		</collection>
+		<collection property="linkman" ofType="com.xinyue.manage.model.LinkMan">
+			<id property="id" column="linkmanid"/>
+			<result property="name" column="linkName"/>
+			<result property="sex" column="sex"/>
+			<result property="sexName" column="sexName"/>
+			<result property="telphone" column="telphone"/>
+			<result property="fixed" column="fixed"/>
+			<result property="fax" column="fax"/>
+			<result property="mail" column="mail"/>
+			<result property="position" column="position"/>
+		</collection>
+	</resultMap>
+	
+	<!-- ywh根据域名或机构名称 判断相对应信息是否存在 -->
+	<select id="checkOrgNameOrDomain" resultType="com.xinyue.manage.model.Organization">
+		select * from m_organization_info 
+		where id != #{orgid}   
+		<if test="domain != null and domain != ''">
+			and domain = #{domain}  
+		</if>
+		<if test="orgName != null and orgName != ''">
+			and name = #{orgName}
+		</if>
+	</select>
+	
+	<!-- ywh添加业务区域时先删除 再添加 -->
+	<delete id="delOrgStation">
+		delete from m_substation_org where org_id = #{orgid}
+	</delete>
+	<insert id="addOrgStation">
+		insert into m_substation_org(org_id , stat_id) values
+		<foreach collection="list" item="item" index="index" close=";" separator=",">
+			(#{orgid} , #{item}) 
+		</foreach>
+	</insert>
+	
+	<!-- ywh 添加擅长业务时 先删除再添加 -->
+	<delete id="delOrgProType">
+		delete from m_org_product_type where org_id = #{orgid}
+	</delete>
+	<insert id="addOrgProType">
+		insert into m_org_product_type(org_id , ptype_id) values
+		<foreach collection="list" item="item" index="index" close=";" separator=",">
+			(#{orgid} , #{item})
+		</foreach>
+	</insert>
+	
+	<!--ywh 修改机构信息 包括店铺信息和机构基本信息 -->
+	<update id="updateOrg">
+		update m_organization_info set 
+			<if test="org.description != null and org.description != ''">
+				description = #{org.description} ,
+			</if>
+			<if test="org.name != null and org.name != ''">
+				name = #{org.name}, 
+			</if>
+			<if test="org.shortName != null and org.shortName != ''">
+				shortName = #{org.shortName},
+			</if>
+			<if test="org.pinying != null and org.pinying != ''">
+				pinying = #{org.pinying},
+			</if>
+			<if test="org.genre != null and org.genre != ''">
+				genre = #{org.genre}, 
+			</if>
+			<if test="org.establish != null and org.establish != ''">
+				establish = #{org.establish},
+			</if> 
+			<if test="org.scale != null and org.scale != ''">
+				scale = #{org.scale},
+			</if>
+			<if test="org.provinceid != null and org.provinceid != ''">
+				province_id = ${org.provinceid},
+			</if>
+			<if test="org.cityid != null and org.cityid != ''">
+				city_id = #{org.cityid},
+			</if>
+			<if test="org.zoneid != null and org.zoneid != ''">
+				zone_id = #{org.zoneid},
+			</if>
+			<if test="org.site != null and org.site != ''">
+				site = #{org.site},
+			</if>
+			<if test="org.postcode != null and org.postcode != ''">
+				postcode = #{org.postcode},
+			</if>
+			<if test="org.status != null and org.status != ''">
+				status = #{org.status},
+			</if>
+			<if test="org.domain != null and org.domain != ''">
+				domain = #{org.domain},
+			</if>
+			<if test="org.regNum != null and org.regNum != ''">
+				reg_num = #{org.regNum},
+			</if>
+			<if test="org.capital != null and org.capital != ''">
+				capital = #{org.capital},
+			</if>
+			<if test="org.pv != null and org.pv != ''">
+				pv = #{org.pv},
+			</if>
+			<if test="org.introduce != null and org.introduce != ''">
+				introduce = #{org.introduce},
+			</if>
+			<if test="org.image != null and org.image != ''">
+				org_img = #{org.image},
+			</if>
+			<if test="org.notice != null and org.notice != ''">
+				notice = #{org.notice}, 
+			</if>
+			modified_time = now(),
+			modified_id = #{modifyUser}
+			where id = #{org.id}
+	</update>
+	
+	<!-- ywh显示机构列表信息 -->
+	<select id="findOrgList" resultType="com.xinyue.manage.model.Organization">
+		select o.id,
+			o.name,
+			s.name genre,
+			o.number,
+			site site,
+			o.postcode ,
+			l.name linkName,
+			i.select_value sex ,
+			l.position ,
+			l.telphone ,
+			l.fixed,
+			l.fax,
+			l.mail,
+			o.status,
+			o.deleted 
+		from m_organization_info o 
+		left join m_organization_type s on o.genre = s.otypeid 
+		left join (select * from m_linkman_info t group by t.orgid) l on l.orgid = o.id  
+		left join m_select_info i on l.sex = i.select_key and i.type_code = 'sex' 
+		where o.deleted = 0
+			<if test="orgInfo.name != null and orgInfo.name != ''"> and o.name like concat(#{orgInfo.name},'%')</if>
+			<if test="orgInfo.genre != null and orgInfo.genre != 0 "> and o.genre = #{orgInfo.genre}</if>
+			<if test="orgInfo.linkman != null and orgInfo.linkman != ''"> and l.name like concat(#{orgInfo.linkman} , '%')</if>
+			<if test="orgInfo.telphone != null and orgInfo.telphone != ''"> and l.telphone like concat(#{orgInfo.telphone},'%')</if>
+			<if test="orgInfo.status != null and orgInfo.status != ''"> and o.status = #{orgInfo.status}</if>
+		 limit #{start} , #{pageSize}
+	
+	</select>
+	
+	<!-- ywh统计机构列表信息 -->
+	<select id="getOrgCount" resultType="int">
+		select count(*) from m_organization_info o 
+		left join m_organization_type s on o.genre = s.otypeid 
+		left join (select * from m_linkman_info t group by t.orgid) l on l.orgid = o.id  
+		left join m_select_info i on l.sex = i.select_key and i.type_code = 'sex' 
+		where o.deleted = 0
+			<if test="orgInfo.name != null and orgInfo.name != ''"> and o.name like concat(#{orgInfo.name},'%')</if>
+			<if test="orgInfo.genre != null and orgInfo.genre != 0 "> and o.genre = #{orgInfo.genre}</if>
+			<if test="orgInfo.linkman != null and orgInfo.linkman != ''"> and l.name like concat(#{orgInfo.linkman} , '%')</if>
+			<if test="orgInfo.telphone != null and orgInfo.telphone != ''"> and l.telphone like concat(#{orgInfo.telphone},'%')</if>
+			<if test="orgInfo.status != null and orgInfo.status != ''"> and o.status = #{orgInfo.status}</if>
+	</select>
+	
+	<!-- ywh 屏蔽机构 -->
+	<update id="updateDisable">
+		update m_organization_info set status = 1 , modified_time=now() , modified_id = #{modifyUser}
+		where id = 
+		<foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	
+	<!-- ywh 启用机构 -->
+	<update id="updateEnable">
+		update m_organization_info set status = 0 , modified_time=now() , modified_id = #{modifyUser}
+		where id = 
+		<foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	
+	<!-- ywh 删除机构 -->
+	<update id="updateMarker">
+		update m_organization_info set deleted = 1 , modified_time=now() , modified_id = #{modifyUser}
+		where id = 
+		<foreach collection="list" item="item" index="index" separator=" or id = "  >  
+	        #{item}  
+	    </foreach>
+	</update>
+	<!-- ywh 只供后台调用  获取所有未删除的机构 -->
 	<select id="getOrgs" resultMap="selectResult">
-		SELECT id as skey, name as svalue FROM m_organization_info where deleted = 0
+		SELECT 
+		    id as skey, name as svalue
+		FROM
+		    m_organization_info
+		where
+		    deleted = 0 
 	</select>
 </mapper>

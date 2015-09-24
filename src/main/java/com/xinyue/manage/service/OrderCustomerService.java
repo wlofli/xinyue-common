@@ -14,7 +14,7 @@ import com.xinyue.manage.model.OrderLowPrice;
  * author lzc
  * 2015年7月1日下午4:02:13
  * 设为领取客户的操作逻辑
- * @param <T>
+ * 竞拍,指定推送,立即领取,最低低价表的操作
  * 
  */
 public interface OrderCustomerService {

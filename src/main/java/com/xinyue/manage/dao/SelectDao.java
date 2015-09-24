@@ -51,7 +51,7 @@ public interface SelectDao {
 	
 	List<Select> getIndustryList();
 	
-	public List<Select> getOrgList();
+
 	
 	List<SelectInfo> findProduct();
 }

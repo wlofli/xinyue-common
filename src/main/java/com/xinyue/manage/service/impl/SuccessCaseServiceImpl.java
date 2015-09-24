@@ -115,4 +115,10 @@ public class SuccessCaseServiceImpl implements SuccessCaseService {
 		return false;
 	}
 
+	@Override
+	public SuccessCase getSuccessCaseDetailByCaseId(String id) {
+		
+		return successCaseDAO.getSuccessCaseDetailByCaseId(id);
+	}
+
 }

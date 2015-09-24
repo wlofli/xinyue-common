@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- youwh -->
+<mapper namespace="com.xinyue.manage.dao.CityStationDao">
+	<select id="findAll" resultType="com.xinyue.manage.model.SubStation">
+		select id , substation_name subName from m_city_substation_info where deleted = 0 
+	</select>
+</mapper>

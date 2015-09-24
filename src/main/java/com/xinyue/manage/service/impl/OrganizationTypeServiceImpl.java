@@ -1,5 +1,6 @@
 package com.xinyue.manage.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -57,6 +58,9 @@ public class OrganizationTypeServiceImpl implements OrganizationTypeService {
 		// TODO Auto-generated method stub
 		try {
 			if(GlobalConstant.isNull(otype.getId())){
+				SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmssms");
+				String code = new StringBuffer(df.format(new java.sql.Date(System.currentTimeMillis()))).toString();
+				otype.setNumber(code);
 				tdao.addOrganizationType(otype);
 				logger.info("添加机构类型成功,数据为"+otype+",添加者为:"+user);
 			}else{

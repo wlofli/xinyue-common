@@ -29,4 +29,6 @@ public interface SuccessCaseDAO {
 
 	int updateCase(SuccessCase caseInfo);
 
+	SuccessCase getSuccessCaseDetailByCaseId(String id);
+
 }

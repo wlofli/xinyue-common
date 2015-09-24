@@ -20,14 +20,15 @@ public class Product implements Serializable {
 	private String name;//产品名称
 	private ProductType type;//产品类型
 	private String productTypeName;
-	private BankInfo bank;//所属银行-----------更改后台删掉
+	private Organization org;//所属机构
 	private String orgName;//机构名称
 	private String orgid;//机构id
-	private String credit;//贷款额度 
-	private int creditFrom;
-	private int creditTo;
+	private String credit;//贷款额度 页面显示
 	
-
+	private String periodFrom;
+	private String periodTo;
+	private String interestFrom;//月息从
+	private String interestTo;//月息到
 	private String content;//内容
 	private String code;//产品编号
 	private String area;//适用地区 
@@ -43,7 +44,87 @@ public class Product implements Serializable {
 	private String modifiedUser;//修改者
 	private List<ProductFile> file;//对应文件申请资料
 	private String typeName;
-
+	private String pv;//访问量
+	private String collect;//收藏量
+	private String orderNum;//订单量
+	private String provinceid;//省id
+	private String cityid;//市
+	private String cid;
+	private String zoneid;//区
+	private String zid;
+	
+	public String getCid() {
+		return cid;
+	}
+	public void setCid(String cid) {
+		this.cid = cid;
+	}
+	public String getZid() {
+		return zid;
+	}
+	public void setZid(String zid) {
+		this.zid = zid;
+	}
+	public String getPeriodFrom() {
+		return periodFrom;
+	}
+	public void setPeriodFrom(String periodFrom) {
+		this.periodFrom = periodFrom;
+	}
+	public String getPeriodTo() {
+		return periodTo;
+	}
+	public void setPeriodTo(String periodTo) {
+		this.periodTo = periodTo;
+	}
+	public String getProvinceid() {
+		return provinceid;
+	}
+	public void setProvinceid(String provinceid) {
+		this.provinceid = provinceid;
+	}
+	public String getCityid() {
+		return cityid;
+	}
+	public void setCityid(String cityid) {
+		this.cityid = cityid;
+	}
+	public String getZoneid() {
+		return zoneid;
+	}
+	public void setZoneid(String zoneid) {
+		this.zoneid = zoneid;
+	}
+	public String getOrderNum() {
+		return orderNum;
+	}
+	public void setOrderNum(String orderNum) {
+		this.orderNum = orderNum;
+	}
+	public String getCollect() {
+		return collect;
+	}
+	public void setCollect(String collect) {
+		this.collect = collect;
+	}
+	public String getPv() {
+		return pv;
+	}
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+	public String getInterestFrom() {
+		return interestFrom;
+	}
+	public void setInterestFrom(String interestFrom) {
+		this.interestFrom = interestFrom;
+	}
+	public String getInterestTo() {
+		return interestTo;
+	}
+	public void setInterestTo(String interestTo) {
+		this.interestTo = interestTo;
+	}
 	public String getProductTypeName() {
 		return productTypeName;
 	}
@@ -56,17 +137,11 @@ public class Product implements Serializable {
 	public void setOrgName(String orgName) {
 		this.orgName = orgName;
 	}
-	public int getCreditFrom() {
-		return creditFrom;
+	public String getContent() {
+		return content;
 	}
-	public void setCreditFrom(int creditFrom) {
-		this.creditFrom = creditFrom;
-	}
-	public int getCreditTo() {
-		return creditTo;
-	}
-	public void setCreditTo(int creditTo) {
-		this.creditTo = creditTo;
+	public void setContent(String content) {
+		this.content = content;
 	}
 	public String getOrgid() {
 		return orgid;
@@ -104,17 +179,11 @@ public class Product implements Serializable {
 	public void setType(ProductType type) {
 		this.type = type;
 	}
-	public BankInfo getBank() {
-		return bank;
+	public Organization getOrg() {
+		return org;
 	}
-	public void setBank(BankInfo bank) {
-		this.bank = bank;
-	}
-	public String getContent() {
-		return content;
-	}
-	public void setContent(String content) {
-		this.content = content;
+	public void setOrg(Organization org) {
+		this.org = org;
 	}
 	public String getCode() {
 		return code;
@@ -197,17 +266,23 @@ public class Product implements Serializable {
 	
 	public Integer getState() {
 		Integer status;
+		System.out.println("addTime:"+addTime);
+		System.out.println("downTime:"+downTime);
 		if(addTime==null&&downTime==null){
 			status=1;
-		}else if(addTime==null&&downTime!=null&&(new Date(System.currentTimeMillis()).compareTo(downTime)>0)){
+		}else if(addTime==null&&downTime!=null&&(new java.util.Date().compareTo(downTime)>0)){
 			status=3;
-		}else if(addTime!=null&&(new Date(System.currentTimeMillis()).compareTo(addTime)<0)&&downTime==null){
+		}else if(addTime==null&&downTime!=null&&(new java.util.Date().compareTo(downTime)<0)){
+			status=2;
+		}else if(addTime!=null&&(new java.util.Date().compareTo(addTime)<0)&&downTime==null){
 			status=1;
-		}else if(addTime!=null&&(new Date(System.currentTimeMillis()).compareTo(addTime)>=0)&&downTime==null){
+		}else if(addTime!=null&&(new java.util.Date().compareTo(addTime)>=0)&&downTime==null){
 			status=2;
-		}else if(downTime!=null&&(new Date(System.currentTimeMillis()).compareTo(downTime)<=0)&&addTime==null){
+		}else if(downTime!=null&&(new java.util.Date().compareTo(downTime)<=0)&&addTime==null){
 			status=2;
-		}else if(addTime!=null&&downTime!=null&&(new Date(System.currentTimeMillis()).compareTo(addTime)>=0)&&(new Date(System.currentTimeMillis()).compareTo(downTime)<=0)){
+		}else if(addTime!=null&&downTime!=null&&(new java.util.Date().compareTo(addTime)<=0)){
+			status=1;
+		}else if(addTime!=null&&downTime!=null&&(new java.util.Date().compareTo(addTime)>=0)){
 			status=2;
 		}else{
 			status=3;
@@ -218,17 +293,21 @@ public class Product implements Serializable {
 	@Override
 	public String toString() {
 		return "Product [id=" + id + ", name=" + name + ", type=" + type
-				+ ", productTypeName=" + productTypeName + ", bank=" + bank
+				+ ", productTypeName=" + productTypeName + ", org=" + org
 				+ ", orgName=" + orgName + ", orgid=" + orgid + ", credit="
-				+ credit + ", creditFrom=" + creditFrom + ", creditTo="
-				+ creditTo + ", content=" + content + ", code=" + code
+				+ credit + ", periodFrom=" + periodFrom + ", periodTo="
+				+ periodTo + ", interestFrom=" + interestFrom + ", interestTo="
+				+ interestTo + ", content=" + content + ", code=" + code
 				+ ", area=" + area + ", recommend=" + recommend + ", logo="
 				+ logo + ", downTime=" + downTime + ", addTime=" + addTime
 				+ ", deleted=" + deleted + ", status=" + status
 				+ ", createdTime=" + createdTime + ", modifiedTime="
 				+ modifiedTime + ", createUser=" + createUser
 				+ ", modifiedUser=" + modifiedUser + ", file=" + file
-				+ ", typeName=" + typeName + "]";
+				+ ", typeName=" + typeName + ", pv=" + pv + ", collect="
+				+ collect + ", orderNum=" + orderNum + ", provinceid="
+				+ provinceid + ", cityid=" + cityid + ", zoneid=" + zoneid
+				+ "]";
 	}
 	
 }

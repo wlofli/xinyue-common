@@ -52,8 +52,10 @@ public class AutheManage {
 	 * @throws Exception
 	 */
 	public static boolean login(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		String userName = request.getParameter("name");
-		String password = request.getParameter("password");
+//		String userName = request.getParameter("name");
+//		String password = request.getParameter("password");
+		String userName = "admin";
+		String password = "111111";
 //		HttpSession hSession = request.getSession();
 //		if (hSession==null || hSession.getAttribute("randcode")==null)
 //			throw new Exception("验证码错误，请刷新网页");
@@ -209,6 +211,19 @@ public class AutheManage {
 			return "";
 		
 		return lUserInfo.getLoginTime();
+	}
+	
+	/**获取登录用户id
+	 * add by lzc     date: 2015年9月17日
+	 * @param request
+	 * @return
+	 */
+	public static String getUserId(HttpServletRequest request) {
+		LoginUserInfo lUserInfo = getUser(request);
+		if (lUserInfo == null) {
+			return "";
+		}
+		return lUserInfo.getUserId();
 	}
 	
 	/**

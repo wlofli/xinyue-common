@@ -49,6 +49,7 @@
 	<select id="getSuccessCaseList" parameterType="com.xinyue.manage.beans.SuccessCaseSearch" resultType="com.xinyue.manage.model.SuccessCase">
 		select 
 			sc.id as id,
+		    pi.id as productId,
 		    pi.name as productName,
 		    sc.applicant_company as applicantCompany,
 		    si.select_value as loanType,
@@ -57,7 +58,8 @@
 		    sc.loan_period as loanPeriod,
 		    sc.loan_days as loanDays,
 		    ap.name as loanProvince,
-		    ac.name as loanCity
+		    ac.name as loanCity,
+		    ac.month_interest as monthInterest
 		from
 		    c_success_case sc,
 		    m_product_info pi,
@@ -173,4 +175,39 @@
 		where 
 			id=#{id};
 	</update>
+	
+	<select id="getSuccessCaseDetailByCaseId" parameterType="String" resultType="com.xinyue.manage.model.SuccessCase">
+		select 
+		    sc.id as id,
+		    sc.product_id as productId,
+		    pi.name as productname,
+		    sc.applicant_company as applicantCompany,
+		    sc.loan_amount as loanAmount,
+		    date_format(sc.loan_date, '%Y-%m-%d') as loanDate,
+		    sc.loan_period as loanPeriod,
+		    sc.loan_days as loanDays,
+		    s1.select_value as loanType,
+		    ap.name as loanProvince,
+		    ac.name as loanCity,
+		    sc.month_interest as monthInterest,
+		    sc.order_number as orderNumber,
+		    sc.description as description
+		from
+		    c_success_case sc,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'loan_type') s1,
+		    m_product_info pi,
+		    m_area_province ap,
+		    m_area_city ac
+		where
+		    sc.id = #{id}
+		        and s1.select_key = sc.loan_type
+		        and pi.id = sc.product_id
+		        and ap.code = sc.loan_province
+		        and ac.code = sc.loan_city;	
+	</select>
 </mapper>

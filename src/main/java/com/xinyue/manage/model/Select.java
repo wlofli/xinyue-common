@@ -11,8 +11,8 @@ import java.io.Serializable;
 public class Select implements Serializable {
 
 	private String dicCode;//字典类型
-	private String dicKey;//字典key
-	private String dicVal;//字典value
+	private String dicKey;//字典值
+	private String dicVal;//字典显示
 	
 	public String getDicCode() {
 		return dicCode;

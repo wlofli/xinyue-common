@@ -21,7 +21,6 @@ public class OrderTrack {
 	private Date createdTime;//跟踪日期
 	
 	
-	//以下为非数据库属性
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date   creditTime;//放款时间
 	private Double creditReal;//贷款额度

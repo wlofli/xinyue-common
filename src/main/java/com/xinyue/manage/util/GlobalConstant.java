@@ -23,6 +23,10 @@ public class GlobalConstant {
 	 * //信贷经理类型
 	 */
 	public static final String USER_TYPE_CREDIT = "c";
+	
+	public static final String USER_TYPE = "user_type";
+	
+	public static final String USER_STATUS = "user_status";
 
 	public static final String TYPE_CITY = "tc";
 	
@@ -242,6 +246,8 @@ public class GlobalConstant {
 		
 		public static final int[] ORDER_CONDITION = {6,7,8,9,10,11};//信贷界面部分状态
 		
+		public static final int[] WITHDRAW_CONDITION = {1,2,3,4};//提现管理
+		
 	//特殊的三种订单审核状态
 //	public static final String AUDITE_STATUS = "audite_status";//数据库中也有->m_select_info
 	
@@ -292,7 +298,18 @@ public class GlobalConstant {
 	public static final String REWARD_SOURCE = "reward_source";
 	public static final String WITHDRAW_TYPE = "withdraw_type";
 	public static final String WITHDRAW_STATUS = "withdraw_status";
+	public static final String RECHARGE_TYPE = "recharge_type";
+	public static final String CONSUMPTION_TYPE = "consumption_type";
 	
+	
+	//add by lzc 提现权限
+	public static final String AUTHE_WITHDRAW = "提现管理";
+	public static final String AUTHE_WITHDRAW_AUDITE = "authe_withdraw_audite";
+	public static final String AUTHE_WITHDRAW_PAY = "authe_withdraw_pay";
+	/**
+	 * 提现管理查看详情查看详情
+	 */
+	public static final String AUTHE_WITHDRAW_DETAIL = "authe_withdraw_detail";
 	//2015/06/18 茅 权限名称追加 START
 	//帮助中心权限
 	public static final String AUTHORITY_HELP_ADD = "help_add";

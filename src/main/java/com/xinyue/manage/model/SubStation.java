@@ -2,6 +2,18 @@ package com.xinyue.manage.model;
 
 public class SubStation {
 
+	//youwh
+	private int id;
+	//youwh
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	String subName;
 	
 	String selectedP;
@@ -145,4 +157,15 @@ public class SubStation {
 	public void setSelectedZHid(String selectedZHid) {
 		this.selectedZHid = selectedZHid;
 	}
+
+	@Override
+	public String toString() {
+		return "SubStation [id=" + id + ", subName=" + subName + ", selectedP="
+				+ selectedP + ", selectedC=" + selectedC + ", selectedZ="
+				+ selectedZ + ", selectedCHid=" + selectedCHid
+				+ ", selectedZHid=" + selectedZHid + ", firstLetter="
+				+ firstLetter + ", hot=" + hot + ", stationCode=" + stationCode
+				+ "]";
+	}
+	
 }

@@ -2,8 +2,6 @@ package com.xinyue.manage.beans;
 
 import java.io.Serializable;
 
-import com.xinyue.manage.util.GlobalConstant;
-
 /**
  * 
  * @author wenhai.you
@@ -12,14 +10,12 @@ import com.xinyue.manage.util.GlobalConstant;
  */
 public class OrganizationInfo implements Serializable {
 
-	private int pageSize = GlobalConstant.PAGE_SIZE;
 	private String name;
 	private int genre;
 	private String linkman;
 	private String telphone;
 	private String topage;
 	private String status;
-	private int start;
 	
 	public String getStatus() {
 		return status;
@@ -27,24 +23,11 @@ public class OrganizationInfo implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public int getStart() {
-		return start;
-	}
-	public void setStart(int start) {
-		this.start = start;
-	}
 	public String getTopage() {
 		return topage;
 	}
 	public void setTopage(String topage) {
 		this.topage = topage;
-	}
-	
-	public int getPageSize() {
-		return pageSize;
-	}
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
 	}
 	public String getName() {
 		return name;
@@ -72,10 +55,9 @@ public class OrganizationInfo implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "OrganizationInfo [pageSize=" + pageSize + ", name=" + name
-				+ ", genre=" + genre + ", linkman=" + linkman + ", telphone="
-				+ telphone + ", topage=" + topage + ", start=" + start + "]";
+		return "OrganizationInfo [name=" + name + ", genre=" + genre
+				+ ", linkman=" + linkman + ", telphone=" + telphone
+				+ ", topage=" + topage + ", status=" + status + "]";
 	}
-
 	
 }

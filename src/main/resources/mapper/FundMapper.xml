@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.FundDAO">
+<resultMap id="consumption" type="com.xinyue.manage.model.Consumption" >
+    <result column="order_id" property="orderId"  />
+    <result column="user_id" property="userId"  />
+    <result column="consumption_type" property="consumptionType"  />
+    <result column="consumption_amount" property="consumptionAmount"  />
+    <result column="consumption_time" property="consumptionTime"  />
+    <result column="status" property="status"  />
+    <result column="serical_number" property="sericalNumber"  />
+    <result column="remark" property="remark"  />
+    <result column="deleted" property="deleted"  />
+    <result column="user_type" property="userType" />
+    <result column="current_amount" property="currentAmount"  />
+    <result column="other_pay_amount" property="otherPayAmount"  />
+    <result column="other_pay_type" property="otherPayType"  />
+    <result column="other_reward_amount" property="otherRewardAmount"  />
+    <result column="other_award_amount" property="otherAwardAmount"  />
+    <result column="other_pay_award" property="otherPayAward"  />
+    <result column="pay_award" property="payAward"  />
+    <result column="customer_name" property="customerName"  />
+    <result column="customer_phone" property="customerPhone"  />
+    <result column="organization" property="organization"  />
+  </resultMap>
+  
+  <!-- add by lzc start	 -->
+	<select id="getConsumptionListByUserId" resultMap="consumption">
+		select
+		 	c.order_id,
+		 	s.select_value as consumption_type,
+		 	c.consumption_amount,
+		 	c.consumption_time,
+		 	c.status,
+		 	c.serical_number,
+		 	c.remark,
+		 	c.current_amount,
+		 	c.other_pay_amount,
+		 	c.other_pay_type,
+		 	c.other_reward_amount,
+		 	c.other_award_amount,
+		 	c.other_pay_award,
+		 	c.pay_award,
+		 	c.customer_name,
+		 	c.customer_phone
+		from 
+		m_consumption_info c
+		left join m_select_info s on s.select_key = c.consumption_type and s.type_code = 'consumption_type'
+		where c.user_id = #{userId} and c.user_type = #{userType} and deleted = 0
+		<if test="searchReward.startTime != null">
+			and c.consumption_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+			<![CDATA[and c.consumption_time < #{searchReward.endTime} ]]> 
+		</if>
+		order by consumption_time
+		limit #{pageNo},#{pageSize}
+	</select>
+	
+	
+	<select id="countConsumptionListByUserId" resultType="int">
+		select count(*)
+		from 
+		m_consumption_info c
+		where c.user_id = #{userId} and c.user_type = #{userType} and deleted = 0
+		<if test="searchReward.startTime != null">
+			and c.consumption_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+			<![CDATA[and c.consumption_time < #{searchReward.endTime} ]]> 
+		</if>
+	</select>
+	
+	
+	<select id="getRechargesByUserId" resultType="com.xinyue.manage.model.Recharge">
+		select
+			c.order_id as orderId,
+			s.select_value  as rechargeType,
+			c.recharge_amount as rechargeAmountShow,
+			date_format(c.recharge_time, '%Y-%m-%d') as rechargeTime,
+			c.status as status,
+			c.serical_number as sericalNumber,
+			c.remark as remark,
+			c.current_amount as currentAmountShow,
+			c.other_reward_amount as rewordAmountD,
+			c.other_award_amount as rewordAmountC
+		from
+		m_recharge_info c
+		left join m_select_info s on s.select_key = c.recharge_type and s.type_code = 'recharge_type'
+		where c.user_id = #{userId} and c.user_type = #{userType}
+		<if test="searchReward.startTime != null">
+			and c.recharge_time > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+			<![CDATA[and c.recharge_time < #{searchReward.endTime} ]]> 
+		</if>
+		order by rechargeTime
+		limit #{pageNo}, #{pageSize}
+	</select>
+	
+	<select id="countRechargesByUserId" resultType="int">
+		select count(*)
+		from
+		m_recharge_info c
+		where c.user_id = #{userId} and c.user_type = #{userType}
+		<if test="searchReward.startTime != null">
+			and c.rechargeTime > #{searchReward.startTime}
+		</if>
+		<if test="searchReward.endTime != null">
+			<![CDATA[and c.rechargeTime < #{searchReward.endTime} ]]> 
+		</if>
+	</select>
+	
+	<insert id="addRecharge" parameterType="com.xinyue.manage.model.Recharge">
+		insert into m_recharge_info
+		 (order_id,user_id,recharge_type,recharge_amount,recharge_time,`status`,
+		 serical_number,remark,deleted,user_type,current_amount,other_reward_amount,other_award_amount)
+		values
+		 (#{orderId},#{userId},#{rechargeType},#{rechargeAmount},now(),#{status},
+		 #{sericalNumber},#{remark},0,#{userType},#{currentAmount},#{rewordAmountD},#{rewordAmountC})
+	</insert>
+	
+	<sql id="rechargeCondition">
+		<if test="search.startTime != null and search.startTime != ''">
+			and r.recharge_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+			and r.recharge_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.minPrice != null and search.minPrice != ''">
+			and r.recharge_amount >= #{search.minPrice}
+		</if>
+		<if test="search.maxPrice != null and search.maxPrice != ''">
+		<![CDATA[
+			and r.recharge_amount <= #{search.maxPrice}
+		]]>
+		</if>
+		<if test="search.phone != null and search.phone != ''">
+			and c.tel_number like '%' #{search.phone} '%'
+		</if>
+		<if test="search.status != null and search.status != ''">
+			and r.recharge_type = #{search.status}
+		</if>
+	</sql>
+	
+	<select id="getRechargesByCondition" resultType="com.xinyue.manage.model.Recharge">
+		select 
+			r.order_id as orderId,
+			r.user_id as userId,
+			date_format(r.recharge_time, '%Y-%m-%d') as rechargeTime,
+			c.real_name as userName,
+			c.tel_number as userPhone,
+			r.recharge_amount as rechargeAmount,
+			s.select_value as rechargeType,
+			r.status,
+			r.remark,
+			r.serical_number as sericalNumber,
+			r.current_amount as currentAmount
+		from m_recharge_info r
+		left join m_select_info s on s.select_key = r.recharge_type and s.type_code = 'recharge_type' 
+		left join c_manager_info c on c.id = r.user_id 
+		where
+			r.deleted = 0 and r.user_type = 'c'
+		<include refid="rechargeCondition"></include>
+		order by r.recharge_time desc
+		limit #{pageNo}, #{pageSize}
+	</select>
+	
+	<select id="countRechargesByCondition" resultType="int">
+		select count(*)
+		from m_recharge_info r
+		left join c_manager_info c on c.id = r.user_id  
+		where
+			r.deleted = 0 and r.user_type = 'c'
+		<include refid="rechargeCondition"></include>
+	</select>
+	
+	<select id="sumRechargeAmountByCondition" resultType="double">
+		select sum(r.recharge_amount)
+		from m_recharge_info r
+		<if test="search != null">
+		left join c_manager_info c on c.id = r.user_id  
+		</if>
+		where r.deleted = 0
+		<if test="search != null">
+		<include refid="rechargeCondition"></include>
+		</if>
+	
+	</select>
+	
+	
+<!-- 	信贷经理详情 -->
+	<select id="getRechargeById" resultType="com.xinyue.manage.model.Recharge">
+		select 
+			r.order_id as orderId,
+			r.user_id as userId,
+			date_format(r.recharge_time, '%Y-%m-%d') as rechargeTime,
+			c.real_name as userName,
+			c.tel_number as userPhone,
+			r.recharge_amount as rechargeAmount,
+			s.select_value as rechargeType,
+			r.status,
+			r.remark,
+			r.serical_number as sericalNumber,
+			r.current_amount as currentAmount,
+			r.other_reward_amount as rewordAmountD,
+			r.other_award_amount as rewordAmountC,
+			o.name as organization
+		from m_recharge_info r
+		left join m_select_info s on s.select_key = r.recharge_type and s.type_code = 'recharge_type' 
+		left join c_manager_info c on c.id = r.user_id 
+		left join m_organization_info o on c.organization = o.id
+		where r.deleted = 0 and r.order_id = #{id}
+	</select>
+	
+	<sql id="consumptionCondition">
+		<if test="search.startTime != null and search.startTime != ''">
+			and c.consumption_time > #{search.startTime}
+		</if>
+		<if test="search.endTime != null and search.endTime != ''">
+			<![CDATA[
+			and c.consumption_time < #{search.endTime}
+			]]>
+		</if>
+		<if test="search.minPrice != null and search.minPrice != ''">
+			and c.consumption_amount >= #{search.minPrice}
+		</if>
+		<if test="search.maxPrice != null and search.maxPrice != ''">
+		<![CDATA[
+			and c.consumption_amount <= #{search.maxPrice}
+		]]>
+		</if>
+		<if test="search.phone != null and search.phone != ''">
+			and m.tel_number like '%' #{search.phone} '%'
+		</if>
+		<if test="search.status != null and search.status != ''">
+			and c.consumption_type = #{search.status}
+		</if>
+	</sql>
+	
+	<select id="getConsumptionByCondition" resultMap="consumption">
+		select
+			c.consumption_time,
+			c.order_id,
+			m.real_name as customer_name,
+			m.tel_number as customer_phone,
+			c.other_pay_amount,
+			c.other_pay_award,
+			c.consumption_amount,
+			s.select_value as consumption_type,
+			c.serical_number,
+			c.other_reward_amount,
+			c.current_amount
+		from
+			m_consumption_info c
+		left join m_select_info s  on s.select_key = c.consumption_type and s.type_code = 'consumption_type'
+		left join c_manager_info m on m.id = c.user_id
+		where c.deleted = 0 
+		<if test="search != null ">
+			<include refid="consumptionCondition"></include>
+		</if>
+		order by c.consumption_time
+		limit #{pageNo},#{pageSize}
+	</select>
+	
+	<select id="countConsumptionByCondition" resultType="int">
+		select 
+			count(*)
+		from 
+			m_consumption_info c
+		left join c_manager_info m on m.id = c.user_id
+		where c.deleted = 0 
+		<if test="search != null ">
+			<include refid="consumptionCondition"></include>
+		</if>
+			
+	
+	</select>
+	
+	
+	<select id="sumConsumptionByCondition" resultType="double">
+		select sum(consumption_amount)
+		from
+	    m_consumption_info c
+	    left join c_manager_info m on m.id = c.user_id
+	    <if test="search != null ">
+			<include refid="consumptionCondition"></include>
+		</if>
+	    
+	</select>
+	
+	
+	<select id="getConsumptionById" resultMap="consumption">
+		select
+			c.consumption_time,
+			c.order_id,
+			m.real_name as customer_name,
+			m.tel_number as customer_phone,
+			o.name as organization,
+			c.other_pay_amount,
+			c.other_pay_award,
+			c.consumption_amount,
+			s.select_value as consumption_type,
+			c.serical_number,
+			c.other_reward_amount,
+			c.current_amount,
+			c.other_award_amount
+		from
+			m_consumption_info c
+		left join m_select_info s  on s.select_key = c.consumption_type and s.type_code = 'consumption_type'
+		left join c_manager_info m on m.id = c.user_id
+		left join m_organization_info o on o.id = m.organization
+		where c.deleted = 0 and c.order_id = #{id}
+	</select>
+	
+	
+	
+<!-- 	add by lzc end -->
+
+	<select id="getRechargeRecords" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="com.xinyue.manage.model.Recharge">
+		SELECT 
+		    date_format(ri.recharge_time, '%Y-%m-%d %H:%i') as rechargeTime,
+		    ri.order_id as orderId,
+		    s1.select_value as rechargeType,
+		    ri.recharge_amount as rechargeAmount,
+		    s2.select_value as status,
+		    ri.remark as remark,
+		    ri.serical_number as sericalNumber,
+		    ri.current_amount as currentAmount
+		FROM
+		    m_recharge_info ri,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'recharge_type') s1,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'account_status') s2
+		where
+		    s1.select_key = ri.recharge_type 
+		    and s2.select_key = ri.status
+		    and ri.user_id = #{managerId} 
+		    and ri.user_type = 'c'
+		    <if test="timestart !=''">
+		    and ri.recharge_time <![CDATA[>=]]> #{timestart}
+		    </if>
+		    <if test="timeEnd !=''">
+		    and ri.recharge_time <![CDATA[<=]]> #{timeEnd}
+		    </if>
+		order by ri.recharge_time desc
+		limit #{index},8;	
+	</select>
+	
+	<select id="getRechargeRecordsCount" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="int">
+		SELECT 
+		    count(order_id)
+		FROM
+		    m_recharge_info
+		where
+		    user_id = #{managerId} and user_type = 'c'
+		    <if test="timestart !=''">
+		    and recharge_time <![CDATA[>=]]> #{timestart}
+		    </if>
+		    <if test="timeEnd !=''">
+		    and recharge_time <![CDATA[<=]]> #{timeEnd}
+		    </if>
+	</select>
+	
+	<select id="getConsumptionRecords" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="com.xinyue.manage.model.Consumption">
+		select 
+		    date_format(ci.consumption_time, '%Y-%m-%d %H:%i') as consumptionTime,
+		    ci.consumption_amount as consumptionAmount,
+		    ci.pay_award as payAward,
+		    ci.other_pay_amount as otherPayAmount,
+		    ci.other_pay_award as otherPayAward,
+		    s1.select_value as consumptionType,
+		    ci.order_id as orderId,
+		    ci.remark as remark,
+		    ci.serical_number as sericalNumber,
+		    ci.current_amount as currentAmount,
+		    ci.other_award_amount as otherAwardAmount,
+		    ci.other_reward_amount as otherRewardAmount
+		from
+		    m_consumption_info ci,
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'consumption_type') s1
+		where
+		    ci.consumption_type = s1.select_key
+		        and ci.user_id = #{managerId}
+		        and ci.user_type = 'c'
+		        <if test="timestart !=''">
+			    and ci.consumption_time <![CDATA[>=]]> #{timestart}
+			    </if>
+			    <if test="timeEnd !=''">
+			    and ci.consumption_time <![CDATA[<=]]> #{timeEnd}
+			    </if>
+		order by ci.consumption_time desc
+		limit #{index} , 8;
+	</select>
+	
+	<select id="getConsumptionRecordsCount" parameterType="com.xinyue.manage.beans.SearchMoneyAccount" resultType="int">
+		select 
+		    count(ci.order_id)
+		from
+		    m_consumption_info ci
+		where
+		        ci.user_id = #{managerId}
+		        and ci.user_type = 'c'
+		        <if test="timestart !=''">
+			    and ci.consumption_time <![CDATA[>=]]> #{timestart}
+			    </if>
+			    <if test="timeEnd !=''">
+			    and ci.consumption_time <![CDATA[<=]]> #{timeEnd}
+			    </if>
+		;
+	</select>
+</mapper>

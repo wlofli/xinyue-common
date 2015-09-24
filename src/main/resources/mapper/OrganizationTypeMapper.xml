@@ -48,4 +48,5 @@
 	<select id="findTypes" resultType="com.xinyue.manage.model.OrganizationType">
 		select otypeid id , name name , number number from m_organization_type where deleted=0 
 	</select>
+	<!-- 2015-09-08以后修改 显示 机构分类 -->
 </mapper>

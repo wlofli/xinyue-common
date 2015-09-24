@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.beans.ProductTypeInfo;
 import com.xinyue.manage.dao.ProductTypeDao;
 import com.xinyue.manage.model.ProductType;
@@ -13,7 +14,6 @@ import com.xinyue.manage.service.ProductTypeService;
 import com.xinyue.manage.util.GlobalConstant;
 
 /**
- * 
  * @author wenhai.you
  * @2015年5月23日
  * @下午2:22:55
@@ -24,35 +24,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 	@Autowired
 	private ProductTypeDao ptdao;
 	private Logger logger = Logger.getLogger(ProductTypeServiceImpl.class);
-	@Override
-	public List<ProductType> findProductTypeList() {
-		// TODO Auto-generated method stub
-		return ptdao.findProductTypeList();
-	}
+	
 
-	@Override
-	public List<ProductType> findTypeFirst(ProductTypeInfo pt) {
-		// TODO Auto-generated method stub
-		return ptdao.findTypeFirst(pt);
-	}
-	
-	@Override
-	public List<ProductType> findTypeSecond(ProductTypeInfo pt) {
-		// TODO Auto-generated method stub
-		return ptdao.findTypeSecond(pt);
-	}
-	
-	@Override
-	public int getTypeFirstCount() {
-		// TODO Auto-generated method stub
-		return ptdao.getTypeFirstCount();
-	}
-	
-	@Override
-	public int getTypeSecondCount() {
-		// TODO Auto-generated method stub
-		return ptdao.getTypeSecondCount();
-	}
 	
 	
 	@Override
@@ -129,5 +102,34 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 	public List<ProductType> findTypeFirstList() {
 		// TODO Auto-generated method stub
 		return ptdao.findTypeFirstList();
+	}
+	
+	//2015-09-17
+	
+	@Override
+	public List<ProductType> findProductTypeList() {
+		// TODO Auto-generated method stub
+		return ptdao.getProTypeList();
+	}
+	
+	//2015-09-17
+	@Override
+	public PageData<ProductType> findFirstPagedata(ProductTypeInfo info) {
+		// TODO Auto-generated method stub
+		String topage = info.getFpage();
+		int currentPage = (GlobalConstant.isNull(topage) || "0".equals(topage))?1:Integer.valueOf(topage);
+		int pageSize = GlobalConstant.PAGE_SIZE;
+		int start = (currentPage-1)*pageSize;
+		return new PageData<ProductType>(ptdao.findTypeFirst(start, pageSize), ptdao.getTypeFirstCount(), currentPage);
+	}
+	
+	@Override
+	public PageData<ProductType> findSecondPagedata(ProductTypeInfo info) {
+		// TODO Auto-generated method stub
+		String topage = info.getSpage();
+		int currentPage = (GlobalConstant.isNull(topage) || "0".equals(topage))?1:Integer.valueOf(topage);
+		int pageSize = GlobalConstant.PAGE_SIZE;
+		int start = (currentPage-1)*pageSize;
+		return new PageData<ProductType>(ptdao.findTypeSecond(start, pageSize), ptdao.getTypeSecondCount(), currentPage);
 	}
 }

@@ -80,7 +80,6 @@ public class Order {
 	
 	private String creditManageId;//信贷经理id
 	
-	//以下为非数据库字段
 	private String province;//省
 	private String city;//市
 	private String zone;//区

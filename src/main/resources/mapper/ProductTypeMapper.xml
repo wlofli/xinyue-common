@@ -2,22 +2,36 @@
 <!-- wenhai.you -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xinyue.manage.dao.ProductTypeDao">
-	<select id="findProductTypeList" resultType="com.xinyue.manage.model.ProductType">
+	
+	
+	<!--添加二级产品分类时显示 一级所有产品分类 -->
+	<select id="findTypeFirstList" resultType="com.xinyue.manage.model.ProductType">
+		select 
+			id id,
+			name name
+		from m_product_type where parent_id is null and deleted = 0 
+	</select>
+	
+	
+	<!--  2015-09-17 以后修改-->
+	<!-- ywh 供后台调用 获取所有产品类型 -->
+	<select id="getProTypeList" resultType="com.xinyue.manage.model.ProductType">
 		select 
 			id id , 
 			name name
 		from m_product_type where deleted = 0 
 	</select>
-	
+	<!-- ywh 获取所有 产品分类 前台调用  -->
 	<select id="findProductTypeByList" resultType="com.xinyue.manage.model.ProductType">
 		select 
 			id id , 
 			name name
-		from m_product_type where deleted = 0 and status = 1
+		from m_product_type where deleted = 0 and status = 0
 	</select>
 	
 	
-	<select id="findTypeFirst" resultType="com.xinyue.manage.model.ProductType" parameterType="com.xinyue.manage.beans.ProductTypeInfo">
+	<!-- ywh 获取 一级产品分类每页数据 -->
+	<select id="findTypeFirst" resultType="com.xinyue.manage.model.ProductType">
 		select 
 			id id,
 			name name,
@@ -29,16 +43,18 @@
 			modified_id modifyUser 
 		from m_product_type where parent_id is null and deleted = 0 
 		order by created_time desc 
-		limit #{fstart} , #{pageSize}
+		limit #{start} , #{pageSize}
 	</select>
 	
+	<!-- ywh 获取一级产品分类总记录数 -->
 	<select id="getTypeFirstCount" resultType="int">
 		select 
 			count(id)
 		from m_product_type where parent_id is null and deleted = 0 
 	</select>
 	
-	<select id="findTypeSecond" resultType="com.xinyue.manage.model.ProductType" parameterType="com.xinyue.manage.beans.ProductTypeInfo">
+	<!-- ywh 获取 二级产品分类每页数据 -->
+	<select id="findTypeSecond" resultType="com.xinyue.manage.model.ProductType">
 		select 
 			id id,
 			name name,
@@ -50,9 +66,9 @@
 			modified_id modifyUser 
 		from m_product_type where parent_id is not null and deleted = 0 
 		order by created_time desc 
-		limit #{sstart} , #{pageSize}
+		limit #{start} , #{pageSize}
 	</select>
-	
+	<!-- ywh 获取二级产品分类总记录数-->
 	<select id="getTypeSecondCount" resultType="int">
 		select 
 			count(id)
@@ -60,44 +76,44 @@
 		
 	</select>
 	
+	<!--ywh 添加产品分类 -->
 	<insert id="addTypeFirst" parameterType="com.xinyue.manage.model.ProductType">
-		insert into m_product_type(id , name , status , created_time , created_id , parent_id)
-		 values(replace(uuid() , '-','') , #{name} , #{status} , now() , #{createUser} , #{parentid})
+		insert into m_product_type(id , name , status , created_time , created_id , parent_id , modified_time , modified_id)
+		 values(replace(uuid() , '-','') , #{name} , #{status} , now() , #{createUser} , #{parentid} , #{createUser} , now())
 	</insert>
 	
-	
+	<!--ywh 修改产品分类 -->
 	<update id="updateProductType" parameterType="com.xinyue.manage.model.ProductType">
 		update m_product_type set name = #{name} , status=#{status} , modified_time=now() , modified_id = #{modifyUser}
 		 where id = #{id}
 	</update>
 	
-	<update id="delProductType">
-		update m_product_type set deleted = 1 , modified_time = now() , modified_id = #{modifyUser}  where id = #{id}
-	</update>
+	<!-- ywh 删除产品分类时 修改产品外键-->
 	<update id="updateProductByType">
 		update m_product_info set type = null, modified_time = now() , modified_id = #{modifyUser} where type = #{id}
 	</update>
 	
-	<update id="enableProductType">
-		update m_product_type set status = 1, modified_time = now() , modified_id = #{modifyUser} where id = #{id}
+	<!-- ywh 删除产品分类 -->
+	<update id="delProductType">
+		update m_product_type set deleted = 1 , modified_time = now() , modified_id = #{modifyUser}  where id = #{id}
 	</update>
 	
-	<update id="unenableProductType">
+	<!-- ywh 启用产品分类 -->
+	<update id="enableProductType">
 		update m_product_type set status = 0, modified_time = now() , modified_id = #{modifyUser} where id = #{id}
 	</update>
 	
+	<!-- ywh 禁用产品分类-->
+	<update id="unenableProductType">
+		update m_product_type set status = 1, modified_time = now() , modified_id = #{modifyUser} where id = #{id}
+	</update>
+	
+	<!-- ywh 根据产品分类 标识符 加载-->
 	<select id="findTypeById" resultType="com.xinyue.manage.model.ProductType">
 		select 
 			id id,
 			name name,
 			status status 
 		from m_product_type where id = #{id}
-	</select>
-	
-	<select id="findTypeFirstList" resultType="com.xinyue.manage.model.ProductType">
-		select 
-			id id,
-			name name
-		from m_product_type where parent_id is null and deleted = 0 
 	</select>
 </mapper>

@@ -10,6 +10,8 @@ import com.xinyue.manage.beans.SearchCreditManager;
 import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
+import com.xinyue.manage.model.MoneyOutline;
+import com.xinyue.manage.model.Order;
 
 public interface CreditManagerDAO {
 
@@ -49,6 +51,14 @@ public interface CreditManagerDAO {
 	 */
 	int updateCreditmanagers(@Param("ids")List<String> list, @Param("status")String status);
 
+	/**
+	 * youwh
+	 * 机构下的id
+	 * @param orgid 机构id
+	 * @return
+	 */
+	public List<CreditManager> findCreditByOrgid(@Param("orgid")String orgid);
+	
 	/**
 	 * 信贷经理保存
 	 * @param creditManager
@@ -120,5 +130,26 @@ public interface CreditManagerDAO {
 	 * @return
 	 */
 	int getInvitationManagerRecords(String managerId);
+
+	/**
+	 * 资金账户
+	 * @param managerId
+	 * @return
+	 */
+	MoneyOutline getMoneyAccountByManagerId(String managerId);
+
+	/**
+	 * 评价信息列表
+	 * @param managerId
+	 * @return
+	 */
+	List<Order> getServerRating(HashMap<String, Object> map);
+
+	/**
+	 * 评价信息数量
+	 * @param managerId
+	 * @return
+	 */
+	int getServerRatingCount(String managerId);
 
 }
