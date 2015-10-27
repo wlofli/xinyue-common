@@ -27,6 +27,7 @@ import com.xinyue.manage.dao.ProductFileDao;
 import com.xinyue.manage.model.Product;
 import com.xinyue.manage.model.ProductContent;
 import com.xinyue.manage.model.ProductFile;
+import com.xinyue.manage.model.ProductType;
 import com.xinyue.manage.service.ProductService;
 import com.xinyue.manage.util.GlobalConstant;
 
@@ -312,7 +313,7 @@ public class ProductServiceImpl implements ProductService{
 	}
 	
 	@Override
-	public boolean delPro(String productid, String user) {
+	public boolean delPro(List<String> productid, String user) {
 		// TODO Auto-generated method stub
 		try {
 			pdao.delPro(productid , user);
@@ -323,5 +324,15 @@ public class ProductServiceImpl implements ProductService{
 			logger.error("删除产品失败 ,删除者为:"+user, e);
 			return false;
 		}
+	}
+	
+	@Override
+	public PageData<Product> findProductPageByOrgid(ProductInfo pc) {
+		// TODO Auto-generated method stub
+		String topage = pc.getTopage();
+		int currentPage = (GlobalConstant.isNull(topage) || "0".equals(topage))?1:Integer.valueOf(topage);
+		int start = (currentPage-1)*GlobalConstant.PAGE_SIZE;
+		pc.setStart(start);
+		return new PageData<Product>(pdao.getProductByOrgid(pc), pdao.getProductByOrgidCount(pc), currentPage);
 	}
 }

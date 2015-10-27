@@ -60,8 +60,18 @@ public interface CompanyInfoService {
 	 */
 	HoldInfos getHoldInfoByOrderId(String orderId);
 	
+	/**
+	 * add by lzc     date: 2015年9月28日
+	 */
+	List<Hold> getHoldByOrderId(String orderId);
+	
 	Control getControlInfoById(String controlId);
 
+	/**这个方法不是我写的,只是添加注释
+	 * add by lzc     date: 2015年9月28日
+	 * @param memberId  可以使memberId,也可以为orderId
+	 * @return
+	 */
 	List<Business> getBusinessInfoById(String memberId);
 
 	RealEstate getRealEstateInfoById(String estateId);

@@ -247,8 +247,8 @@ public class AutheManage {
 		return MenuManage.menuJson(user);
 	}
 	
-	
-	private static LoginUserInfo getUser(HttpServletRequest request){
+	//ywh private 改为public
+	public static LoginUserInfo getUser(HttpServletRequest request){
 		Cookie[] cookies  = request.getCookies();
 		if (cookies==null)
 			return null;

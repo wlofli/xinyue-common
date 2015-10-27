@@ -1,10 +1,8 @@
 package com.xinyue.manage.service.impl;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -203,7 +201,7 @@ public class NewServiceImpl implements NewService {
 	public boolean updateNewInfo(List<String> idList, int status, String modifiedId) {
 		// TODO Auto-generated method stub
 		try {
-			newDAO.updateNewInfos(idList, status,modifiedId);
+			newDAO.updateNewInfos(idList, status, modifiedId);
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.info(e.toString());
@@ -235,7 +233,7 @@ public class NewServiceImpl implements NewService {
 		if(searchNew.getPubDate() != null){
 			Calendar  calendar =Calendar.getInstance();
 			calendar.setTime(searchNew.getPubDate());
-			calendar.add(calendar.DAY_OF_YEAR, 1);
+			calendar.add(Calendar.DAY_OF_YEAR, 1);
 			searchNew.setEndDate(calendar.getTime());
 		}
 	}
@@ -257,8 +255,7 @@ public class NewServiceImpl implements NewService {
 	public SelectInfo getRecentNew(String typeId, Date modifiedTime, int type) {
 		// TODO Auto-generated method stub
 		List<SelectInfo> selectInfos = newDAO.getRecentlyInfoList(typeId, modifiedTime, type, 0, 1);
-//System.out.println(selectInfos);
-		return  selectInfos.size() >0 ? selectInfos.get(0) : null;
+		return  selectInfos.size() > 0 ? selectInfos.get(0) : null;
 	}
 
 	@Override

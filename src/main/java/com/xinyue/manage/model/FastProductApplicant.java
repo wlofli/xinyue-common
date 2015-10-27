@@ -18,7 +18,16 @@ public class FastProductApplicant {
 	private String registerZone;//区
 	private String twoYearCredit;//俩年内信用
 	private String houseType;//名下房产类型
+	private String name;//申请人姓名
 	
+	
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public String getApplicantFastId() {
 		return applicantFastId;
 	}

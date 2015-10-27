@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- ywh -->
+<mapper namespace="com.xinyue.manage.dao.AnswerTypeDao">
+		
+	<!-- ywh 获取问题类型每页数据 -->
+	<select id="findPageAanswerType" resultType="com.xinyue.manage.model.AnswerType">
+		select 
+			id,
+			name,
+			parent_id parentid,
+			status status,
+			deleted deleted 
+		from m_question_type 
+		where 
+		<choose>
+			<when test="type == 1">
+				parent_id is null 
+			</when>
+			<otherwise>
+				parent_id is not null 
+			</otherwise>
+		</choose>  
+		and deleted = 0 
+		order by id desc 
+		limit #{start} , #{pageSize} 
+	</select>
+	
+	<select id="findAanswerType" resultType="com.xinyue.manage.model.AnswerType">
+		select 
+			id,
+			name,
+			parent_id parentid,
+			status status,
+			deleted deleted 
+		from m_question_type 
+		where deleted = 0 
+		<choose>
+			<when test="parent == true">
+				and parent_id is null 
+			</when>
+			<otherwise>
+				and parent_id is not null 
+			</otherwise>
+		</choose>
+		
+		
+	</select>
+	
+	<!-- ywh 获取问题类型总记录数 -->
+	<select id="getPageAanswerType" resultType="int">
+		select 
+			count(id)
+		from m_question_type where 
+		<choose>
+			<when test="type == 2">
+				parent_id is null 
+			</when>
+			<otherwise>
+				parent_id is not null 
+			</otherwise>
+		</choose>  
+		and deleted = 0 
+	</select>
+	
+	
+	<update id="delAnswertype">
+		update m_question_type set deleted = 1 where id = #{id}
+	</update>
+	<update id="delAllAnswerTypeByParentid">
+		update m_question_type set deleted = 1 where parent_id = #{id}
+	</update>
+	
+	<insert id="addAnswertype" parameterType="com.xinyue.manage.model.AnswerType">
+		insert into m_question_type(name , parent_id , status , deleted) values(#{name} , #{parentid} , #{status} , 0)
+	</insert>
+	
+	<update id="updateStatus">
+		update m_question_type set status = #{status} where id = #{id}
+	</update>
+	<update id="updateAllStatusByParent">
+		update m_question_type set status = 1 where parent_id = #{id}
+	</update>
+	
+	<update id="updateAnswertype" parameterType="com.xinyue.manage.model.AnswerType">
+		update m_question_type set name = #{name} , parent_id = #{parentid} , status = #{status} where id = #{id}
+	</update>
+	
+	<select id="getAnswertypeById" resultType="com.xinyue.manage.model.AnswerType">
+		select 
+			id,
+			name,
+			parent_id parentid,
+			status status,
+			deleted deleted 
+		from m_question_type where id = #{id}
+	</select>
+</mapper>

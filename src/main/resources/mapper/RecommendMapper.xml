@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xinyue.manage.dao.RecommendDAO">
+<resultMap id="recommend" type="com.xinyue.manage.beans.Recommend" >
+	<result column="id" property="id"/>
+	<result column="user_name" property="userName"/>
+	<result column="user_phone" property="userPhone"/>
+	<result column="user_type" property="userType"/>
+	<result column="province" property="province"/>
+	<result column="city" property="city"/>
+	<result column="zone" property="zone"/>
+	<result column="recommend_user_num" property="recommendUserNum"/>
+	<result column="recommend_order_num" property="recommendOrderNum"/>
+	<result column="recommend_credit_num" property="recommendCreditNum"/>
+	<result column="recommend_recharge_num" property="recommendRechargeNum"/>
+</resultMap>
+
+
+<sql id="memberToCreditCondition">
+		WHERE 1=1
+		<if test="search.userName != null and search.userName != ''">
+			AND mi.contact_name LIKE '%' #{search.userName} '%'
+		</if>
+		<if test="search.userPhone != null and search.userPhone != ''">
+			AND mi.contact_phone LIKE '%' #{search.userPhone} '%'
+		</if>
+		<if test="search.province != null and search.province != ''">
+			AND mi.area_province = #{search.province}
+		</if>
+		<if test="search.city != null and search.city !=''">
+			AND mi.area_city  = #{search.city}
+		</if>
+		<if test="search.zone != null and search.zone !=''">
+			AND mi.area_zone = #{search.zone}
+		</if>
+		<if test="search.recommendCreditNum != null and search.recommendCreditNum != ''">
+			AND (SELECT count(*)	FROM c_credit_loan m1 WHERE	m1.presenter = m.presenter) >= #{search.recommendCreditNum}
+		</if>
+		<if test="search.recommendRechargeNum != null and search.recommendRechargeNum !=''">
+			AND (SELECT	SUM(r.recharge_amount) FROM m_recharge_info r WHERE r.deleted = 0 AND r.user_type = 'm'
+					AND r.user_id IN 
+					(SELECT m2.presentee FROM c_credit_loan m2 WHERE m2.presenter = m.presenter)
+				) >= #{search.recommendRechargeNum}
+		</if>
+</sql>
+<sql id="creditToCreditCondition">
+		WHERE 1=1
+		<if test="search.userName != null and search.userName != ''">
+			AND mi.real_name LIKE '%' #{search.userName} '%'
+		</if>
+		<if test="search.userPhone != null and search.userPhone != ''">
+			AND mi.tel_number LIKE '%' #{search.userPhone} '%'
+		</if>
+		<if test="search.province != null and search.province != ''">
+			AND mi.province = #{search.province}
+		</if>
+		<if test="search.city != null and search.city !=''">
+			AND mi.city  = #{search.city}
+		</if>
+		<if test="search.recommendCreditNum != null and search.recommendCreditNum != ''">
+			AND (SELECT count(*)	FROM c_credit_credit m1 WHERE	m1.presenter = m.presenter) >= #{search.recommendCreditNum}
+		</if>
+		<if test="search.recommendRechargeNum != null and search.recommendRechargeNum !=''">
+			AND (SELECT	SUM(r.recharge_amount) FROM m_recharge_info r WHERE r.deleted = 0 AND r.user_type = 'c'
+					AND r.user_id IN 
+					(SELECT m2.presentee FROM c_credit_credit m2 WHERE m2.presenter = m.presenter)
+				) >= #{search.recommendRechargeNum}
+		</if>
+</sql>
+
+<select id="getRecommendCreditByCondition" resultMap="recommend">
+<!-- 普通会员推荐信贷 -->
+	<if test='search.userType != "c"'>
+		SELECT  
+			m.presenter,
+			mi.contact_name AS user_name,
+			mi.contact_phone AS user_phone,
+			p.name AS province,
+			c.name AS city,
+			z.name AS　zone,
+			(
+			SELECT
+				count(*)
+			FROM
+				c_credit_loan m1
+			WHERE
+				m1.presenter = m.presenter
+			) AS recommend_credit_num,
+	<!-- 		取出被推荐信贷经理总共充值的金额 -->
+			(
+				SELECT
+					SUM(r.recharge_amount)
+				FROM
+					m_recharge_info r
+				WHERE
+					r.deleted = 0
+				AND r.user_type = 'm'
+				AND r.user_id IN (
+					SELECT
+						m2.presentee
+					FROM
+						c_credit_loan m2
+					WHERE
+						m2.presenter = m.presenter
+					)
+			) AS recommend_recharge_num,
+			'm' AS user_type
+				
+		FROM c_credit_loan m
+		LEFT JOIN m_member_info mi ON mi.id = m.presenter
+		LEFT JOIN m_area_province p ON p.code = mi.area_province
+		LEFT JOIN m_area_city     c ON c.code = mi.area_city
+		LEFT JOIN m_area_zone     z ON z.code = mi.area_zone
+		<include refid="memberToCreditCondition"></include>
+		GROUP BY m.presenter
+	</if>
+	<if test="search.userType == null || search.userType ==''">
+	UNION ALL
+	</if>
+	<if test='search.userType != "m"'>
+	<!-- 	信贷经理推荐信贷 -->
+		SELECT  
+			m.presenter,
+			mi.real_name AS user_name,
+			mi.tel_number AS user_phone,
+			p.name AS province,
+			c.name AS city,
+			NULL AS　zone,
+			(
+			SELECT
+				count(*)
+			FROM
+				c_credit_credit m1
+			WHERE
+				m1.presenter = m.presenter
+			) AS recommend_credit_num,
+	<!-- 		取出被推荐信贷经理总共充值的金额 -->
+			(
+				SELECT
+					SUM(r.recharge_amount)
+				FROM
+					m_recharge_info r
+				WHERE
+					r.deleted = 0
+				AND r.user_type = 'c'
+				AND r.user_id IN (
+					SELECT
+						m2.presentee
+					FROM
+						c_credit_credit m2
+					WHERE
+						m2.presenter = m.presenter
+					)
+			) AS recommend_recharge_num,
+			'c' AS user_type
+				
+		FROM c_credit_credit m
+		LEFT JOIN c_manager_info mi ON mi.id = m.presenter
+		LEFT JOIN m_area_province p ON p.code = mi.province
+		LEFT JOIN m_area_city     c ON c.code = mi.city
+		<include refid="creditToCreditCondition"></include>
+		GROUP BY m.presenter	
+	</if>
+	LIMIT #{pageNo}, #{pageSize}
+
+</select>
+
+
+<select id="countRecommendCreditByCondition" resultType="int">
+<!-- 普通会员推荐信贷 -->
+	<if test="search.userType == null || search.userType ==''">
+		SELECT
+	</if>
+	<if test='search.userType != "c"'>
+		(SELECT  
+		  COUNT(m.presenter)
+		FROM
+		(SELECT DISTINCT m1.presenter  FROM 
+		c_credit_loan m1) m
+		LEFT JOIN m_member_info mi ON mi.id = m.presenter
+		<include refid="memberToCreditCondition"></include>
+		
+		)
+	</if>
+	<if test="search.userType == null || search.userType ==''">
+		+
+	</if>
+	<if test='search.userType != "m"'>
+	<!-- 	信贷经理推荐信贷 -->
+		(SELECT  
+			COUNT(m.presenter)
+		FROM (SELECT DISTINCT m1.presenter 				
+		FROM c_credit_credit m1) m
+		
+		LEFT JOIN c_manager_info mi ON mi.id = m.presenter
+		<include refid="creditToCreditCondition"></include>
+		)
+	</if>
+</select>
+
+
+<sql id="memberToMemberCondition">
+		WHERE  1 = 1
+		<if test="search.userName != null and search.userName != ''">
+			AND mi.contact_name LIKE '%' #{search.userName} '%'
+		</if>
+		<if test="search.userPhone != null and search.userPhone != ''">
+			AND mi.contact_phone LIKE '%' #{search.userPhone} '%'
+		</if>
+		<if test="search.province != null and search.province != ''">
+			AND mi.area_province = #{search.province}
+		</if>
+		<if test="search.city != null and search.city !=''">
+			AND mi.area_city  = #{search.city}
+		</if>
+		<if test="search.zone != null and search.zone !=''">
+			AND mi.area_zone = #{search.zone}
+		</if>
+		<if test="search.recommendUserNum != null and search.recommendUserNum != ''">
+			AND (SELECT count(*)	FROM c_member_loan m1 WHERE	m1.presenter = m.presenter) >= #{search.recommendUserNum}
+		</if>
+		<if test="search.recommendOrderNum != null and search.recommendOrderNum !=''">
+			AND (SELECT	count(*) FROM	m_order_info o	WHERE o.status = 10 AND o.deleted = 0
+				AND o.member_id IN(SELECT 	m2.presentee FROM c_member_loan m2 WHERE m2.presenter = m.presenter)
+			) >= #{search.recommendOrderNum}
+		</if>
+</sql>
+
+<sql id="creditToMemberCondition">
+		WHERE 1=1
+		<if test="search.userName != null and search.userName != ''">
+			AND mi.real_name LIKE '%' #{search.userName} '%'
+		</if>
+		<if test="search.userPhone != null and search.userPhone != ''">
+			AND mi.tel_number LIKE '%' #{search.userPhone} '%'
+		</if>
+		<if test="search.province != null and search.province != ''">
+			AND mi.province = #{search.province}
+		</if>
+		<if test="search.city != null and search.city !=''">
+			AND mi.city  = #{search.city}
+		</if>
+		<if test="search.recommendUserNum != null and search.recommendUserNum != ''">
+			AND (SELECT count(*) FROM c_credit_member m1 WHERE	m1.presenter = m.presenter) >= #{search.recommendUserNum}
+		</if>
+		<if test="search.recommendOrderNum != null and search.recommendOrderNum !=''">
+			AND (SELECT	count(*) FROM m_order_info o WHERE o.deleted = 0 AND o.status = 10 
+				AND o.member_id IN (SELECT m2.presentee FROM c_credit_member m2 WHERE m2.presenter = m.presenter) 
+				) >= #{search.recommendOrderNum}
+		</if>
+</sql>
+	
+<select id="getRecommendMemberByCondition" resultMap="recommend">
+<!-- 		普通会员推荐普通会员 -->
+	<if test='search.userType != "c"'>
+		SELECT  
+			m.presenter,
+			mi.contact_name AS user_name,
+			mi.contact_phone AS user_phone,
+			'm' AS user_type,
+			p.name AS province,
+			c.name AS city,
+			z.name AS　zone,
+			(SELECT 
+				count(*)
+			FROM 
+				c_member_loan m1
+			WHERE m1.presenter = m.presenter	
+				 ) AS 	recommend_user_num,
+			(SELECT
+				count(*)
+			FROM
+				m_order_info o
+			WHERE o.status = 10 AND o.deleted = 0
+			AND o.member_id IN(
+					SELECT 
+						m2.presentee
+					FROM c_member_loan m2
+					WHERE m2.presenter = m.presenter
+				)
+			) AS 	recommend_order_num
+		FROM c_member_loan m
+		LEFT JOIN m_member_info mi ON mi.id = m.presenter
+		LEFT JOIN m_area_province p ON p.code = mi.area_province
+		LEFT JOIN m_area_city     c ON c.code = mi.area_city
+		LEFT JOIN m_area_zone     z ON z.code = mi.area_zone
+		<include refid="memberToMemberCondition"></include>
+		GROUP BY m.presenter
+	</if>
+	<if test="search.userType == null || search.userType == ''">
+		UNION ALL
+	</if>
+	<if test='search.userType != "m"'>
+<!-- 	信贷经理推荐普通会员 -->
+		SELECT
+			m.presenter,
+			mi.real_name AS user_name,
+			mi.tel_number AS user_phone,
+			'c'  AS user_type,
+			p.name AS province,
+			c.name AS city,
+			NULL AS　zone,
+			
+			(SELECT 
+				count(*)
+			FROM
+				c_credit_member m1
+			WHERE
+				m1.presenter = m.presenter
+			) AS recommend_user_num,
+			(SELECT
+				count(*)
+			FROM
+				m_order_info o
+			WHERE o.deleted = 0 AND o.status = 10 
+				AND o.member_id IN (
+					SELECT 
+						m2.presentee
+					FROM c_credit_member m2
+					WHERE m2.presenter = m.presenter
+				) 
+			) AS recommend_order_num
+		FROM c_credit_member m
+		LEFT JOIN c_manager_info mi ON mi.id = m.presenter
+		LEFT JOIN m_area_province p ON p.code = mi.province
+		LEFT JOIN m_area_city     c ON c.code = mi.city
+		<include refid="creditToMemberCondition"></include>
+		GROUP BY m.presenter	
+	</if>
+		LIMIT #{pageNo}, #{pageSize}
+</select>
+
+<select id="countRecommendMemberByCondition" resultType="int">
+	<if test="search.userType == null || search.userType ==''">
+		SELECT
+	</if>
+	<!-- 		普通会员推荐普通会员 -->
+	<if test='search.userType != "c"'>
+		(SELECT  
+			count(m.presenter)	
+		FROM(SELECT DISTINCT m1.presenter FROM c_member_loan m1) m
+		LEFT JOIN m_member_info mi ON mi.id = m.presenter
+		<include refid="memberToMemberCondition"></include>
+		)
+	</if>
+	<if test="search.userType == null || search.userType == ''">
+		+
+	</if>
+	<if test='search.userType != "m"'>
+<!-- 	信贷经理推荐普通会员 -->
+		(SELECT
+			count(m.presenter)
+		FROM (SELECT DISTINCT m1.presenter FROM c_credit_member m1) m
+		LEFT JOIN c_manager_info mi ON mi.id = m.presenter
+		LEFT JOIN m_area_province p ON p.code = mi.province
+		LEFT JOIN m_area_city     c ON c.code = mi.city
+		<include refid="creditToMemberCondition"></include>
+		)
+	</if>
+</select>
+
+<sql id="memberToCredit">
+	WHERE (SELECT count(*) FROM	c_manager_info m1	WHERE	m1.invited_code = m.invitation_code) > 0
+	<if test="search.userName != null and search.userName != ''">
+		AND m.contact_name LIKE '%' #{search.userName} '%'
+	</if>
+	<if test="search.userPhone != null and search.userPhone != ''">
+		AND m.contact_phone LIKE '%' #{search.userPhone} '%'
+	</if>
+	<if test="search.province != null and search.province != ''">
+		AND m.area_province = #{search.province}
+	</if>
+	<if test="search.city != null and search.city !=''">
+		AND m.area_city  = #{search.city}
+	</if>
+	<if test="search.zone != null and search.zone !=''">
+		AND m.area_zone = #{search.zone}
+	</if>
+	<if test="search.recommendCreditNum != null and search.recommendCreditNum != ''">
+		AND (SELECT count(*) FROM	c_manager_info m1	WHERE	m1.invited_code = m.invitation_code) >= #{search.recommendCreditNum}
+	</if>
+	<if test="search.recommendRechargeNum != null and search.recommendRechargeNum !=''">
+		AND (SELECT	SUM(r.recharge_amount) FROM	m_recharge_info r WHERE	r.deleted = 0 AND r.user_type = 'm'	
+			AND r.user_id IN (SELECT m2.id	FROM c_manager_info m2 WHERE m2.invited_code = m.invitation_code)
+			) >= #{search.recommendRechargeNum}
+	</if>
+	
+</sql>
+<sql id="creditToCredit">
+	WHERE (SELECT	count(*) FROM	c_manager_info m1	WHERE	m1.invited_code = m.invitation_code	) > 0
+	<if test="search.userName != null and search.userName != ''">
+		AND m.real_name LIKE '%' #{search.userName} '%'
+	</if>
+	<if test="search.userPhone != null and search.userPhone != ''">
+		AND m.tel_number LIKE '%' #{search.userPhone} '%'
+	</if>
+	<if test="search.province != null and search.province != ''">
+		AND m.province = #{search.province}
+	</if>
+	<if test="search.city != null and search.city !=''">
+		AND m.city  = #{search.city}
+	</if>
+	<if test="search.recommendCreditNum != null and search.recommendCreditNum != ''">
+		AND (SELECT	count(*) FROM	c_manager_info m1	WHERE	m1.invited_code = m.invitation_code	) >= #{search.recommendCreditNum}
+	</if>
+	<if test="search.recommendRechargeNum != null and search.recommendRechargeNum !=''">
+		AND (SELECT	SUM(r.recharge_amount)	FROM m_recharge_info r	WHERE	r.deleted = 0 AND r.user_type = 'm'
+				AND r.user_id IN (SELECT m2.id	FROM c_manager_info m2	WHERE	m2.invited_code = m.invitation_code)
+			) >= #{search.recommendRechargeNum}
+	</if>
+</sql>
+<select id="getRecommendCreditByInvitedCode" resultMap="recommend">
+<!-- 	普通会员推荐信贷 -->
+	<if test='search.userType != "c"'>
+		SELECT  
+			m.id,
+			m.contact_name AS user_name,
+			m.contact_phone AS user_phone,
+			p.name AS province,
+			c.name AS city,
+			z.name AS zone,
+			(
+			SELECT
+				count(*)
+			FROM
+				c_manager_info m1
+			WHERE
+				m1.invited_code = m.invitation_code
+			) AS recommend_credit_num,
+	<!-- 		取出被推荐信贷经理总共充值的金额 -->
+			(
+				SELECT
+					SUM(r.recharge_amount)
+				FROM
+					m_recharge_info r
+				WHERE
+					r.deleted = 0
+				AND r.user_type = 'm'
+				AND r.user_id IN (
+					SELECT
+						m2.id
+					FROM
+						c_manager_info m2
+					WHERE
+						m2.invited_code = m.invitation_code
+					)
+			) AS recommend_recharge_num,
+			'm' AS user_type
+		FROM m_member_info m
+		LEFT JOIN m_area_province p ON p.code = m.area_province
+		LEFT JOIN m_area_city     c ON c.code = m.area_city
+		LEFT JOIN m_area_zone     z ON z.code = m.area_zone
+		<include refid="memberToCredit"></include>
+		
+	</if>
+	<if test="search.userType == null || search.userType ==''">
+	UNION ALL
+	</if>
+	<if test='search.userType != "m"'>
+	<!-- 	信贷经理推荐信贷 -->
+		SELECT  
+			m.id,
+			m.real_name AS user_name,
+			m.tel_number AS user_phone,
+			p.name AS province,
+			c.name AS city,
+			NULL   AS zone,
+			(
+			SELECT
+				count(*)
+			FROM
+				c_manager_info m1
+			WHERE
+				m1.invited_code = m.invitation_code
+			) AS recommend_credit_num,
+	<!-- 		取出被推荐信贷经理总共充值的金额 -->
+			(
+				SELECT
+					SUM(r.recharge_amount)
+				FROM
+					m_recharge_info r
+				WHERE
+					r.deleted = 0
+				AND r.user_type = 'c'
+				AND r.user_id IN (
+					SELECT
+						m2.id
+					FROM
+						c_manager_info m2
+					WHERE
+						m2.invited_code = m.invitation_code
+					)
+			) AS recommend_recharge_num,
+			'c' AS user_type
+				
+		FROM c_manager_info m
+		LEFT JOIN m_area_province p ON p.code = m.province
+		LEFT JOIN m_area_city     c ON c.code = m.city
+		<include refid="creditToCredit"></include>
+	</if>
+	LIMIT #{pageNo}, #{pageSize}
+</select>
+
+<select id="countRecommendCreditByInvitedCode" resultType="int">
+<!-- 普通会员推荐信贷 -->
+	<if test="search.userType == null || search.userType ==''">
+		SELECT
+	</if>
+	<if test='search.userType != "c"'>
+		(SELECT  
+		  COUNT(m.id)
+		FROM m_member_info m
+		<include refid="memberToCredit"></include>
+		)
+	</if>
+	<if test="search.userType == null || search.userType ==''">
+		+
+	</if>
+	<if test='search.userType != "m"'>
+	<!-- 	信贷经理推荐信贷 -->
+		(SELECT  
+			COUNT(m.id)
+		FROM c_manager_info m
+		<include refid="creditToCredit"></include>
+		)
+	</if>
+</select>
+
+<sql id="memberToMember">
+		WHERE (SELECT count(*)	FROM m_member_info m1	WHERE m1.invited_code = m.invitation_code) > 0
+		<if test="search.userName != null and search.userName != ''">
+			AND m.contact_name LIKE '%' #{search.userName} '%'
+		</if>
+		<if test="search.userPhone != null and search.userPhone != ''">
+			AND m.contact_phone LIKE '%' #{search.userPhone} '%'
+		</if>
+		<if test="search.province != null and search.province != ''">
+			AND m.area_province = #{search.province}
+		</if>
+		<if test="search.city != null and search.city !=''">
+			AND m.area_city  = #{search.city}
+		</if>
+		<if test="search.zone != null and search.zone !=''">
+			AND m.area_zone = #{search.zone}
+		</if>
+		<if test="search.recommendUserNum != null and search.recommendUserNum != ''">
+			AND (SELECT count(*)	FROM m_member_info m1	WHERE m1.invited_code = m.invitation_code) >= #{search.recommendUserNum}
+		</if>
+		<if test="search.recommendOrderNum != null and search.recommendOrderNum !=''">
+			AND (SELECT	count(*) FROM	m_order_info o	WHERE o.status = 10 AND o.deleted = 0
+				AND o.member_id IN(SELECT m2.id FROM m_member_info m2 WHERE m2.invited_code = m.invitation_code)
+			) >= #{search.recommendOrderNum}
+		</if>
+</sql>
+
+<sql id="creditToMember">
+	WHERE (SELECT count(*) FROM c_manager_info m1 WHERE m1.invited_code = m.invitation_code ) > 0
+		<if test="search.userName != null and search.userName != ''">
+			AND m.real_name LIKE '%' #{search.userName} '%'
+		</if>
+		<if test="search.userPhone != null and search.userPhone != ''">
+			AND m.tel_number LIKE '%' #{search.userPhone} '%'
+		</if>
+		<if test="search.province != null and search.province != ''">
+			AND m.province = #{search.province}
+		</if>
+		<if test="search.city != null and search.city !=''">
+			AND m.city  = #{search.city}
+		</if>
+		<if test="search.recommendUserNum != null and search.recommendUserNum != ''">
+			AND (SELECT count(*) FROM c_manager_info m1 WHERE m1.invited_code = m.invitation_code ) >= #{search.recommendUserNum}
+		</if>
+		<if test="search.recommendOrderNum != null and search.recommendOrderNum !=''">
+			AND (SELECT count(*) FROM m_order_info o WHERE o.deleted = 0 AND o.status = 10
+				AND o.member_id IN (SELECT m2.id FROM c_manager_info m2 WHERE m2.invited_code = m.invitation_code) 
+			) >= #{search.recommendOrderNum}
+		</if>
+</sql>
+
+<select id="getRecommendMemberByInvitedCode" resultMap="recommend">
+<!-- 		普通会员推荐普通会员 -->
+	<if test='search.userType != "c"'>
+		SELECT  
+			m.id,
+			m.contact_name AS user_name,
+			m.contact_phone AS user_phone,
+			'm' AS user_type,
+			p.name AS province,
+			c.name AS city,
+			z.name AS zone,
+			(SELECT 
+				count(*)
+			FROM 
+				m_member_info m1
+			WHERE m1.invited_code = m.invitation_code
+			) AS 	recommend_user_num,
+			(SELECT
+				count(*)
+			FROM
+				m_order_info o
+			WHERE o.status = 10 AND o.deleted = 0
+			AND o.member_id IN(
+					SELECT 
+						m2.id
+					FROM m_member_info m2
+					WHERE m2.invited_code = m.invitation_code
+				)
+			) AS 	recommend_order_num
+		FROM m_member_info m
+		LEFT JOIN m_area_province p ON p.code = m.area_province
+		LEFT JOIN m_area_city     c ON c.code = m.area_city
+		LEFT JOIN m_area_zone     z ON z.code = m.area_zone
+		<include refid="memberToMember"></include>
+	</if>
+	<if test="search.userType == null || search.userType == ''">
+		UNION ALL
+	</if>
+	<if test='search.userType != "m"'>
+<!-- 	信贷经理推荐普通会员 -->
+		SELECT
+			m.id,
+			m.real_name AS user_name,
+			m.tel_number AS user_phone,
+			'c'  AS user_type,
+			p.name AS province,
+			c.name AS city,
+			NULL   AS zone,
+			
+			(SELECT 
+				count(*)
+			FROM
+				c_manager_info m1
+			WHERE
+				m1.invited_code = m.invitation_code
+			) AS recommend_user_num,
+			(SELECT
+				count(*)
+			FROM
+				m_order_info o
+			WHERE o.deleted = 0 AND o.status = 10
+				AND o.member_id IN (
+					SELECT 
+						m2.id
+					FROM c_manager_info m2
+					WHERE m2.invited_code = m.invitation_code
+				) 
+			) AS recommend_order_num
+		FROM c_manager_info m
+		LEFT JOIN m_area_province p ON p.code = m.province
+		LEFT JOIN m_area_city     c ON c.code = m.city
+		<include refid="creditToMember"></include>
+	</if>
+		LIMIT #{pageNo}, #{pageSize}
+</select>
+
+<select id="countRecommendMemberByInvitedCode" resultType="int">
+	<if test="search.userType == null || search.userType ==''">
+	SELECT
+	</if>
+	<!-- 		普通会员推荐普通会员 -->
+	<if test='search.userType != "c"'>
+		(SELECT  
+			count(*)	
+		FROM
+			m_member_info m
+		<include refid="memberToMember"></include>
+		)
+	</if>
+	<if test="search.userType == null || search.userType == ''">
+		+
+	</if>
+	<if test='search.userType != "m"'>
+<!-- 	信贷经理推荐普通会员 -->
+		(SELECT
+			count(*)
+		FROM
+			c_manager_info m
+		
+		<include refid="creditToMember"></include>
+		)
+	</if>
+</select>
+
+</mapper>

@@ -9,6 +9,7 @@ import com.xinyue.manage.beans.ProductInfo;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Product;
 import com.xinyue.manage.model.ProductContent;
+import com.xinyue.manage.model.ProductType;
 import com.xinyue.manage.util.CommonFunction;
 
 /**
@@ -135,7 +136,16 @@ public interface ProductService {
 	/**
 	 * ywh 删除产品
 	 * @param productid
+	 * @param user
 	 * @return
 	 */
-	public boolean delPro(String productid, String user);
+	public boolean delPro(List<String> productid, String user);
+	
+	
+	/**
+	 * ywh 机构管理 店铺设置产品列表
+	 * @param pc
+	 * @return
+	 */
+	public PageData<Product> findProductPageByOrgid(ProductInfo pc);
 }

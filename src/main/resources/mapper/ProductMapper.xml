@@ -20,11 +20,11 @@
 	</update>
 	
 	
-	
+	<!-- ywh 前台显示产品详情  -->
 	<select id="findProductById" resultType="com.xinyue.manage.model.Product">
-		select p.id id , p.name name , concat_ws('' , a.name , c.name , z.name ) area , concat_ws('-' , p.credit_from , p.credit_to) credit, 
+		select p.id id , p.name name ,p.logo ,  concat_ws('' , a.name , c.name , z.name ) area , p.credit, 
 		t.name productTypeName , i.name orgName , i.id orgid from m_product_info p 
-		left join m_product_type t on p.type = t.id and t.deleted = 0 and t.status = 1 
+		left join m_product_type t on p.type = t.id and t.deleted = 0 and t.status = 0  
 		left join m_area_province a on a.code  = p.province_id 
 		left join m_area_city c on c.code = p.city_id 
 		left join m_area_zone z on z.code = p.area_id 
@@ -32,15 +32,6 @@
 		where p.deleted = 0 and p.status = 2 and p.id = #{proid} 
 	</select>
 	
-	
-    
-     
-    
-     
-     
-     
-     
-     
      
 <!--      add by lzc -->
      <select id="getListByRecommend" resultType="com.xinyue.manage.model.Product">
@@ -108,8 +99,8 @@
 		select  i.* , concat_ws('' , p.name , c.name , z.name ) area , 
 			s.select_key statusKey , s.select_value statusName 
 		from m_product_info i   
-			left join m_product_type t on i.type = t.id 
-		 	left join m_organization_info o on i.bank = o.id  
+			left join m_product_type t on i.type = t.id and t.deleted = 0 
+		 	left join m_organization_info o on i.bank = o.id and o.deleted = 0 
 		 	left join m_area_province p on p.code = i.province_id 
 		 	left join m_area_city c on c.code = i.city_id 
 		 	left join m_area_zone z on z.code = i.area_id 
@@ -178,8 +169,8 @@
 	<!-- ywh 产品列表总记录数 -->
 	<select id="getProCount" resultType="int" parameterType="com.xinyue.manage.beans.ProductInfo">
 		select count(*)  from m_product_info i  
-			left join m_product_type t on i.type = t.id
-		 	left join m_organization_info o on i.bank = o.id
+			left join m_product_type t on i.type = t.id and t.deleted = 0 
+		 	left join m_organization_info o on i.bank = o.id and o.deleted = 0 
 		 	left join m_select_info s on i.status = s.select_key and s.type_code = 'product_status'
 		where i.deleted = 0 
 		 <if test="productName != null and productName != ''">
@@ -198,7 +189,58 @@
 		 	and i.status = #{status}
 		 </if>
 	</select>
-	
+	 <!--ywh 机构下的产品信息  和产品详情共用resultmap  搜索条件和产品列表共用-->
+	 <select id="getProductByOrgid" resultMap="pro_profile" parameterType="com.xinyue.manage.beans.ProductInfo">
+	 	select 
+		i.* ,  
+		s.select_key statusKey , s.select_value statusName  ,
+		o.id orgid , o.name orgName , 
+		concat_ws('' , p.name , c.name , z.name ) area , 
+		count(t.id) collect , count(d.id) orderNum 
+		from m_product_info i 
+		left join m_area_province p on p.code = i.province_id 
+		left join m_area_city c on c.code = i.city_id 
+		left join m_area_zone z on z.code = i.area_id 
+		left join m_select_info s on i.status = s.select_key and s.type_code = 'product_status' 
+		left join c_collect_info t on t.product_id = i.id 
+		left join m_order_info d on d.product_info = i.id 
+		left join m_organization_info o on o.id = i.bank 
+	 	where i.deleted = 0 and o.id = #{org} 
+	 	<if test="productName != null and productName != ''">
+	 		and (i.name like concat(#{productName} , '%') or i.code like concat(#{productName} , '%')) 
+	 	</if>
+	 	<if test="type != null and type != ''">
+	 		and i.type = #{type}
+	 	</if>
+	 	<if test="status != null and status != 0">
+	 		and i.status = #{status}
+	 	</if>
+	 	<if test="recommend != null and recommend != ''">
+	 		and i.recommend = #{recommend}
+	 	</if>
+	 	 group by i.id 
+	 	limit #{start} , #{pageSize}
+	 </select>
+	 <select id="getProductByOrgidCount" parameterType="com.xinyue.manage.beans.ProductInfo" resultType="int">
+	 	select count(*)	from m_product_info i 
+		left join m_organization_info o on o.id = i.bank 
+	 	where i.deleted = 0  and o.id = #{org} 
+	 	<if test="productName != null and productName != ''">
+	 		and (i.name like concat(#{productName} , '%') or i.code like concat(#{productName} , '%')) 
+	 	</if>
+	 	<if test="type != null and type != ''">
+	 		and i.type = #{type}
+	 	</if>
+	 	<if test="status != null and status != 0">
+	 		and i.status = #{status}
+	 	</if>
+	 	<if test="recommend != null and recommend != ''">
+	 		and i.recommend = #{recommend}
+	 	</if>
+	 </select>
+	 
+	 
+	 
 	<!-- ywh 产品详情 -->
 	<select id="getProductById" resultMap="pro_profile">
 		select 
@@ -215,7 +257,8 @@
 		left join c_collect_info t on t.product_id = i.id 
 		left join m_order_info d on d.product_info = i.id 
 		left join m_organization_info o on o.id = i.bank and o.deleted = 0 
-		where i.id = #{id} 
+		where  i.id = #{id} 
+		
 	</select>
 	
 	<resultMap type="com.xinyue.manage.model.Product" id="pro_profile">
@@ -235,6 +278,8 @@
 		<result property="zoneid" column="area_id"/>
 		<result property="cid" column="city_id"/>
 		<result property="zid" column="area_id"/>
+		<result property="collect" column="collect"/>
+		<result property="orderNum" column="orderNum"/>
 		
 		<result property="interestFrom" column="interest_from"/>
 		<result property="interestTo" column="interest_to"/>
@@ -390,7 +435,11 @@
      </update>
      <!-- ywh 删除产品 -->
      <update id="delPro">
-     	update m_product_info set deleted = 1 , modified_id = #{modifyUser} , modified_time=now()  where id = #{productid}
+     	update m_product_info set deleted = 1 , modified_id = #{modifyUser} , modified_time=now()  
+     	where id =  
+     	<foreach collection="list" item="item" index="index" separator=" or id = ">
+     		#{item}
+     	</foreach>
      </update>
      
      <!-- ywh　自动更新产品状态 -->
@@ -400,4 +449,7 @@
     	when add_time<![CDATA[<]]>curdate() and down_time>curdate() then 2
 		when add_time>curdate() then 1 end 
      </update>
+     
+     
+    
 </mapper>

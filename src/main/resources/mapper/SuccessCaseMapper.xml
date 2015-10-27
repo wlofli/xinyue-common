@@ -59,7 +59,7 @@
 		    sc.loan_days as loanDays,
 		    ap.name as loanProvince,
 		    ac.name as loanCity,
-		    ac.month_interest as monthInterest
+		    sc.month_interest as monthInterest
 		from
 		    c_success_case sc,
 		    m_product_info pi,

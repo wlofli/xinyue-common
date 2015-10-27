@@ -20,6 +20,8 @@ public class CreditManager implements Serializable{
 	private String realName = "";
 	
 	private String organization = "";
+//	add by lzc
+	private String organizationName = "";
 	
 	//add by mzj start 2015/08/28
 	private String sex = "";
@@ -56,12 +58,86 @@ public class CreditManager implements Serializable{
 	//add by mzj end 2015/08/28
 	
 
+	//ywh start
+	private String card;
+	private String auditName;
+	private String one;
+	private String two;
+	private String three;
+	private String four;
+	private String five;
+	//ywh over
+	
 	public String getId() {
 		return id;
 	}
 
+	public String getCard() {
+		return card;
+	}
+
+	public void setCard(String card) {
+		this.card = card;
+	}
+
+	public String getAuditName() {
+		return auditName;
+	}
+
+	public void setAuditName(String auditName) {
+		this.auditName = auditName;
+	}
+
+	public String getOne() {
+		return one;
+	}
+
+	public void setOne(String one) {
+		this.one = one;
+	}
+
+	public String getTwo() {
+		return two;
+	}
+
+	public void setTwo(String two) {
+		this.two = two;
+	}
+
+	public String getThree() {
+		return three;
+	}
+
+	public void setThree(String three) {
+		this.three = three;
+	}
+
+	public String getFour() {
+		return four;
+	}
+
+	public void setFour(String four) {
+		this.four = four;
+	}
+
+	public String getFive() {
+		return five;
+	}
+
+	public void setFive(String five) {
+		this.five = five;
+	}
+
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getOrganizationName() {
+		return organizationName;
+	}
+
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
 	}
 
 	public String getTel() {

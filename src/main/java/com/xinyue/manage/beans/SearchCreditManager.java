@@ -42,11 +42,40 @@ public class SearchCreditManager {
 	private int jumpPage = 1;
 	
 	private int index = 0;
+	//ywh start
+	private String audit;
+	private String orgid;
+	private String topage;
+	//ywh over
 	
 	/**
 	 * 信贷经理ID
 	 */
 	private String managerId="";
+	public String getTopage() {
+		return topage;
+	}
+
+	public void setTopage(String topage) {
+		this.topage = topage;
+	}
+
+	public String getOrgid() {
+		return orgid;
+	}
+
+	public void setOrgid(String orgid) {
+		this.orgid = orgid;
+	}
+
+	public String getAudit() {
+		return audit;
+	}
+
+	public void setAudit(String audit) {
+		this.audit = audit;
+	}
+
 	/**
 	 * 擅长业务
 	 */
@@ -392,4 +421,23 @@ public class SearchCreditManager {
 		this.index = index;
 	}
 
+	@Override
+	public String toString() {
+		return "SearchCreditManager [creditManagerName=" + creditManagerName
+				+ ", sex=" + sex + ", telPhone=" + telPhone + ", province="
+				+ province + ", city=" + city + ", zone=" + zone
+				+ ", organization=" + organization + ", registerTimeStart="
+				+ registerTimeStart + ", registerTimeEnd=" + registerTimeEnd
+				+ ", serverStar=" + serverStar + ", sortCustomerAmount="
+				+ sortCustomerAmount + ", sortSuccessCase=" + sortSuccessCase
+				+ ", sortRemaind=" + sortRemaind + ", sortMoneyPaper="
+				+ sortMoneyPaper + ", sortPoint=" + sortPoint + ", jumpPage="
+				+ jumpPage + ", index=" + index + ", audit=" + audit
+				+ ", orgid=" + orgid + ", topage=" + topage + ", managerId="
+				+ managerId + ", goodBusiness=" + goodBusiness
+				+ ", serverZone=" + serverZone + ", organizationType="
+				+ organizationType + ", auth=" + auth + ", orderType="
+				+ orderType + "]";
+	}
+	
 }

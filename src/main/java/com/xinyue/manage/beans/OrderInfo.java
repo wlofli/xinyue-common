@@ -3,6 +3,7 @@ package com.xinyue.manage.beans;
 import java.util.Date;
 
 /**信贷->客户管理->我的客户->详情
+ * 订单跟总记录bean
  * author lzc
  */
 public class OrderInfo {
@@ -23,9 +24,25 @@ public class OrderInfo {
 	private Double price;//下载价格
 	private String info;//企业信息
 	
+	//ywh start 
+	private String topage;
+	private String memberid;
+	//ywh over
 	
 	public Double getPrice() {
 		return price;
+	}
+	public String getTopage() {
+		return topage;
+	}
+	public void setTopage(String topage) {
+		this.topage = topage;
+	}
+	public String getMemberid() {
+		return memberid;
+	}
+	public void setMemberid(String memberid) {
+		this.memberid = memberid;
 	}
 	public void setPrice(Double price) {
 		this.price = price;

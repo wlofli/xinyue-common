@@ -121,4 +121,60 @@ public class SuccessCaseServiceImpl implements SuccessCaseService {
 		return successCaseDAO.getSuccessCaseDetailByCaseId(id);
 	}
 
+	@Override
+	public List<SuccessCase> getSuccessCasesByOrgId(String orgid,int page) {
+		int index = (page-1)*10;
+		return successCaseDAO.getSuccessCasesByOrgId(orgid,index);
+	}
+
+	@Override
+	public int getSuccessCasesCountByOrgId(String orgid) {
+		
+		return successCaseDAO.getSuccessCasesCountByOrgId(orgid);
+	}
+
+	@Override
+	public boolean updateOrgSuccessCaseUseFlag(String code, String type) {
+		
+		try {
+			String[] temp = code.split("~");
+			List<String> codes = new ArrayList<>();
+			for (int i = 0; i < temp.length; i++) {
+				codes.add(temp[i]);
+			}
+			
+			int result = successCaseDAO.updateOrgSuccessCaseUseFlag(codes,type);
+			
+			if (result > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return false;
+	}
+
+	@Override
+	public boolean deleteSuccessCaseByIds(String code) {
+		
+		try {
+			String[] temp = code.split("~");
+			List<String> codes = new ArrayList<>();
+			for (int i = 0; i < temp.length; i++) {
+				codes.add(temp[i]);
+			}
+			
+			int result = successCaseDAO.deleteSuccessCaseByIds(codes);
+			
+			if (result > 0) {
+				return true;
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		
+		return false;
+	}
+
 }

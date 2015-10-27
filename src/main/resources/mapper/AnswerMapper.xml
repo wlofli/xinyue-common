@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- ywh -->
+<mapper namespace="com.xinyue.manage.dao.AnswerDao">
+		
+	<!--ywh 通用信息 我的回答 -->
+	<select id="getMyAnswer" resultType="com.xinyue.manage.beans.QuestionBean">
+		select max(case when status = 1 then num else 0 end) as verify ,
+		max(case when status = 2 then num else 0 end) as pass ,
+		max(case when status = 3 then num else 0 end) as fail ,
+		sum(case when status is not null then num else 0 end) as total 
+		from (select status ,count(status) num from m_answer_info where created_id = #{createid} and deleted=0 group by status order by null) t
+	</select>
+	
+	<!-- ywh 通用信息 最近回答 -->
+	<select id="getRecentlyAnswer" resultType="com.xinyue.manage.beans.QuestionBean">
+		select distinct(select count(*) from m_answer_info where created_time>=curdate() and deleted=0) as totay ,  
+		(select count(*) from m_answer_info where created_time>=date_sub(curdate(),interval 1 day) and created_time<![CDATA[<]]>curdate() and deleted=0) as yesterday  ,
+		(select count(*)+1 from m_answer_info where created_time>=curdate() and created_time<![CDATA[<]]>t.created_time and deleted=0) as rank 
+		from m_answer_info t where t.created_id = #{createid} and created_time>=curdate() and deleted=0 order by id limit 0 , 1 
+	</select>
+	
+	<!-- ywh 新越网 少回答问题 -->
+	<select id="findXAbsenceAnswer" resultType="com.xinyue.manage.model.Question">
+		select id, created_time createtime , title , content , questioner_type questType 
+		from m_question_info q 
+		where not exists (select * from m_answer_info where question_id = q.id and deleted=0) 
+		and q.type_id = 1 and deleted=0  
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 新越网少回答问题 记录数 -->
+	<select id="getXAbsenceAnswerCount" resultType="int">
+		select count(*) 
+		from m_question_info q 
+		where not exists (select * from m_answer_info where question_id = q.id and deleted=0) 
+		and q.type_id = 1 and q.deleted=0 
+	</select>
+	
+	
+	<!-- ywh 新越网 热门问题 -->
+	<select id="findXPossAnswer" resultType="com.xinyue.manage.model.Question">
+		select q.id id , q.created_time createtime , q.title , q.content , q.questioner_type questType , count(*) answerNum
+		from  m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id  and a.deleted = 0
+		where q.type_id = 1 and q.deleted = 0 
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 新越网 热门问题 -->
+	<select id="getXPossAnswerCount" resultType="int">
+		select count(distinct q.id)
+		from  m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0
+		where q.type_id = 1 and q.deleted = 0 
+	</select>
+	
+	
+	<!-- ywh 添加回答 -->
+	<insert id="addAnswer" parameterType="com.xinyue.manage.model.Answer">
+		insert into m_answer_info(created_time , content , modified_time , status ,  question_id , answer_type , created_id , modified_id , deleted 
+		<if test="provinceid != null and provinceid != ''">
+			, province_id 
+		</if>
+		<if test="cityid != null and cityid != ''">
+			, city_id
+		</if>
+		<if test="orgid != null and orgid != ''">
+			, org_id 
+		</if>
+		)
+		values(now() , #{acontent} , now() , 1 , #{questid} , #{type} , #{createid} , #{createid} , 0 
+		<if test="provinceid != null and provinceid != ''">
+			, #{provinceid} 
+		</if>
+		<if test="cityid != null and cityid != ''">
+			, #{cityid}
+		</if>
+		<if test="orgid != null and orgid != ''">
+			, #{orgid}
+		</if>
+		)
+	</insert>
+	<!-- ywh 删除问题 -->
+	<update id="delQuest">
+		update m_question_info set deleted = 1 , modified_id = #{createUser} , modified_time = now() where 
+		
+		<foreach collection="list" item="item" index="index" open="id = " separator="or id = ">
+			#{item}
+		</foreach>
+	</update>
+	
+	<!-- ywh 机构回答 待回答 -->
+	<select id="findJAbsenceAnswer" resultType="com.xinyue.manage.model.Question">
+		select id, created_time createtime , title , content , questioner_type questType 
+		from m_question_info q 
+		where not exists (select * from m_answer_info where question_id = q.id and deleted=0) 
+		and q.type_id = 2 and deleted=0 
+		limit #{start} , #{pageSize}
+	</select>
+	
+	<!-- ywh 机构回答 待回答总记录数 -->
+	<select id="getJAbsenceAnswerCount" resultType="int">
+		select count(*) 
+		from m_question_info q 
+		where not exists (select * from m_answer_info where question_id = q.id and deleted=0) 
+		and q.type_id = 2  and deleted=0
+	</select>
+	
+	<!-- ywh 机构回答 已回答 -->
+	<select id="findJPossAnswer" resultType="com.xinyue.manage.model.Question">
+		select distinct q.id id , q.created_time createtime , q.title , q.content , q.questioner_type questType , count(*) answerNum 
+		from  m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where q.type_id = 2 and q.deleted = 0 
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 机构回答 已回答 记录数 -->
+	<select id="getJPossAnswerCount" resultType="int">
+		select count(*) from m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where q.type_id = 2 and q.deleted = 0 
+	</select>
+	
+	
+	<!-- ywh 机构回答 通过审核 -->
+	<select id="findJPassAnswer" resultType="com.xinyue.manage.model.Question">
+		select distinct q.id id , q.created_time createtime , q.title , q.content , q.questioner_type questType , count(*) answerNum 
+		from  m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where q.type_id = 2 and q.deleted = 0 and q.status = 2 
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 机构回答 审核记录数 -->
+	<select id="getJPassAnswerCount" resultType="int">
+		select count(*) from  m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where q.type_id = 2 and q.deleted = 0 and q.status = 2
+	</select>
+	
+	<!-- ywh 新越网 机构零回答 -->
+	<select id="showZeroAnswer" resultType="com.xinyue.manage.beans.ShowAnswer">
+		select q.id id , q.title title , q.content content , q.questioner_type qtype , concat('' , p.name , c.name) address , q.created_time qtime 
+		from m_question_info q  
+		left join m_area_province p on p.code = q.province_id 
+		left join m_area_city c on c.code = q.city_id 
+		left join m_organization_info o on o.id = q.org_id 
+		where q.id = #{questid} and q.deleted =0 
+	</select>
+	
+	<!-- ywh 新越网 机构 非0回答  -->
+	<select id="showAnswer" resultType="com.xinyue.manage.beans.ShowAnswer">
+		select q.id id , q.title title , q.content content , q.questioner_type qtype , concat('' , p.name , c.name) address , q.created_time qtime , 
+		a.content acontent , a.created_time atime , a.created_id  acreater, m.contact_name mcreateName, i.real_name ccreateName, a.answer_type atype , o.name oname  
+		from m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		left join m_area_province p on p.code = q.province_id 
+		left join m_area_city c on c.code = q.city_id 
+		left join m_member_info m on m.id = a.created_id 
+		left join c_manager_info i on i.id = a.created_id 
+		left join m_organization_info o on o.id = q.org_id 
+		where q.id = #{questid} and q.deleted =0 
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 新越网 机构 非0回答 记录数 -->
+	<select id="getShowAnswerCount" resultType="int">
+		select count(*) from m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id  and a.deleted = 0 
+		left join m_area_province p on p.code = q.province_id 
+		left join m_area_city c on c.code = q.city_id 
+		left join m_member_info m on m.id = a.created_id 
+		left join c_manager_info i on i.id = a.created_id 
+		left join m_organization_info o on o.id = q.org_id 
+		where q.id = #{questid} and q.deleted =0  
+	</select>
+	
+	<!-- ywh 我的回答 -->
+	<select id="findMyAnswer" resultType="com.xinyue.manage.model.Question">
+		select q.id id , q.created_time createtime,  q.content content ,q.title title, a.content answerContent  , a.created_time answerCreatetime
+		from m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where a.created_id =#{createid} and q.deleted = 0 
+ 		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 我的回答 记录数 -->
+	<select id="findMyAnswerCount" resultType="int">
+		select count(*) from m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where a.created_id =#{createid} and q.deleted = 0 
+	</select>
+	
+	
+	<!-- ywh 机构店铺设置  贷款咨询问题 -->
+	<select id="findOrgQuest" resultType="com.xinyue.manage.model.Question">
+		select * from (select distinct q.id id , q.created_time createtime , q.title , q.content , q.questioner_type questType , count(a.id) answerNum 
+		from  m_question_info q 
+		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where q.type_id = 2 and q.deleted = 0 and q.org_id = #{qbean.orgid} 
+		<choose>
+			<when test="qbean.timefrom != null and qbean.timefrom != ''">
+				and q.created_time>= #{qbean.timefrom}
+			</when>
+		</choose>
+		<choose>
+			<when test="qbean.timeto != null and qbean.timeto != ''">
+				and q.created_time <![CDATA[<]]>#{qbean.timeto}
+			</when>
+		</choose>
+		<if test="qbean.title != null and qbean.title != ''">
+			and q.title like concat(#{qbean.title} , '%')
+		</if> group by id 
+		 ) t where 1=1 
+		<if test="qbean.answerstatus != null and qbean.answerstatus == 2">
+		 and answerNum>0
+		</if>
+		<if test="qbean.answerstatus != null and qbean.answerstatus == 1">
+		 and answerNum = 0
+		</if>
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 机构店铺设置  贷款咨询问题记录数 -->
+	<select id="getOrgQuestCount" resultType="int">
+		select count(*) from (select distinct q.id id , q.created_time createtime , q.title , q.content , q.questioner_type questType , count(a.id) answerNum 
+		from  m_question_info q 
+		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		where q.type_id = 2 and q.deleted = 0 and org_id = #{qbean.orgid} 
+		<choose>
+			<when test="qbean.timefrom != null and qbean.timefrom != ''">
+				and q.created_time>= #{qbean.timefrom}
+			</when>
+		</choose>
+		<choose>
+			<when test="qbean.timeto != null and qbean.timeto != ''">
+				and q.created_time <![CDATA[<]]>#{qbean.timeto}
+			</when>
+		</choose>
+		<if test="qbean.title != null and qbean.title != ''">
+			and q.title like concat(#{qbean.title} , '%')
+		</if> group by id 
+		 ) t where 1=1 
+		<if test="qbean.answerstatus != null and qbean.answerstatus == 2">
+		 and answerNum>0
+		</if>
+		<if test="qbean.answerstatus != null and qbean.answerstatus == 1">
+		 and answerNum = 0
+		</if>
+	</select>
+	
+	
+	<!-- ywh 机构店铺设置  贷款咨询问题详情   -->
+	<select id="showOrgAnswer" resultType="com.xinyue.manage.beans.ShowAnswer">
+		select q.id id , q.title title , q.content content , q.questioner_type qtype , concat('' , p.name , c.name) address , q.created_time qtime , 
+		mq.contact_name mqcreateName, q.telphone telphone , t.id questTypeid , t.name questTypeName , q.status , a.content acontent , a.created_time atime , 
+		a.id aid , a.created_id  acreater, m.contact_name mcreateName, i.real_name ccreateName, a.answer_type atype , o.name oname  
+		from m_question_info q 
+		left join m_question_type t on t.id = q.quest_type_id and t.deleted = 0 
+		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 
+		left join m_area_province p on p.code = q.province_id 
+		left join m_area_city c on c.code = q.city_id 
+		left join m_member_info m on m.id = a.created_id 
+		left join m_member_info mq on mq.id = q.created_id 
+		left join c_manager_info i on i.id = a.created_id 
+		left join m_organization_info o on o.id = q.org_id 
+		where q.id = #{questid} and q.deleted =0 
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh 机构店铺设置  贷款咨询问题详情 记录数 -->
+	<select id="getOrgAnswerCount" resultType="int">
+		select count(*) from m_question_info q 
+		left join m_answer_info a on q.id = a.question_id  and a.deleted = 0 
+		left join m_area_province p on p.code = q.province_id 
+		left join m_area_city c on c.code = q.city_id 
+		left join m_member_info m on m.id = a.created_id 
+		left join c_manager_info i on i.id = a.created_id 
+		left join m_organization_info o on o.id = q.org_id 
+		where q.id = #{questid} and q.deleted =0  
+	</select>
+	
+	
+	<!-- ywh 后台信贷经理 客户回答 -->
+	<select id="findAdminXPossAnswer" resultType="com.xinyue.manage.model.Question">
+		select q.id id , q.created_time createtime , q.title , concat('' , p.name , c.name) address  , q.status
+		from  m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id  and a.deleted = 0 
+		left join m_area_province p on p.code = q.province_id 
+		left join m_area_city c on c.code = q.city_id 
+		where q.type_id = #{typeid} and q.deleted = 0 and a.created_id = #{creditid} 
+		limit #{start} , #{pageSize}
+	</select>
+	<!-- ywh后台信贷经理 客户回答记录数 -->
+	<select id="getAdminXPossAnswerCount" resultType="int">
+		select count(distinct q.id)
+		from  m_question_info q 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0
+		where q.type_id = #{typeid} and q.deleted = 0 and a.created_id = #{creditid} 
+	</select>
+	
+	
+	<!-- 后台 -->
+	<select id="findQuestList" resultType="com.xinyue.manage.model.Question">
+		select q.id , q.title , q.created_time createtime ,q.created_id createid, i.contact_name createName, q.telphone telphone, q.status , 
+		(select count(*) from m_answer_info where question_id = q.id) answerNum, m.real_name creditName, m.tel_number creditTel
+		from m_question_info q 
+		left join m_member_info i on q.created_id = i.id and i.deleted = 0 
+		left join m_question_type t on t.id = q.quest_type_id and t.deleted = 0 
+		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 and a.recommend = 1 
+		left join c_manager_info m on m.id = a.created_id and m.deleted = 0 
+		where q.deleted = 0 
+		<if test="qb.name != null and qb.name != '' ">
+			<if test="qb.option == 1">
+				and q.title like concat(#{qb.name} , '%')
+			</if>
+			<if test="qb.option == 2">
+				and q.content like concat('%' , #{qb.name} , '%')
+			</if>
+			<if test="qb.option == 3">
+				and q.title like concat(#{qb.name} , '%') or  q.content like concat('%' , #{qb.name} , '%')
+			</if>
+		</if>
+		<if test="qb.answerName != null and qb.answerName != '' ">
+			and i.contact_name like concat(#{qb.answerName} , '%')
+		</if>
+		<if test="qb.answerTime != null and qb.answerTime != '' ">
+			and date_format(q.created_time , '%Y-%m-%d') = #{qb.answerTime}
+		</if>
+		<if test="qb.questType != null and qb.questType != ''">
+			and t.id = #{qb.questType}
+		</if>
+		<if test="qb.status != null and qb.status != ''">
+			and q.status = #{qb.status}
+		</if>
+		limit #{start} , #{pageSize}
+	</select>
+	<select id="getQuestListCount" resultType="int">
+		select count(*) from m_question_info q 
+		left join m_member_info i on q.created_id = i.id and i.deleted = 0 
+		left join m_question_type t on t.id = q.quest_type_id and t.deleted = 0 
+		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 and a.recommend = 1 
+		left join c_manager_info m on m.id = a.created_id and m.deleted = 0 
+		where q.deleted = 0 
+		<if test="name != null and name != '' ">
+			<if test="option == 1">
+				and q.title like concat(#{name} , '%')
+			</if>
+			<if test="option == 2">
+				and q.content like concat('%' , #{name} , '%')
+			</if>
+			<if test="option == 3">
+				and q.title like concat(#{name} , '%') or  q.content like concat('%' , #{name} , '%')
+			</if>
+		</if>
+		<if test="answerName != null and answerName != '' ">
+			and i.contact_name like concat(#{answerName} , '%')
+		</if>
+		<if test="answerTime != null and answerTime != '' ">
+			and date_format(q.created_time , '%Y-%m-%d') = #{answerTime}
+		</if>
+		<if test="questType != null and questType != ''">
+			and t.id = #{questType}
+		</if>
+		<if test="status != null and status != ''">
+			and q.status = #{status}
+		</if>
+	</select>
+	
+	<update id="updateQuest">
+		update m_question_info set status = #{status} <if test="questtypeid != null and questtypeid != ''">,quest_type_id = #{questtypeid}</if>  where id = #{id}
+	</update>
+	
+	<update id="updateAnswer">
+		update m_answer_info set 
+			<if test="option == 0">
+				status = 2 
+			</if>
+			<if test="option == 1">
+				status = 3
+			</if>
+			<if test="option == 2">
+				recommend = 1
+			</if>
+			<if test="option == 3">
+				deleted = 1
+			</if>
+			where id = #{aid}
+	</update>
+	<update id="updateAnswerRecommend">
+		update m_answer_info set recommend = 0  where question_id = #{questid}
+	</update>
+	
+	<insert id="addQuest">
+		insert into m_question_info(title , created_time , modified_time , deleted , status , 
+		<if test="questType != null and questType != ''">
+		 quest_type_id , 
+		</if>
+		created_id ,  telphone , keyword , content , questioner_type , publish , 
+		<choose>
+			<when test="orgid != null and orgid != ''">
+				org_id , type_id 
+			</when>
+			<otherwise>type_id</otherwise>
+		</choose>
+		  )
+		value(#{title} , #{createtime} , #{createtime} , 0 ,
+		<choose>
+			<when test="publish == '1'">
+				2,
+			</when>
+			<otherwise>
+				1,
+			</otherwise>
+		</choose>
+		<if test="questType != null and questType != ''">
+		#{questType} ,
+		</if>
+		 #{createid} , #{telphone} , #{keyword} , #{scontent} ,  'g' , #{publish} , 
+		 <choose>
+			<when test="orgid != null and orgid != ''">
+				#{orgid} , '2' 
+			</when>
+			<otherwise>'1'</otherwise>
+		</choose> )
+	</insert>	
+	<update id="updateAdminQuest">
+		update m_question_info set title = #{title} , modified_time = #{createtime} , 
+		
+		<if test="publish == '1'">
+			status = 2,
+		</if>
+		<if test="questType != null and questType != ''">
+		 quest_type_id = #{questType} ,
+		</if>
+		created_id = #{createid} , telphone = #{telphone} , keyword=#{keyword} , content = #{scontent} , publish = #{publish}, 
+		<choose>
+			<when test="orgid != null and orgid != ''">
+				org_id = #{orgid} , type_id = '2' 
+			</when>
+			<otherwise>type_id = '1'</otherwise>
+		</choose>
+		where id = #{id}
+	</update>
+	
+	<select id="findQuestById" resultType="com.xinyue.manage.model.Question">
+		select q.id , q.title , q.content , q.org_id orgid , q.modified_time createtime , q.telphone , q.keyword , q.quest_type_id questType , q.created_id createid , u.username createName
+		from m_question_info q 
+		inner join passport_user_info u on u.id = q.created_id
+		where q.id = #{questid} 
+	</select>
+	
+	<select id="findUserByUserName" resultType="com.xinyue.manage.model.Question">
+		select id , userName from passport_user_info where userName = #{userName}; 
+	</select>
+	
+	<select id="publishQuest">
+		update m_question_info set publish = 1 , modified_id = #{createUser} , modified_time = now() where 
+		
+		<foreach collection="list" item="item" index="index" open="id = " separator="or id = ">
+			#{item}
+		</foreach>
+	</select>
+	
+	
+	<!-- 2015-10-20 -->
+	<!-- ywh 会员中心  会员问答列表 -->
+	<select id="findMemberQuest" resultType="com.xinyue.manage.model.Question">
+		select q.id , q.title , q.created_time createtime, q.status , q.type_id type , p.name province , c.name city 
+		from m_question_info q
+		left join m_area_province p on p.code = q.province_id 
+		left join m_area_city c on c.code = q.city_id 
+		where q.deleted = 0 and  q.created_id = #{memberid} limit #{start} , #{pageSize}
+	</select>
+	<select id="getMemberQuest" resultType="int">
+		select count(*) from m_question_info 
+		where deleted = 0 and  created_id = #{memberid} 
+	</select>
+	
+</mapper>

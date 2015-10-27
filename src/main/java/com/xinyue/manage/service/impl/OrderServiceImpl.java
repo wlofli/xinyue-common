@@ -76,22 +76,19 @@ public class OrderServiceImpl implements OrderService{
 	@Override
 	public Order getOrderInfo(String id) {
 		// TODO Auto-generated method stub
-		return orderDAO.getOrderInfo(id,GlobalConstant.ORDER_MEMBER_STATUS);
+		return orderDAO.getOrderInfo(id, GlobalConstant.ORDER_MEMBER_STATUS);
 	}
 
 
 	@Override
 	public Order getOrder(String id) {
 		// TODO Auto-generated method stub
-		return orderDAO.getOrder(id,GlobalConstant.ORDER_STATUS);
+		return orderDAO.getOrder(id, GlobalConstant.ORDER_STATUS);
 	}
 
 	@Override
 	public boolean updateOrder(Order order) {
 		try {
-//System.out.println(order.getStatus());
-//System.out.println("taxs======="+order.getTaxAuditeStatus());	
-//System.out.println("blankx=========="+order.getBlankAuditeStatus());
 			orderDAO.updateOrder(order);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -309,8 +306,6 @@ public class OrderServiceImpl implements OrderService{
 			map.put("id", debt.getId());
 			if (state == 0) {
 				companyInfoDAO.addDebt(map);
-System.out.println("debt===============" + debt.getId());
-System.out.println("realestate=============" + realEstate.getId());
 				map.clear();
 				map1.put("user", modifiedId);
 				map.put("debt", debt.getId());
@@ -404,14 +399,11 @@ System.out.println("realestate=============" + realEstate.getId());
 			Control control, String orderId, String modifiedId, int state) {
 		// TODO Auto-generated method stub
 			//获取企业基本信息
-//System.out.println(2);
 			HashMap<String, Object> map = getCompanyBase(companyBase);
 			//获取治理信息
 			HashMap<String, Object> map2 = getControl(control);
-//System.out.println(3);
 			//获取控股信息
 			List<Hold> holds = getHoldList(holdInfos);
-//System.out.println(4);
 		try {
 			map.put("user", modifiedId);
 			map2.put("user", modifiedId);
@@ -432,7 +424,6 @@ System.out.println("realestate=============" + realEstate.getId());
 					}
 					orderDAO.addHoldList(holdList, orderId);
 					orderDAO.updateOrderDetail(map);
-System.out.println("updateOrderDetail!!");
 				}else {
 					companyInfoDAO.updateCompanyBase(map);
 					companyInfoDAO.updateHolds(holds,modifiedId);
@@ -464,7 +455,6 @@ System.out.println("updateOrderDetail!!");
 			map.put("type", "document");
 			map.put("orderId", orderId);
 			orderDAO.updateOrderDetail(map);
-System.out.println("updateOrderDetail");
 		} catch (Exception e) {
 			// TODO: handle exception
 			log.error(e.toString());
@@ -503,11 +493,9 @@ System.out.println("updateOrderDetail");
 	private List<Hold> getHoldList(HoldInfos holdInfos){
 		//holdInfos
 		List<Hold> holds = new ArrayList<>();
-//System.out.println(holdInfos);
 		try {
 			for (int i = 0; i < 2; i++) {
 				Hold temp = new Hold();
-//System.out.println(holdInfos.getIds()[i]);
 				temp.setId(holdInfos.getIds()[i]);
 				temp.setOrderNum(String.valueOf(i));
 				if (holdInfos.getHoldTypes()[i].equals("")) {
@@ -548,8 +536,6 @@ System.out.println("updateOrderDetail");
 				holds.add(temp);
 				
 			}
-System.out.println(holds.get(0).getEducation());
-System.out.println(holds.get(1).getEducation());
 			return holds;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -766,11 +752,14 @@ System.out.println(holds.get(1).getEducation());
 			map.put("city", applicantFast.getRegisterCity());
 			map.put("zone", applicantFast.getRegisterZone());
 			map.put("phone", stepOneData.split("&")[0]);
-			if (stepOneData.split("&").length>2) {
-				map.put("mark", stepOneData.split("&")[1]);
-			}else {
-				map.put("mark", "");
-			}
+			map.put("manageid", stepOneData.split("&")[1]);
+			map.put("productid", stepOneData.split("&")[2]);
+			map.put("type", 2);
+//			if (stepOneData.split("&").length>2) {
+//				map.put("mark", stepOneData.split("&")[1]);
+//			}else {
+//				map.put("mark", "");
+//			}
 			map.put("applicantFastId", applicantId);
 			map.put("companyFastId", companyId);
 			
@@ -802,6 +791,7 @@ System.out.println(holds.get(1).getEducation());
 			orderDAO.addOrder(order);
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 			throw new RuntimeException();
 		}
 	}
@@ -827,6 +817,31 @@ System.out.println(holds.get(1).getEducation());
 	public CustomerInfo getOrderTrackByOrderId(String id) {
 		
 		return orderDAO.getOrderTrackByOrderId(id);
+	}
+
+
+	@Override
+	public String saveOrderStatus(Order order, String modifiedId) {
+		// TODO Auto-generated method stub
+		if (order.getApplicantSave() != 1) 
+			return "申请人信息未保存";
+		if (order.getCompanySave() != 1) 
+			return "企业基本信息未保存";
+		if(order.getBusinessSave() != 1)
+			return "基本经营信息未保存";
+		if (order.getDebtSave() != 1) 
+			return "抵押物与负债信息未保存";
+		order.setModifiedId(modifiedId);
+		order.setStatus("1");
+		try {
+			orderDAO.updateOrder(order);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
+		return GlobalConstant.RET_SUCCESS;
 	}
 	
 }

@@ -23,15 +23,24 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.xinyue.manage.beans.OrganizationInfo;
 import com.xinyue.manage.beans.PageData;
+import com.xinyue.manage.beans.QuestionBean;
+import com.xinyue.manage.beans.SearchCreditManager;
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.beans.ShowAnswer;
+import com.xinyue.manage.dao.AnswerDao;
 import com.xinyue.manage.dao.CityStationDao;
+import com.xinyue.manage.dao.CreditManagerDAO;
 import com.xinyue.manage.dao.OrganizationDao;
 import com.xinyue.manage.dao.OrganizationTypeDao;
 import com.xinyue.manage.dao.ProductTypeDao;
+import com.xinyue.manage.model.Answer;
+import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.LinkMan;
 import com.xinyue.manage.model.Organization;
 import com.xinyue.manage.model.OrganizationType;
 import com.xinyue.manage.model.ProductType;
+import com.xinyue.manage.model.Question;
+import com.xinyue.manage.model.Select;
 import com.xinyue.manage.model.SubStation;
 import com.xinyue.manage.service.OrganizationService;
 import com.xinyue.manage.util.GlobalConstant;
@@ -159,9 +168,9 @@ public class OrganizationServiceImpl implements OrganizationService {
 	private CityStationDao cdao;
 	
 	@Override
-	public List<SubStation> findAll() {
+	public List<SubStation> findAllStation() {
 		// TODO Auto-generated method stub
-		return cdao.findAll();
+		return cdao.findAllStation();
 	}
 	
 	@Resource
@@ -336,4 +345,78 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return new PageData<Organization>(orgDao.findOrgList(orgInfo , start , GlobalConstant.PAGE_SIZE ), total, currentPage);
 	}
 
+	@Resource
+	private AnswerDao adao;
+	@Override
+	public PageData<Question> findOrgQuest(QuestionBean qb) {
+		// TODO Auto-generated method stub
+		String topage = qb.getTopage();
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<Question>(
+				adao.findOrgQuest(qb, start, GlobalConstant.PAGE_SIZE) , 
+				adao.getOrgQuestCount(qb), 
+				currentPage);
+	}
+	
+	
+	@Override
+	public PageData<ShowAnswer> findOrgAnswer(String questid, String topage) {
+		// TODO Auto-generated method stub
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<ShowAnswer>( adao.showOrgAnswer(questid, start, GlobalConstant.PAGE_SIZE),
+				adao.getOrgAnswerCount(questid),
+				currentPage);
+	}
+	
+	@Resource
+	private CreditManagerDAO  mdao;
+	@Override
+	public List<Select> getAllCredit() {
+		// TODO Auto-generated method stub
+		return mdao.getAllCredit();
+	}
+	
+	@Override
+	public boolean addAnswer(Answer answer) {
+		// TODO Auto-generated method stub
+		try {
+			adao.addAnswer(answer);
+			logger.info("添加问题回答成功");
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("添加问题回答失败" , e);
+			return false;
+		}
+	}
+	
+	
+	@Override
+	public boolean delQuest(List<String> questids, String createUser) {
+		// TODO Auto-generated method stub
+		try {
+			adao.delQuest(questids, createUser);
+			logger.info("删除问题成功 , 操作者为:"+createUser);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.info("删除问题失败, 操作者为:"+createUser);
+			return false;
+		}
+	}
+	
+	
+	@Override
+	public PageData<CreditManager> findCreditByOrgid(SearchCreditManager sc) {
+		// TODO Auto-generated method stub
+		String topage = sc.getTopage();
+		int currentPage = (GlobalConstant.isNull(topage) || "0".equals(topage))?1:Integer.valueOf(topage);
+		int start = (currentPage-1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<CreditManager>(
+				orgDao.findCreditByOrgid(sc, start, GlobalConstant.PAGE_SIZE), 
+				orgDao.getCreditByOrgidCount(sc), 
+				currentPage);
+	}
 }

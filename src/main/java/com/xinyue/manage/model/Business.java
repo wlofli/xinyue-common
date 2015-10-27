@@ -11,7 +11,7 @@ public class Business {
 	private String totalVAT = "";
 	private String totalIncomeTax = "";
 	private String targetId = "";
-	private String targetType = "";
+	private String targetType = "";//1会员2.订单
 	/**
 	 * @return the year
 	 */

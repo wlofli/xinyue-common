@@ -448,7 +448,7 @@
 		        from
 		            m_order_hold
 		        where
-		            orid_id = #{id})
+		            order_id = #{id})
 		order by h.order_num;
 	</select>
 	

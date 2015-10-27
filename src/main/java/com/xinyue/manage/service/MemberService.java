@@ -4,8 +4,17 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.MemberInfo;
+import com.xinyue.manage.beans.OrderInfo;
+import com.xinyue.manage.beans.PageData;
+import com.xinyue.manage.beans.Recommend;
+import com.xinyue.manage.beans.SearchReward;
 import com.xinyue.manage.model.Member;
+import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.Reward;
 
 /**
  * 
@@ -83,4 +92,40 @@ public interface MemberService {
 	//2015/08/07 茅 追加 START
 	public boolean findMemberByPhone(String contactPhone);
 	//2015/08/07 茅 追加 END
+	
+	/**
+	 * admin member recommendmember ywh 
+	 * @param rec
+	 * @return
+	 */
+	public PageData<InvitationMemberInfo> findRecommendMember(Recommend rec);
+	/**
+	 * admin member recommendcredit ywh
+	 * @param rec
+	 * @return
+	 */
+	public PageData<InvitationMemberInfo> findRecommendCredit(Recommend rec);
+	
+	/**
+	 * admin member order ywh
+	 * @param info
+	 * @return
+	 */
+	public PageData<Order> findMemberOrder(OrderInfo info);
+	
+	
+	/**
+	 * 提现
+	 * @param sc
+	 * @return
+	 */
+	public PageData<Reward> findMemberDraw(SearchReward sc);
+	
+	
+	/**
+	 * 奖励 
+	 * @param sc
+	 * @return
+	 */
+	public PageData<Reward> findMemberReword(SearchReward sc);
 }

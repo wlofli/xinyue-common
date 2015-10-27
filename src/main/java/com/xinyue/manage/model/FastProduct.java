@@ -12,7 +12,6 @@ public class FastProduct {
 	private String id;
 	private String company;
 	private String code;//订单号
-	
 	private String areaProvince;
 	private String areaCity;
 	private String areaZone;
@@ -29,15 +28,15 @@ public class FastProduct {
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date modifiedTime;
 	private String remark;
-	private String receiver;
-	private Date receiveTime;//放款时间
-	
-	
-	
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date auditeTime;//放款时间
+	private String auditePerson;//放款人员
+	private String receiver;//接单人员
+	private String receiverPhone;//接单人员电话
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date receiveTime;//接单时间
 	private String orderStatus;//指定客户状态1.已领取2.未领取3.无人领取4.领取未开始
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,5重置
-	
-	
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
 	private Date blankAuditeTime;//银行审核时间
 	private String blankAuditeRemark;//银行备注
@@ -48,14 +47,72 @@ public class FastProduct {
 	private String taxAuditeRemark;//新越备注
 	private String taxAuditePerson;//新越审核人员
 	private int taxAuditeStatus;
-	
 	private Double creditReal;//实际贷款
-	
-	
 	private String applicantFastId;//快速申贷申请人信息
 	private String companyFastId;//快速申贷公司信息
+	private String productId;//产品id
+	private String manageId;//信贷经理id
+	private String productName;//产品名称
+	private String productCode;//产品编号
+	private String organization;//所属机构
+	
+	private String type;//1.普通2.有产品
 	
 	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getReceiverPhone() {
+		return receiverPhone;
+	}
+	public void setReceiverPhone(String receiverPhone) {
+		this.receiverPhone = receiverPhone;
+	}
+	public Date getAuditeTime() {
+		return auditeTime;
+	}
+	public void setAuditeTime(Date auditeTime) {
+		this.auditeTime = auditeTime;
+	}
+	public String getAuditePerson() {
+		return auditePerson;
+	}
+	public void setAuditePerson(String auditePerson) {
+		this.auditePerson = auditePerson;
+	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public String getProductCode() {
+		return productCode;
+	}
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+	public String getOrganization() {
+		return organization;
+	}
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+	public String getProductId() {
+		return productId;
+	}
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+	public String getManageId() {
+		return manageId;
+	}
+	public void setManageId(String manageId) {
+		this.manageId = manageId;
+	}
 	public String getApplicantFastId() {
 		return applicantFastId;
 	}

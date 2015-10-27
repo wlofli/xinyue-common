@@ -36,6 +36,9 @@
 		<result column="applicat_person" property="applicatPerson"/>
 		<result column="deleted" property="deleted"/>
 		<result column="remark" property="remark"/>
+		<result column="receiver" property="receiver"/>
+		<result column="receiver_phone" property="receiverPhone"/>
+		<result column="receive_time" property="receiveTime"/>
 		<result column="created_time" property="createdTime"/>
 		<result column="created_id" property="createdId"/>
 		<result column="modified_id" property="modifiedId"/>
@@ -53,16 +56,16 @@
 		<result column="evaluate_content" property="evaluateContent"/>
 		<result column="evaluation_time" property="evaluationTime"/>
 		
-<!-- 		<association column="member_status"  property="member_status" javaType="String" select="getMemberStatus"></association> -->
+		
+		<result column="blank_audite_person" property="blankAuditePerson"/>
+		<result column="tax_audite_person" property="taxAuditePerson"/>
+		
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
 		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
-		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association>
-		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association>
+<!-- 		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association> -->
+<!-- 		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association> -->
 	</resultMap>
 	
-<!-- 	<select id="getMemberStatus"> -->
-<!-- 		select select_value from m_select_info where select_key =#{member_status} and type_code = 'order_member_status' -->
-<!-- 	</select> -->
 	<select id="getOrderStatus" resultType="String">
 		select select_value from m_select_info where select_key = #{order_status} and type_code = 'order_get_status'
 	</select>
@@ -71,13 +74,13 @@
 		select select_value from m_select_info where select_key = #{order_type} and type_code = 'order_type'
 	</select>
 	
-	<select id="getBlankAuditePersonName" resultType="String">
-		select name from m_user_info where id = #{blank_audite_person}
-	</select>
+<!-- 	<select id="getBlankAuditePersonName" resultType="String"> -->
+<!-- 		select name from m_user_info where id = #{blank_audite_person} -->
+<!-- 	</select> -->
 	
-	<select id="getTaxAuditePersonName" resultType="String">
-		select name from m_user_info where id = #{tax_audite_person}
-	</select>
+<!-- 	<select id="getTaxAuditePersonName" resultType="String"> -->
+<!-- 		select name from m_user_info where id = #{tax_audite_person} -->
+<!-- 	</select> -->
 	
 	<resultMap id="selectInfo" type="com.xinyue.manage.beans.SelectInfo">
 		<result column="key" property="key" />
@@ -96,11 +99,11 @@
 	<insert id="addOrder" parameterType="com.xinyue.manage.model.Order">
 		insert into 
 			m_order_info
-		(id,member_id,bank,link_phone,code,product_info,`status`,applicant_person,deleted,created_id,created_time,
-		modified_id,modified_time,applicant_save,business_save,company_save,debt_save,document_save,credit_manage_id)
+		(id,member_id,bank,link_phone,code,product_info,`status`,applicat_person,deleted,created_id,created_time,
+		modified_id,modified_time,applicant_save,business_save,company_save,debt_save,document_save,credit_manager_id)
 		values
-		(#{id},#{memberId},#{bank},#{linkPhone},#{code},#{productInfo},#{status},#{applicantPerson},0,#{createdId},now(),
-		#{modifiedId},now(),#{applicantSave},#{businessSave},#{companySave},#{debtSave},#{documentSave},#{creditManageId})
+		(#{id},#{memberId},#{bank},#{linkPhone},#{code},#{productInfo},#{status},#{applicatPerson},0,#{createdId},now(),
+		#{modifiedId},now(),#{applicantSave},#{businessSave},#{companySave},#{debtSave},#{documentSave},#{creditManagerId})
 	</insert>
 	
 	<select id="getOrder" resultMap="order">
@@ -174,6 +177,7 @@
 			o.applicant_info,
 			o.created_time,
 			o.audite_time,
+			o.audite_person,
 			o.tax_audite_time,
 			o.tax_audite_person,
 			o.blank_audite_person,
@@ -681,9 +685,13 @@
 	</select>
 	
 	<select id="getCreditManagerByName" resultType="com.xinyue.manage.model.CreditManager">
-		select id,tel_number as tel, real_name as realName,
-			organization
-		from c_manager_info
+		select m.id,
+			m.tel_number as tel, 
+			m.real_name as realName,
+			m.organization,
+			o.name as organizationName
+		from c_manager_info m
+		left join m_organization_info o on o.id = m.organization
 		where real_name = #{name}
 	
 	</select>
@@ -709,7 +717,8 @@
 		#{registerCity},
 		#{registerZone},
 		#{twoYearCredit},
-		#{houseType}
+		#{houseType},
+		#{name}
 	);
 	</insert>
 	
@@ -743,33 +752,51 @@
 	insert into
 		m_product_fast_info(
 			id,
+			type,
 			company,
 			code,
 			area_province,
 			area_city,
 			area_zone,
-			remark,
+<!-- 			remark, -->
 			contact_phone,
 			deleted,
 			created_time,
 			modified_time,
 			applicant_fast_id,
 			company_fast_id
+			<!-- ywh start -->
+			<if test="productid != null and productid != ''">
+			,product_id
+			</if>
+			<if test="manageid != null and manageid != ''">
+			,manage_id
+			</if>
+			<!-- ywh over -->
 		)
 	values(
 		#{id},
+		#{type},
 		#{company},
 		#{code},
 		#{province},
 		#{city},
 		#{zone},
-		#{mark},
+<!-- 		#{mark}, -->
 		#{phone},
 		0,
 		now(),
 		now(),
 		#{applicantFastId},
 		#{companyFastId}
+		<!-- ywh start -->
+		<if test="productid != null and productid != ''">
+			, #{productid} 
+		</if>
+		<if test="manageid != null and manageid != ''">
+			, #{manageid}
+		</if>
+		<!-- ywh over -->	
 	);
 	</insert>
 	<!-- add by mzj 2015/08/26 end   -->

@@ -86,6 +86,13 @@ public class SuccessCase implements Serializable{
 	 * 修改人
 	 */
 	private String modifiedId;
+	
+	/**
+	 * 启用：0/屏蔽：1
+	 */
+	private boolean useFlag = false;
+	
+	
 	/**
 	 * @return the id
 	 */
@@ -296,6 +303,18 @@ public class SuccessCase implements Serializable{
 	}
 	public void setCreditManagerName(String creditManagerName) {
 		this.creditManagerName = creditManagerName;
+	}
+	/**
+	 * @return the useFlag
+	 */
+	public boolean isUseFlag() {
+		return useFlag;
+	}
+	/**
+	 * @param useFlag the useFlag to set
+	 */
+	public void setUseFlag(boolean useFlag) {
+		this.useFlag = useFlag;
 	}
 	
 }

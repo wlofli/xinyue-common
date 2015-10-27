@@ -6,10 +6,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.xinyue.manage.beans.OrganizationInfo;
 import com.xinyue.manage.beans.PageData;
+import com.xinyue.manage.beans.QuestionBean;
+import com.xinyue.manage.beans.SearchCreditManager;
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.beans.ShowAnswer;
+import com.xinyue.manage.model.Answer;
+import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.Organization;
 import com.xinyue.manage.model.OrganizationType;
 import com.xinyue.manage.model.ProductType;
+import com.xinyue.manage.model.Question;
+import com.xinyue.manage.model.Select;
 import com.xinyue.manage.model.SubStation;
 import com.xinyue.manage.util.CommonFunction;
 import com.xinyue.manage.util.GlobalConstant;
@@ -38,13 +45,7 @@ public interface OrganizationService {
 	public List<SelectInfo> getOrganizations();
 	//add by mzj 2015/07/06 end
 	
-	public Organization findShop(String orgid);
 	
-	/**
-	 * 城市分站信息
-	 * @return
-	 */
-	public List<SubStation> findAll();
 	
 	public List<ProductType> findProductTypeByList();
 	
@@ -62,6 +63,13 @@ public interface OrganizationService {
 	public final static String REAL_PATH = CommonFunction.getValue("upload.path");
 	public final static String SHOW_PATH = CommonFunction.getValue("down.path")+"moko/images/";
 	
+	
+	/**
+	 * ywh 2015-09-08下显示店铺设置信息 和 显示机构基本信息和联系人信息
+	 * @param orgid
+	 * @return
+	 */
+	public Organization findShop(String orgid);
 	
 	/**
 	 * ywh修改店铺信息
@@ -129,5 +137,58 @@ public interface OrganizationService {
 	 * @return
 	 */
 	public boolean saveOrg(String orgedit , String loginName);
-
+	
+	/**
+	 * ywh 机构店铺设置  贷款咨询问题
+	 * @param qb
+	 * @return
+	 */
+	public PageData<Question> findOrgQuest(QuestionBean qb);
+	
+	
+	/**
+	 * ywh 店铺问题详细
+	 * @param questid
+	 * @param topage
+	 * @return
+	 */
+	public PageData<ShowAnswer> findOrgAnswer(String questid , String topage);
+	
+	
+	/**
+	 * ywh 获取所有信贷经理
+	 * @return
+	 */
+	public List<Select> getAllCredit();
+	
+	/**
+	 * ywh 添加机构回答问题
+	 * @param answer
+	 * @return
+	 */
+	public boolean addAnswer(Answer answer);
+	
+	
+	/**
+	 * ywh 删除问题
+	 * @param questids
+	 * @param createUser
+	 * @return
+	 */
+	public boolean delQuest(List<String> questids , String createUser);
+	
+	
+	/**
+	 * ywh 获取所有城市分站信息
+	 * @return
+	 */
+	public List<SubStation> findAllStation();
+	
+	
+	/**
+	 * ywh admin 根据机构显示信贷经理信息
+	 * @param orgid
+	 * @return
+	 */
+	public PageData<CreditManager> findCreditByOrgid(SearchCreditManager sc);
 }

@@ -1,5 +1,6 @@
 package com.xinyue.manage.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * 该model层较为混乱,以下字段意思是根据界面与表之间的关系猜测,以后可能需要修改
  * 2015年6月1日09:58:08 addby lzc
  */
-public class Order {
+public class Order  implements Serializable{
 	private String id;//订单id
 	private String memberId;//会员id外键
 	private String licenseInfo;//企业基本信息id外键
@@ -24,13 +25,10 @@ public class Order {
 	private String ratingInfo;//评级表id外键
 	private String bank;//银行id外键
 	private String productInfo;//产品表外键
-	
 	private String companyInfo;//申请单位
 	private String code;//订单号
-	
 	private String linkPhone;//手机号
 	private String linkUserName;//用户名
-	
 	private String name;
 	private String applicant;//申请人姓名
 	private String applicatPerson;//申请人
@@ -45,6 +43,12 @@ public class Order {
 	private Date auditeTime;//放款实际时间
 	private String auditePerson;
 	private String remark;//放款备注
+	
+	private String receiver;//接单员ID
+	private String receiverPhone;//接单电话
+	@DateTimeFormat(pattern = "yyyy-MM-dd" )
+	private Date receiveTime;//接单时间
+	
 	
 	private String controlInfo;//公司治理信息
 	private int documentSave;//上传文件保存标志
@@ -78,7 +82,7 @@ public class Order {
 	private String evaluateContent;//评价内容
 	private Date evaluationTime;//评价时间
 	
-	private String creditManageId;//信贷经理id
+	private String creditManagerId;//信贷经理id
 	
 	private String province;//省
 	private String city;//市
@@ -86,13 +90,53 @@ public class Order {
 	private String productName;//产品名称
 	private String productCode;//产品编号
 	
+	//ywh start 
+	private String limitDate;//贷款周期
+	private String realCredit;//
+	private String statusName;
+	//ywh over
 	
-	
-	public String getCreditManageId() {
-		return creditManageId;
+	public String getReceiver() {
+		return receiver;
 	}
-	public void setCreditManageId(String creditManageId) {
-		this.creditManageId = creditManageId;
+	public String getStatusName() {
+		return statusName;
+	}
+	public void setStatusName(String statusName) {
+		this.statusName = statusName;
+	}
+	public String getRealCredit() {
+		return realCredit;
+	}
+	public void setRealCredit(String realCredit) {
+		this.realCredit = realCredit;
+	}
+	public String getLimitDate() {
+		return limitDate;
+	}
+	public void setLimitDate(String limitDate) {
+		this.limitDate = limitDate;
+	}
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
+	}
+	public String getReceiverPhone() {
+		return receiverPhone;
+	}
+	public void setReceiverPhone(String receiverPhone) {
+		this.receiverPhone = receiverPhone;
+	}
+	public Date getReceiveTime() {
+		return receiveTime;
+	}
+	public void setReceiveTime(Date receiveTime) {
+		this.receiveTime = receiveTime;
+	}
+	public String getCreditManagerId() {
+		return creditManagerId;
+	}
+	public void setCreditManagerId(String creditManagerId) {
+		this.creditManagerId = creditManagerId;
 	}
 	public Date getEvaluationTime() {
 		return evaluationTime;

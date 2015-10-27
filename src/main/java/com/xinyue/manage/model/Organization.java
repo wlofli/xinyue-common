@@ -46,8 +46,9 @@ public class Organization implements Serializable {
 	private String scaleName;//规模内容
 	private String establish;//成立时间
 	private String business;//擅长业务
-	private String orderNum;//
+	private String orderNum;//订单量
 	private String description;//描述
+	private String content;//用于修改之后存储内容
 	
 	//用来显示省 市 区回显
 	private String provinceid;
@@ -55,11 +56,17 @@ public class Organization implements Serializable {
 	private String cid;
 	private String zoneid;
 	private String zid;
-	private List<SubStation> stat;
+	private List<SubStation> stat;//业务区域
 	private List<String> statid;//用来存储选择id
-	private List<ProductType> ptype;
+	private List<ProductType> ptype;//擅长业务 
 	private List<String> ptypeid;
 	
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
 	public String getScaleName() {
 		return scaleName;
 	}

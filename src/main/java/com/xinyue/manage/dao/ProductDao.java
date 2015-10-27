@@ -10,6 +10,7 @@ import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Product;
 import com.xinyue.manage.model.ProductContent;
 import com.xinyue.manage.model.ProductFile;
+import com.xinyue.manage.model.ProductType;
 
 /**
  * 
@@ -37,7 +38,7 @@ public interface ProductDao {
 	public void updateUnShelve(@Param("list") List<String> list, @Param("modifyUser") String modifyUser);
 	
 	public List<ProductFile> findProductFileList(@Param("id")String pid);
-	public Product findProductById(@Param("pid")String pid);
+	
 	
 	
 	
@@ -94,9 +95,10 @@ public interface ProductDao {
 	 */
 	public int getProCount(ProductInfo pinfo);
 	
-	
+
 	/**
-	 * ywh 根据产品标识符显示产品详情 后台
+	 * ywh 
+	 * 根据产品标识符显示产品详情 后台
 	 * @param id
 	 * @return
 	 */
@@ -146,7 +148,31 @@ public interface ProductDao {
 	
 	/**
 	 * ywh 删除产品 
-	 * @param productid
+	 * @param listproductid
+	 * @param modifyUser
 	 */
-	public void delPro(@Param("productid")String productid , @Param("modifyUser")String modifyUser);
+	public void delPro(@Param("list")List<String> listproductid , @Param("modifyUser")String modifyUser);
+	
+	
+	/**
+	 * ywh 机构管理 店铺设置产品列表
+	 * @param pc
+	 * @return
+	 */
+	public List<Product> getProductByOrgid(ProductInfo pc);
+	
+	/**
+	 * ywh 机构管理 店铺设置产品列表
+	 * @param pc
+	 * @return
+	 */
+	public int getProductByOrgidCount(ProductInfo pc);
+	
+	
+	/**
+	 * ywh　前台使用产品详情　
+	 * @param pid
+	 * @return
+	 */
+	public Product findProductById(@Param("proid")String pid);
 }

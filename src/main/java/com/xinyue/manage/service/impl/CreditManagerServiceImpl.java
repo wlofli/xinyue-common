@@ -279,10 +279,13 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 		
 		List<Order> orders = creditManagerDAO.getServerRating(map);
 		
-		int size = orders.size();
+		int size = 0;
 		int stars = 0;
-		for (int i = 0; i < size; i++) {
-			stars = stars + Integer.parseInt(orders.get(i).getLevel());
+		for (int i = 0; i < orders.size(); i++) {
+			if (orders.get(i).getLevel() != null && !orders.get(i).getLevel().equals("")) {
+				stars = stars + Integer.parseInt(orders.get(i).getLevel());
+				size++;
+			}
 		}
 		
 		if (size > 0) {

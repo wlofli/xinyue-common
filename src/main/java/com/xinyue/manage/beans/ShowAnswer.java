@@ -10,21 +10,85 @@ import java.io.Serializable;
  */
 public class ShowAnswer implements Serializable {
 
-	private String id;
-	private String title;
-	private String content;
-	private String qtype;
-	private String address;
-	private String qtime;
-	private String acontent;
-	private String atime;
-	private String anum;
-	private String mcreateName;
-	private String ccreateName;
-	private String oname;
-	private String atype;
+	private String id;//提出问题id
+	private String title;//提出问题
+	private String content;//提出问题内容
+	private String qtype;//提出问题类型 普通会员 匿名者  管理员
+	private String mqcreateName;//提出问题 普通会员名 若为null则为匿名
+	private String gcreateName;//提出问题为管理员
+	private String qcid;//创建者id 0为匿名
+	private String questTypeName;//问题分类 
+	private String address;//所属地区
+	private String qtime;//发布时间
+	private String acontent;//回答内容
+	private String atime;//回答时间
+	private String anum;//
+	private String mcreateName;//普通会员名
+	private String ccreateName;//信贷经理名
+	private String oname;//机构名
+	private String atype;//回答者类型
+	private String recommend;//推荐回答
+	//后台添加属性
+	private String telphone;
+	private String questTypeid;
+	private String status;
 	
+	private String aid;//回答id
 	
+	public String getRecommend() {
+		return recommend;
+	}
+	public void setRecommend(String recommend) {
+		this.recommend = recommend;
+	}
+	public String getGcreateName() {
+		return gcreateName;
+	}
+	public void setGcreateName(String gcreateName) {
+		this.gcreateName = gcreateName;
+	}
+	public String getQcid() {
+		return qcid;
+	}
+	public void setQcid(String qcid) {
+		this.qcid = qcid;
+	}
+	public String getAid() {
+		return aid;
+	}
+	public void setAid(String aid) {
+		this.aid = aid;
+	}
+	public String getTelphone() {
+		return telphone;
+	}
+	public void setTelphone(String telphone) {
+		this.telphone = telphone;
+	}
+	public String getQuestTypeid() {
+		return questTypeid;
+	}
+	public void setQuestTypeid(String questTypeid) {
+		this.questTypeid = questTypeid;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getQuestTypeName() {
+		return questTypeName;
+	}
+	public void setQuestTypeName(String questTypeName) {
+		this.questTypeName = questTypeName;
+	}
+	public String getMqcreateName() {
+		return mqcreateName;
+	}
+	public void setMqcreateName(String mqcreateName) {
+		this.mqcreateName = mqcreateName;
+	}
 	private String typeid;
 	private String name;//提问者
 	

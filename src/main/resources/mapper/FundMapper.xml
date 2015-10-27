@@ -252,6 +252,7 @@
 			s.select_value as consumption_type,
 			c.serical_number,
 			c.other_reward_amount,
+			c.pay_award,
 			c.current_amount
 		from
 			m_consumption_info c

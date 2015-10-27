@@ -9,9 +9,16 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.MemberInfo;
+import com.xinyue.manage.beans.OrderInfo;
+import com.xinyue.manage.beans.PageData;
+import com.xinyue.manage.beans.Recommend;
+import com.xinyue.manage.beans.SearchReward;
 import com.xinyue.manage.dao.MemberDao;
 import com.xinyue.manage.model.Member;
+import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.Reward;
 import com.xinyue.manage.service.MemberService;
 import com.xinyue.manage.util.CommonFunction;
 import com.xinyue.manage.util.GlobalConstant;
@@ -281,5 +288,65 @@ public class MemberServiceImpl implements MemberService {
 			return true;
 		}
 		return false;
+	}
+	
+	
+	@Override
+	public PageData<InvitationMemberInfo> findRecommendCredit(Recommend rec) {
+		// TODO Auto-generated method stub
+		String topage = rec.getCredittopage();
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<InvitationMemberInfo>(
+				memberDao.findRecommendCredit(rec.getMemberid(), start, GlobalConstant.PAGE_SIZE), 
+				memberDao.getRecommendCredit(rec.getMemberid()), 
+				currentPage);
+	}
+	
+	
+	@Override
+	public PageData<InvitationMemberInfo> findRecommendMember(Recommend rec) {
+		// TODO Auto-generated method stub
+		String topage = rec.getMembertopage();
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<InvitationMemberInfo>(
+				memberDao.findRecommendMember(rec.getMemberid(), start, GlobalConstant.PAGE_SIZE), 
+				memberDao.getRecommendMemberCount(rec.getMemberid()), 
+				currentPage);
+	}
+	
+	@Override
+	public PageData<Order> findMemberOrder(OrderInfo info) {
+		// TODO Auto-generated method stub
+		String topage = info.getTopage();
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<Order>(
+				memberDao.findMemberOrder(info.getMemberid(), start, GlobalConstant.PAGE_SIZE), 
+				memberDao.getMemberOrderCount(info.getMemberid()),
+				currentPage);
+	}
+	
+	@Override
+	public PageData<Reward> findMemberDraw(SearchReward sc) {
+		// TODO Auto-generated method stub
+		String topage = sc.getTopage();
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<Reward>(
+				memberDao.findMemberDraw(sc, start, GlobalConstant.PAGE_SIZE), 
+				memberDao.getMemberDraw(sc), currentPage);
+	}
+	
+	@Override
+	public PageData<Reward> findMemberReword(SearchReward sc) {
+		// TODO Auto-generated method stub
+		String topage = sc.getTopage();
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<Reward>(
+				memberDao.findMemberReword(sc, start, GlobalConstant.PAGE_SIZE), 
+				memberDao.getMemberReword(sc), currentPage);
 	}
 }

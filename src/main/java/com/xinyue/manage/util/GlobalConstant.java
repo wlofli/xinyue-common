@@ -236,7 +236,7 @@ public class GlobalConstant {
 	public static final String ORDER_STATUS_PASS_SET_CHINESE = "新越网审核通过设为推荐";//新越网审核通过设为推荐
 	public static final String ORDER_MEMBER_STATUS = "order_member_status";//会员订单状态typecode
 	public static final String ORDER_INIT = "order_init";//会员订单状态搜索条件
-	public static final String ORDER_INIT_NUMBER = "2";//订单初始化
+//	public static final String ORDER_INIT_NUMBER = "2";//订单初始化
 //	public static final String ORDER_SEARCH_TIME = "order_search_time";//订单排序,升序,降序
 	
 	//信贷:客户条件
@@ -253,7 +253,7 @@ public class GlobalConstant {
 	
 	//搜索新闻条件
 	public static final String SEARCH_NEW = "search_new";
-	public static final String NEW_HOTNEWS_ID = "af492c9780d84fdebce633d987d5f4fd";//热门资讯主键id
+//	public static final String NEW_HOTNEWS_ID = "af492c9780d84fdebce633d987d5f4fd";//热门资讯主键id
 	
 	//订单审核的权限
 	public static final String ORDER_AUDITE_NAME = "订单审批";//订单模块名称

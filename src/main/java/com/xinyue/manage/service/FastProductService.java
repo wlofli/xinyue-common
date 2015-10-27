@@ -4,13 +4,15 @@ import java.util.List;
 
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.FastProduct;
+import com.xinyue.manage.model.FastProductApplicant;
+import com.xinyue.manage.model.FastProductCompany;
 
 public interface FastProductService {
 
 	/**
 	 * add by lzc
 	 * 2015年5月28日13:11:38
-	 * @param fastProduct 条件对象
+	 * @param fastProduct 
 	 * @param pageNo 第几页
 	 * @param pageSize 页面大小
 	 * @return
@@ -18,11 +20,33 @@ public interface FastProductService {
 	public List<FastProduct> getListByPage(FastProduct fastProduct, int pageNo, int pageSize);
 	public int countFastProduct(FastProduct fastProduct);
 	
+	/**productId不为空的列表
+	 * add by lzc     date: 2015年9月29日
+	 * @param pageSize
+	 * @return
+	 */
+	public List<FastProduct> getListWithProduct(FastProduct fastProduct, int pageNo, int pageSize);
+	
+	public int countListWithProduct(FastProduct fastProduct);
+	
 	public boolean updateFastProductStatus(FastProduct fastProduct, String name);
 	
 	
 	public FastProduct getFastProduct(String id);
 	
+	/**获取快速申贷申请人信息
+	 * add by lzc     date: 2015年10月8日
+	 * @param id
+	 * @return
+	 */
+	public FastProductApplicant getApplicant(String id);
+	
+	/**获取快速申贷公司信息
+	 * add by lzc     date: 2015年10月8日
+	 * @param id
+	 * @return
+	 */
+	public FastProductCompany getCompany(String id);
 	
 	/**
 	 * 修改快速申贷订单状态列表

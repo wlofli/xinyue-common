@@ -4,8 +4,13 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.MemberInfo;
+import com.xinyue.manage.beans.Recommend;
+import com.xinyue.manage.beans.SearchReward;
 import com.xinyue.manage.model.Member;
+import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.Reward;
 
 /**
  * 
@@ -59,4 +64,31 @@ public interface MemberDao {
 	public int getGuoCount(MemberInfo memberinfo);
 
 	public int findMemberByPhone(String contactPhone);
+	
+	/**
+	 * ywh gg 根据电话号码查询会员 信息
+	 * @param contactPhone
+	 * @return
+	 */
+	public Member getMemberByPhone(String contactPhone);
+	
+	//2015-10-20
+	//推荐
+	public List<InvitationMemberInfo> findRecommendMember(@Param("memberid") String memberid , @Param("start") int start , @Param("pageSize") int pageSize);
+	public int getRecommendMemberCount(String memberid);
+	
+	public List<InvitationMemberInfo> findRecommendCredit(@Param("memberid") String memberid , @Param("start") int start , @Param("pageSize") int pageSize);
+	public int getRecommendCredit(String memberid);
+	
+	//订单
+	public List<Order> findMemberOrder(@Param("memberid") String memberid , @Param("start") int start , @Param("pageSize") int pageSize);
+	public int getMemberOrderCount(String memberid);
+	
+	//提现
+	public List<Reward> findMemberDraw(@Param("sc")SearchReward sc , @Param("start") int start , @Param("pageSize") int pageSize);
+	public int getMemberDraw(@Param("sc")SearchReward sc);
+	
+	//奖励 
+	public List<Reward> findMemberReword(@Param("sc")SearchReward sc , @Param("start") int start , @Param("pageSize") int pageSize);
+	public int getMemberReword(@Param("sc")SearchReward sc);
 }

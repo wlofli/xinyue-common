@@ -174,12 +174,17 @@
 			m.contact_phone contactPhone,
 			m.company company,
 			p.code provinceid,
+			p.name province,
 			c.code cityid,
+			c.name city ,
 			z.code zoneid,
+			z.name zone ,
 			c.code cityids,
 			z.code zoneids,
+			m.memberid memberid,
 			m.address address,
 			m.login_time loginTime,
+			m.created_time regTime ,
 			(select count(*) from m_order_info where member_id = id) as orderCount,
 			s.select_value memberName,
 			m.memberCount memberCount
@@ -220,10 +225,10 @@
 			memberid , 
 			register_time ,
 			created_time , 
-			created_id , deleted ) values
+			created_id , deleted , membercount) values
 			(uuid() , #{loginName} , concat(#{loginName} , '123456') , #{contactName} , 
 			#{contactPhone} , #{company} , #{provinceid} , #{cityid} , #{zoneid} , #{address} , #{memberid} ,
-			now() , now() , #{createUser} , 0 )
+			now() , now() , #{createUser} , 0 , #{memberCount})
 	</insert>
 	
 	<update id="delMember">
@@ -1260,5 +1265,122 @@
 	
 	<select id="findMemberByPhone" parameterType="String" resultType="int">
 		select count(*) from m_member_info where contact_phone=#{contactPhone} and deleted=0;
+	</select>
+	
+	<select id="getMemberByPhone" resultType="com.xinyue.manage.model.Member">
+		select id from m_member_info where contact_phone=#{contactPhone} and deleted = 0 and status = 0;
+	</select>
+	
+	<!-- 2015-10-19以后  -->
+	<!-- 普通会员推荐 普通会员 -->
+	<select id="findRecommendMember" resultType="com.xinyue.manage.beans.InvitationMemberInfo">
+		 select  
+		 	mr.contact_name as name, mr.contact_phone as telPhone, date_format(mr.register_time,'%Y-%m-%d') as registerTime, date_format(o.audite_time,'%Y-%m-%d') as successLoanTime 
+		from m_member_info ml 
+		inner join m_member_info mr on ml.invitation_code = mr.invited_code and mr.deleted = 0 
+		left join m_order_info o on o.member_id = mr.id and o.deleted = 0 and o.status = 10 
+		where ml.id = #{memberid} limit #{start} , #{pageSize}
+	</select>
+	<select id="getRecommendMemberCount" resultType="int">
+		 select count(*) from m_member_info ml 
+		inner join m_member_info mr on ml.invitation_code = mr.invited_code and mr.deleted = 0 
+		left join m_order_info o on o.member_id = mr.id and o.deleted = 0 and o.status = 10 
+		where ml.id = #{memberid} 
+	</select>
+	<!-- 普通会员推荐信贷经理 -->
+	<select id="findRecommendCredit" resultType="com.xinyue.manage.beans.InvitationMemberInfo">
+		select 
+			c.real_name name, c.tel_number telPhone, date_format(c.created_time,'%Y-%m-%d') as registerTime, date_format(r.recharge_time,'%Y-%m-%d') as rechargeTime 
+		from m_member_info m 
+		inner join c_manager_info c on m.invitation_code = c.invited_code  
+		left join  m_recharge_info r on r.user_id = c.id and r.deleted = 0 
+		where m.id = #{memberid} limit #{start} , #{pageSize} 
+	</select>
+	<select id="getRecommendCredit" resultType="int">
+		select count(*) from m_member_info m 
+		inner join c_manager_info c on m.invitation_code = c.invited_code  
+		left join  m_recharge_info r on r.user_id = c.id and r.deleted = 0 
+		where m.id = #{memberid}  
+	</select> 
+	
+	<!-- member ywh order -->
+	<select id="findMemberOrder" resultType="com.xinyue.manage.model.Order">
+		select 
+		o.id , o.code , p.name productName, p.code productCode, i.name bank, o.credit , o.credit_real realCredit, a.deadline limitDate, o.commit_time commitTime, 
+		o.status , s.select_value statusName ,  o.tax_audite_person taxAuditePerson, o.tax_audite_time taxAuditeTime,o.remark, o.blank_audite_time blankAuditeTime, o.blank_audite_person blankAuditePerson
+		from m_order_info o 
+		left join m_product_info p on o.product_info = p.id 
+		left join m_organization_info i on i.id = o.bank 
+		left join m_applicant_info a on a.id = o.applicant_info 
+		left join m_select_info s on s.select_key = o.status and s.type_code = 'order_status'
+		where o.deleted = 0 and o.member_id = #{memberid}
+		limit #{start} , #{pageSize} 		
+	</select>
+	<select id="getMemberOrderCount" resultType="int">
+		select count(*) from m_order_info o 
+		left join m_product_info p on o.product_info = p.id 
+		left join m_organization_info i on i.id = o.bank 
+		left join m_applicant_info a on a.id = o.applicant_info 
+		where o.deleted = 0 and o.member_id = #{memberid} 	
+	</select>
+	
+	<!-- admin ywh member 提现 -->
+	<select id="findMemberDraw" resultType="com.xinyue.manage.model.Reward">
+		select 
+		q.id , q.withdraw_time rewardTime, sw.select_value rewardType, q.withdraw_amount rewardAmount, si.select_value status, q.remark , 
+		q.serical_number sericalNumber , q.other_award_amount otherAwardAmount
+		from m_withdraw_money_info q 
+		left join m_select_info sw on sw.select_key = q.withdraw_type and sw.type_code = 'withdraw_type' 
+		left join m_select_info si on si.select_key = q.status and si.type_code = 'withdraw_status'
+		where q.deleted = 0 and q.user_id = #{sc.memberid} 
+		<if test="sc.startTime != null and sc.startTime != ''">
+			and q.withdraw_time >= #{sc.startTime }
+		</if>
+		<if test="sc.endTime != null and sc.endTime != ''">
+			and q.withdraw_time <![CDATA[<]]> #{sc.endTime}
+		</if>
+		limit #{start} , #{pageSize}
+	</select>
+	<select id="getMemberDraw" resultType="int">
+		select count(*) from m_withdraw_money_info q 
+		left join m_select_info sw on sw.select_key = q.withdraw_type and sw.type_code = 'withdraw_type' 
+		left join m_select_info si on si.select_key = q.status and si.type_code = 'withdraw_status'
+		where q.deleted = 0  and q.user_id = #{sc.memberid} 
+		<if test="sc.startTime != null and sc.startTime != ''">
+			and q.withdraw_time >= #{sc.startTime }
+		</if>
+		<if test="sc.endTime != null and sc.endTime != ''">
+			and q.withdraw_time <![CDATA[<]]> #{sc.endTime}
+		</if>
+	</select>
+	
+	<!-- admin ywh member 奖励 -->
+	<select id="findMemberReword" resultType="com.xinyue.manage.model.Reward">
+		select 
+		r.id , r.reward_time rewardTime, s.select_value rewardType, m.contact_name userName, m.contact_phone userPhone, r.remark , 
+		r.serical_number sericalNumber,r.reward_amount rewardAmount, r.other_award_amount otherAwardAmount
+		from m_reward_info r 
+		left join m_select_info s on s.select_key = r.reward_type and s.type_code = 'reward_source' 
+		left join m_member_info m on m.id = r.user_id and m.deleted = 0 
+		where r.deleted = 0 and r.user_id = #{sc.memberid} 
+		<if test="sc.startTime != null and sc.startTime != ''">
+			and r.reward_time >= #{sc.startTime }
+		</if>
+		<if test="sc.endTime != null and sc.endTime != ''">
+			and r.reward_time <![CDATA[<]]> #{sc.endTime}
+		</if>
+		limit #{start} , #{pageSize}
+	</select>
+	<select id="getMemberReword" resultType="int">
+		select count(*) from m_reward_info r 
+		left join m_select_info s on s.select_key = r.reward_type and s.type_code = 'reward_source' 
+		left join m_member_info m on m.id = r.user_id and m.deleted = 0 
+		where r.deleted = 0 and r.user_id = #{sc.memberid} 
+		<if test="sc.startTime != null and sc.startTime != ''">
+			and r.reward_time >= #{sc.startTime }
+		</if>
+		<if test="sc.endTime != null and sc.endTime != ''">
+			and r.reward_time <![CDATA[<]]> #{sc.endTime}
+		</if>
 	</select>
 </mapper>

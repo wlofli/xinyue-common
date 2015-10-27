@@ -411,7 +411,7 @@
 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
 		where a.deleted = 0 and a.type = '1'
 		and o.deleted = 0 and o.order_type = '4'  and o.order_status != '1'
-		and manage_id = #{manageId}
+		and a.manage_id = #{manageId}
 		<choose>
 		<when test="search.status != null and search.status != ''">
 <!-- 		快速筛选 -->
@@ -456,7 +456,7 @@
 			left join m_select_info    s   on s.select_key = f.status and s.type_code = 'order_status'
 			where a.deleted = 0 and a.type = '2'
 			and f.deleted = 0 and f.order_type = '4' and f.order_status != '1'
-			and manage_id = #{manageId}
+			and a.manage_id = #{manageId}
 			<choose>
 				<when test="search.status != null and search.status != ''">
 	<!-- 			快速筛选 -->
@@ -493,7 +493,7 @@
 		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '4'
 		left join m_product_fast_info  f on f.id = a.order_id  and f.deleted = 0 and f.order_type = '4' and f.order_status = '4'
 		where a.deleted = 0 
-		and manage_id = #{manageId}
+		and a.manage_id = #{manageId}
 		<choose>
 		<when test="search.status != null and search.status != ''">
 <!-- 		快速筛选 -->
@@ -964,5 +964,7 @@ type;//1.订单2快速申贷 -->
 		left join m_product_fast_info     o   on o.id = c.order_id and o.deleted = 0
 		where c.id = #{customerId} and c.deleted = 0 and c.type = 2
 	</select>
+	
+
 	
 </mapper>

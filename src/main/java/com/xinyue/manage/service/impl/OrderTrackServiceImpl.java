@@ -54,7 +54,7 @@ public class OrderTrackServiceImpl implements OrderTrackService{
 				orderInfo = orderCustomerDAO.getOrderInfoByFixedFast(customerId);
 			}
 			break;
-		case GlobalConstant.ORDER_TYPE_APPOINTED:
+		case GlobalConstant.ORDER_TYPE_APPOINTED://指定推送
 			OrderAppointed orderAppointed = orderCustomerDAO.getOrderAppointById(customerId);
 			if(orderAppointed.getType() == 1){//订单
 				orderInfo = orderCustomerDAO.getOrderInfoByAppointedOrder(customerId);
@@ -76,14 +76,14 @@ public class OrderTrackServiceImpl implements OrderTrackService{
 	}
 
 	@Override
-	public boolean addOrderTrack(OrderTrack orderTrack) {
+	public boolean addOrderTrack(OrderTrack orderTrack, String user) {
 		// TODO Auto-generated method stub
 		try {
 			if(orderTrack.getOrderType().equals("1")){//订单
 				Order order = new Order();
 				order.setId(orderTrack.getOrderId());
 				order.setStatus(orderTrack.getStatus());
-				order.setBlankAuditePerson(orderTrack.getCreatedId());
+				order.setBlankAuditePerson(user);
 				order.setBlankAuditeRemark(orderTrack.getRemark());
 				order.setRemark(orderTrack.getRemark());
 				order.setCreditReal(orderTrack.getCreditReal());
@@ -99,7 +99,7 @@ public class OrderTrackServiceImpl implements OrderTrackService{
 				fastProduct.setBlankAuditeRemark(orderTrack.getRemark());
 				fastProduct.setRemark(orderTrack.getRemark());
 				fastProduct.setCreditReal(orderTrack.getCreditReal());
-				fastProduct.setReceiveTime(orderTrack.getCreditTime());
+				fastProduct.setAuditeTime(orderTrack.getCreditTime());
 				fastProduct.setModifiedId(orderTrack.getCreatedId());
 				fastProductDAO.modifiedFastProductStatus(orderTrack.getCreatedId(), fastProduct);
 			}

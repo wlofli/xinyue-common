@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.FastProductDAO;
 import com.xinyue.manage.model.FastProduct;
+import com.xinyue.manage.model.FastProductApplicant;
+import com.xinyue.manage.model.FastProductCompany;
 import com.xinyue.manage.service.FastProductService;
 import com.xinyue.manage.util.GlobalConstant;
 /**
@@ -63,7 +65,8 @@ public class FastProductServiceImpl implements FastProductService{
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.info(e.toString());
+			e.printStackTrace();
+			logger.error(e.toString());
 			throw new RuntimeException();
 		}
 	}
@@ -92,6 +95,9 @@ public class FastProductServiceImpl implements FastProductService{
 			fastLoanInfo.setId(UUID.randomUUID().toString().replace("-", ""));
 			fastLoanInfo.setCode(orderId);
 			
+			//add by lzc
+			fastLoanInfo.setType("1");
+			
 			int result = fastProductDAO.saveFastOrder(fastLoanInfo);
 			if (result > 0) {
 				return true;
@@ -101,5 +107,31 @@ public class FastProductServiceImpl implements FastProductService{
 		}
 		return false;
 	}
+
+	@Override
+	public List<FastProduct> getListWithProduct(FastProduct fastProduct,
+			int pageNo, int pageSize) {
+		// TODO Auto-generated method stub
+		return fastProductDAO.getListWithProduct(fastProduct, pageNo, pageSize);
+	}
+
+	@Override
+	public int countListWithProduct(FastProduct fastProduct) {
+		// TODO Auto-generated method stub
+		return fastProductDAO.countListWithProduct(fastProduct);
+	}
+
+	@Override
+	public FastProductApplicant getApplicant(String id) {
+		// TODO Auto-generated method stub
+		return fastProductDAO.getApplicant(id);
+	}
+
+	@Override
+	public FastProductCompany getCompany(String id) {
+		// TODO Auto-generated method stub
+		return fastProductDAO.getCompany(id);
+	}
+
 
 }

@@ -7,6 +7,8 @@
 		<result column="company" property="company" />
 		<result column="code" property="code" />
 		<result column="receiver" property="receiver" />
+		<result column="receiver_phone" property="receiverPhone" />
+		<result column="receive_time" property="receiveTime" />
 		<result column="area_province" property="areaProvince" />
 		<result column="area_city" property="areaCity" />
 		<result column="area_zone" property="areaZone" />
@@ -23,6 +25,9 @@
 <!-- 		<result column="order_status" property="orderStatus" /> -->
 <!-- 		<result column="order_type" property="orderType" /> -->
 		<result column="credit_real" property="creditReal"/>
+		<result column="remark" property="remark" />
+		<result column="audite_time" property="auditeTime" />
+		<result column="audite_person" property="auditePerson" />
 		<result column="blank_audite_time" property="blankAuditeTime"/>
 		<result column="blank_audite_remark" property="blankAuditeRemark"/>
 		<result column="blank_audite_status" property="blankAuditeStatus"/>
@@ -31,12 +36,59 @@
 		<result column="tax_audite_status" property="taxAuditeStatus"/>
 		<result column="company_fast_id" property="companyFastId"/>
 		<result column="applicant_fast_id" property="applicantFastId"/>
+		<result column="product_id" property="productId"/>
+		<result column="manage_id" property="manageId"/>
+		<result column="product_name" property="productName"/>
+		<result column="product_code" property="productCode"/>
+		<result column="organization" property="organization"/>
+		<result column="blank_audite_person" property="blankAuditePerson"/>
+		<result column="tax_audite_person" property="taxAuditePerson"/>
+		<result column="type" property="type"/>
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
 		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
-		
-		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association>
-		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association>
+<!-- 		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association> -->
+<!-- 		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association> -->
 	</resultMap>
+	
+	
+	<resultMap type="com.xinyue.manage.model.FastProductApplicant" id="applicant">
+		<result column="applicant_fast_id" property="applicantFastId" />
+		<result column="loan_amount" property="loanAmount" />
+		<result column="loan_period" property="loanPeriod" />
+		<result column="profession" property="profession" />
+		<result column="month_management" property="monthManagement" />
+		<result column="month_cash_income" property="monthCashIncome" />
+		<result column="management_life" property="managementLife" />
+		<result column="register_province" property="registerProvince" />
+		<result column="register_city" property="registerCity" />
+		<result column="register_zone" property="registerZone" />
+		<result column="two_year_credit" property="twoYearCredit" />
+		<result column="house_type" property="houseType" />
+	</resultMap>
+	
+	<resultMap type="com.xinyue.manage.model.FastProductCompany" id="company">
+		<result column="company_fast_id" property="companyFastId" />
+		<result column="company_name" property="companyName" />
+		<result column="legal_representative" property="legalRepresentative" />
+		<result column="parpers_type" property="parpersType" />
+		<result column="papers_number" property="papersNumber" />
+		<result column="business_license_number" property="businessLicenseNumber" />
+		<result column="register_time" property="registerTime" />
+		<result column="register_fund" property="registerFund" />
+		<result column="company_type" property="companyType" />
+		<result column="industry" property="industry" />
+		<result column="register_address" property="registerAddress" />
+		<result column="fact_business_area" property="factBusinessArea" />
+		<result column="year_turnover" property="yearTurnover" />
+		<result column="year_invoice" property="yearInvoice" />
+		<result column="asset_liability" property="assetLiability" />
+		<result column="business_growth" property="businessGrowth" />
+		<result column="year_net_profit" property="yearNetProfit" />
+		<result column="staff_number" property="staffNumber" />
+		<result column="person_information" property="personInformation" />
+	
+	</resultMap>
+	
 	
 	<select id="getOrderStatus" resultType="String">
 		select select_value from m_select_info where select_key = #{order_status} and type_code = 'order_get_status'
@@ -45,13 +97,13 @@
 	<select id="getOrderType" resultType="String">
 		select select_value from m_select_info where select_key = #{order_type} and type_code = 'order_type'
 	</select>
-	<select id="getBlankAuditePersonName" resultType="String">
-		select name from m_user_info where id = #{blank_audite_person}
-	</select>
+<!-- 	<select id="getBlankAuditePersonName" resultType="String"> -->
+<!-- 		select name from m_user_info where id = #{blank_audite_person} -->
+<!-- 	</select> -->
 	
-	<select id="getTaxAuditePersonName" resultType="String">
-		select name from m_user_info where id = #{tax_audite_person}
-	</select>
+<!-- 	<select id="getTaxAuditePersonName" resultType="String"> -->
+<!-- 		select name from m_user_info where id = #{tax_audite_person} -->
+<!-- 	</select> -->
 	<resultMap id="selectInfo" type="com.xinyue.manage.beans.SelectInfo">
 		<result column="key" property="key" />
 		<result column="value" property="value" />
@@ -63,6 +115,7 @@
 			   m.company,
 			   m.code,
 			   u.name receiver,
+			   m.receive_time,
 			   p.name area_province,
 			   c.name area_city,
 			   z.name area_zone,
@@ -85,7 +138,7 @@
 			 left join m_select_info   s on s.select_key = m.status and type_code = #{typeCode}
 			 left join m_user_info     u on u.id = m.receiver
 			 where
-			 m.deleted = 0
+			 m.deleted = 0 and  m.type = 1
 			 <if test="fspdt.code != null and fspdt.code !=''">
 			 	and m.code like '%' #{fspdt.code} '%'
 			 </if>
@@ -116,7 +169,7 @@
 		select count(*)
 			 from m_product_fast_info 
 			 where
-			 deleted = 0
+			 deleted = 0 and type =1
 			 <if test="fspdt.id != null and fspdt.id !=''">
 			 	and id like '%' #{fspdt.id} '%'
 			 </if>
@@ -132,6 +185,95 @@
 			  <if test="fspdt.status != '' and fspdt.status != null">
 			 	and status = #{fspdt.status}
 			 </if>
+	</select>
+	
+	<select id="countListWithProduct" resultType="int">
+		select count(*)
+			 from m_product_fast_info 
+			 where
+			 deleted = 0 and type = 2
+			 <if test="fspdt.id != null and fspdt.id !=''">
+			 	and id like '%' #{fspdt.id} '%'
+			 </if>
+			 <if test="fspdt.company != null and fspdt.company !=''">
+			 	and company like '%' #{fspdt.company} '%'
+			 </if>
+			 <if test="fspdt.contactName != null and fspdt.contactName !=''">
+			 	and contact_name like '%'	#{fspdt.contactName} '%'
+			 </if>
+			 <if test="fspdt.contactPhone != null and fspdt.contactPhone !=''">
+			 	and contact_phone like '%' #{fspdt.contactPhone} '%'
+			 </if>
+			  <if test="fspdt.status != '' and fspdt.status != null">
+			 	and status = #{fspdt.status}
+			 </if>
+	</select>
+	
+	
+	<select id="getListWithProduct" resultMap="fspdt">
+		select m.id,
+			   m.company,
+			   m.code,
+			   u.name receiver,
+			   p.name area_province,
+			   c.name area_city,
+			   z.name area_zone,
+			   m.contact_name,
+			   m.order_type,
+			   m.order_status,
+			   m.deleted,
+			   s.select_value as `status`,
+			   m.credit,
+			   m.contact_phone,
+			   m.created_id,
+			   m.created_time,
+			   m.modified_id,
+			   m.modified_time,
+			   m.remark,
+			   m.product_id,
+			   m.tax_audite_person,
+			   m.tax_audite_time,
+			   m.tax_audite_remark,
+			   m.blank_audite_person,
+			   m.blank_audite_time,
+			   m.blank_audite_remark,
+			   pd.name as product_name,
+			   pd.code as product_code,
+			   o.name as organization
+			 from m_product_fast_info  m
+			 left join m_area_province p on  m.area_province = p.id
+			 left join m_area_city     c on m.area_city = c.id
+			 left join m_area_zone     z on m.area_zone = z.id
+			 left join m_select_info   s on s.select_key = m.status and type_code = 'order_status'
+			 left join m_user_info     u on u.id = m.receiver
+			 left join m_product_info  pd on pd.id = m.product_id
+			 left join m_organization_info o on o.id = pd.bank
+			 where
+			 m.deleted = 0 and  m.type = 2
+			 <if test="fspdt.code != null and fspdt.code !=''">
+			 	and m.code like '%' #{fspdt.code} '%'
+			 </if>
+			 <if test="fspdt.company != null and fspdt.company !=''">
+			 	and company like '%' #{fspdt.company} '%'
+			 </if>
+			 <if test="fspdt.contactName != null and fspdt.contactName !=''">
+			 	and contact_name like '%'	#{fspdt.contactName} '%'
+			 </if>
+			 <if test="fspdt.contactPhone != null and fspdt.contactPhone !=''">
+			 	and contact_phone like '%' #{fspdt.contactPhone} '%'
+			 </if>
+			 <if test="fspdt.status != '' and fspdt.status != null">
+			 	and m.status = #{fspdt.status}
+			 </if>
+			 <if test="fspdt.orderType != '' and fspdt.orderType != null">
+			 	and m.order_type = #{fspdt.orderType}
+			 </if>
+			 <if test="fspdt.orderStatus != '' and fspdt.orderStatus != null">
+			 	and m.order_status = #{fspdt.orderStatus}
+			 </if>
+			 
+			 limit #{pageNo},#{pageSize}
+	
 	</select>
 	
 	
@@ -164,21 +306,81 @@
 			   m.created_time,
 			   m.modified_id,
 			   m.modified_time,
-			   m.remark
+			   m.audite_time,
+			   m.audite_person,
+			   m.remark,
+			   m.type,
+			   pd.name as product_name,
+			   pd.code as product_code,
+			   o.name as organization,
+			   m.applicant_fast_id,
+			   m.company_fast_id
 			 from m_product_fast_info  m
 			 left join m_area_province p on  m.area_province = p.id
 			 left join m_area_city     c on m.area_city = c.id
 			 left join m_area_zone     z on m.area_zone = z.id
 			 left join m_select_info   s on s.select_key = m.status and type_code = #{typeCode} 
 			 left join m_user_info     u on u.id = m.receiver
+			 left join m_product_info pd on pd.id = m.product_id 
+			 left join m_organization_info o on o.id = pd.bank
 		where m.id= #{id}
 	</select>
 	
+	
+	<select id="getApplicant" resultMap="applicant">
+		select 
+			m.applicant_fast_id ,
+			m.loan_amount,
+			m.loan_period,
+			m.profession,
+			m.month_management,
+			m.month_cash_income,
+			m.management_life,
+			m.register_province,
+			m.register_city,
+			m.register_zone,
+			m.two_year_credit,
+			m.house_type,
+			m.name
+		
+		from m_applicant_fast_info m
+		
+		where m.applicant_fast_id = #{id}
+	
+	</select>
+	
+	<select id="getCompany" resultMap="company">
+		SELECT  
+			m.company_fast_id,
+			m.company_name,
+			m.legal_representative,
+			m.parpers_type,
+			m.papers_number,
+			m.business_license_number,
+			m.register_time,
+			m.register_fund,
+			m.company_type,
+			m.industry,
+			m.register_address,
+			m.fact_business_area,
+			m.year_turnover,
+			m.year_invoice,
+			m.asset_liability,
+			m.business_growth,
+			m.year_net_profit,
+			m.staff_number,
+			m.person_information
+			
+		FROM m_company_fast_info m
+		WHERE  m.company_fast_id = #{id}
+	</select>
+	
+	
 	<select id="getStatus" resultMap="selectInfo">
 		select 
-			   select_key as  'key',
-			   select_value as 'value'
-			from m_select_info
+		   select_key as  'key',
+		   select_value as 'value'
+		from m_select_info
 		where type_code = #{typeCode}
 	</select>
 	<update id="modifiedFastProductStatus">
@@ -211,28 +413,28 @@
 				<if test="fspdt.status == 10">
 					,credit_real = #{fspdt.creditReal},
 					<choose>
-						<when test="fspdt.receiveTime == null  || fspdt.receiveTime == ''">
-							receive_time = now(),
+						<when test="fspdt.auditeTime == null  || fspdt.auditeTime == ''">
+							audite_time = now(),
 						</when>
 						<otherwise>
-							receive_time = #{fspdt.receiveTime},
+							audite_time = #{fspdt.auditeTime},
 						</otherwise>
 					</choose>
 					remark= #{fspdt.remark},
-					receiver = #{name}
+					audite_person = #{name}
 				</if>
 			where
 				id = #{fspdt.id}
 	</update>
 	
 	<update id="updateFastProductStatusList">
-		update m_product_fast_info
+		  update m_product_fast_info
 		  set `status` = #{status},
 		  	 modified_time = now(),
 		  	 modified_id = #{modifiedId}
 		  where
 		    id in 
-		    <foreach collection="list" item="id" index="index" separator="," open="(" close=")">#{id}</foreach>
+	      <foreach collection="list" item="id" index="index" separator="," open="(" close=")">#{id}</foreach>
 	</update>
 	
 	<!-- 2015/08/07 茅 追加 START -->
@@ -250,6 +452,7 @@
 				contact_phone,
 				deleted,
 				created_time,
+				type,
 				modified_time
 			)
 		values(
@@ -264,6 +467,7 @@
 			#{contactPhone},
 			0,
 			now(),
+			#{type},
 			now()
 		);
 	</insert>

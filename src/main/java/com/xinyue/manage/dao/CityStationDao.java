@@ -12,5 +12,9 @@ import com.xinyue.manage.model.SubStation;
  */
 public interface CityStationDao {
 
-	public List<SubStation> findAll();
+	/**
+	 * ywh 返回所有 城市分站
+	 * @return
+	 */
+	public List<SubStation> findAllStation();
 }

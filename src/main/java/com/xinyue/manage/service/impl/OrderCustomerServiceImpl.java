@@ -42,7 +42,7 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 		try {
 			orderCustomerDAO.addOrderAppointed(orderAppointed);
 			orderCustomerDAO.updateOrderType(tableName, orderStatus, GlobalConstant.ORDER_TYPE_APPOINTED, 
-					orderAppointed.getCreatedId(),orderAppointed.getOrderId(),GlobalConstant.ORDER_STATUS_PASS_SET);
+					orderAppointed.getCreatedId(),orderAppointed.getOrderId(), GlobalConstant.ORDER_STATUS_PASS_SET);
 		} catch (Exception e) {
 			// TODO: handle exception
 			log.info(e.toString());
@@ -58,7 +58,7 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 		try {
 			orderCustomerDAO.addOrderAuction(orderAuction);
 			orderCustomerDAO.updateOrderType(tableName, orderStatus, GlobalConstant.ORDER_TYPE_AUCTION,
-					orderAuction.getCreatedId(),orderAuction.getOrderId(),GlobalConstant.ORDER_STATUS_PASS_SET);
+					orderAuction.getCreatedId(),orderAuction.getOrderId(), GlobalConstant.ORDER_STATUS_PASS_SET);
 		} catch (Exception e) {
 			// TODO: handle exception
 			log.info(e.toString());
@@ -74,7 +74,7 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 		try {
 			orderCustomerDAO.addOrderFixed(orderFixed);
 			orderCustomerDAO.updateOrderType(tableName, orderStatus, GlobalConstant.ORDER_TYPE_FIXED,
-					orderFixed.getCreatedId(),orderFixed.getOrderId(),GlobalConstant.ORDER_STATUS_PASS_SET);
+					orderFixed.getCreatedId(),orderFixed.getOrderId(), GlobalConstant.ORDER_STATUS_PASS_SET);
 		} catch (Exception e) {
 			// TODO: handle exception
 			log.info(e.toString());
@@ -90,7 +90,7 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 		try {
 			orderCustomerDAO.addOrderLowPrice(orderLowPrice);
 			orderCustomerDAO.updateOrderType(tableName, orderStatus, GlobalConstant.ORDER_TYPE_LOWPRICE, 
-					orderLowPrice.getCreatedId(),orderLowPrice.getOrderId(),GlobalConstant.ORDER_STATUS_PASS_SET);
+					orderLowPrice.getCreatedId(),orderLowPrice.getOrderId(), GlobalConstant.ORDER_STATUS_PASS_SET);
 		} catch (Exception e) {
 			// TODO: handle exception
 			log.info(e.toString());
@@ -126,7 +126,7 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 	}
 	
 	@Override
-	public boolean deleteOrderCustom(String tableName, String id, String modifiedId,String orderStatus) {
+	public boolean deleteOrderCustom(String tableName, String id, String modifiedId, String orderStatus) {
 		// TODO Auto-generated method stub
 		String orderType = orderCustomerDAO.getOrderType(tableName, id);
 		if(orderType != null){
@@ -156,8 +156,6 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 				 type = GlobalConstant.ORDER_CUSTOMER_TYPE;
 			}
 			try {
-System.out.println(type);
-System.out.println(orderTabName);
 				orderCustomerDAO.deleteOrderCustomer(id, orderTabName, modifiedId, type);
 				orderCustomerDAO.updateOrderType(tableName, orderStatus, GlobalConstant.ORDER_TYPE_RESET, 
 						modifiedId, id,GlobalConstant.ORDER_STATUS_PASS);

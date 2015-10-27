@@ -26,12 +26,32 @@ public class SearchReward {
 	private String timeSort;//时间排序,1升,2降
 	private String amountSort;//金额排序 1升 2降
 	
-	
-	
-	
+	//ywh start 
+	private String memberid;
+	private String topage;
+	private String type="0";
+	//ywh over
 	
 	public String getTimeSort() {
 		return timeSort;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getMemberid() {
+		return memberid;
+	}
+	public void setMemberid(String memberid) {
+		this.memberid = memberid;
+	}
+	public String getTopage() {
+		return topage;
+	}
+	public void setTopage(String topage) {
+		this.topage = topage;
 	}
 	public void setTimeSort(String timeSort) {
 		this.timeSort = timeSort;

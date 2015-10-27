@@ -2,6 +2,9 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.xinyue.manage.beans.BusinessInfos;
 import com.xinyue.manage.beans.CustomerInfo;
 import com.xinyue.manage.beans.HoldInfos;
@@ -70,6 +73,13 @@ public interface OrderService {
 	public Order getOrder(String id);
 	
 	public boolean updateOrder(Order order);
+	
+	/**将订单从需求填写中转为等待新越网审核
+	 * add by lzc     date: 2015年9月28日
+	 * @param order
+	 * @return errorMessage or success 
+	 */
+	public String saveOrderStatus(Order order, String modifiedId);
 	
 	
 	/**
@@ -206,4 +216,6 @@ public interface OrderService {
 	 * @return
 	 */
 	public CustomerInfo getOrderTrackByOrderId(String id);
+
+	
 }

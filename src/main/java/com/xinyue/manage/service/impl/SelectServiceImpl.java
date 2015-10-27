@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.SelectDao;
@@ -79,5 +80,24 @@ public class SelectServiceImpl implements SelectService {
 	public List<SelectInfo> findSelectByTypePart(String code, int[] number) {
 		// TODO Auto-generated method stub
 		return sdao.findSelectByTypePart(code, number);
+	}
+
+
+	@Override
+	public void addAreaToModel(Model model, String province, String city,
+			String zone) {
+		// TODO Auto-generated method stub
+		//省
+		List<SelectInfo> provinceList = sdao.findProvince();
+		model.addAttribute("provinceList", provinceList);
+		if(city != null && !city.isEmpty()){
+			List<SelectInfo> cityList = sdao.findCitiesByProvinceId(province);
+			model.addAttribute("cityList", cityList);
+			if(city != null && !zone.isEmpty()){
+				List<SelectInfo> zoneList = sdao.findZonesByCityId(city);
+				model.addAttribute("zoneList", zoneList);
+			}
+		}
+		
 	}
 }

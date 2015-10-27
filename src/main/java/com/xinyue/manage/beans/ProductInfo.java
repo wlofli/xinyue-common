@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.xinyue.manage.util.GlobalConstant;
 
 /**
- * 贷款产品列表 查询条件 
+ * 贷款产品列表 查询条件  和机构列表 店铺设置里产品列表
  * @author wenhai.you
  * @2015年5月22日
  * @下午6:34:15
@@ -18,10 +18,17 @@ public class ProductInfo implements Serializable {
 	private String org;//所属银行或贷款机构
 	private int sort;//上架时间
 	private int status; //状态
+	private String recommend;//推荐
 	private int pageSize = GlobalConstant.PAGE_SIZE;//每页大小 
 	private String topage;//当前页
 	private int start;//开始行
 	
+	public String getRecommend() {
+		return recommend;
+	}
+	public void setRecommend(String recommend) {
+		this.recommend = recommend;
+	}
 	public int getStart() {
 		return start;
 	}

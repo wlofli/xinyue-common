@@ -2,6 +2,8 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import org.springframework.ui.Model;
+
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.ProductType;
 import com.xinyue.manage.model.Select;
@@ -69,4 +71,14 @@ public interface SelectService {
 	 * @return key->id, value->name
 	 */
 	public List<SelectInfo> getProductList();
+	
+	
+	/**将省市区添加进model
+	 * add by lzc     date: 2015年10月10日
+	 * @param model
+	 * @param province
+	 * @param city
+	 * @param zone
+	 */
+	public void addAreaToModel(Model model, String province, String city, String zone);
 }

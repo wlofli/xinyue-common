@@ -312,6 +312,21 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		}
 		return null;
 	}
+	
+	
+	@Override
+	public List<Hold> getHoldByOrderId(String orderId) {
+		// TODO Auto-generated method stub
+		try {
+			List<Hold> list = companyInfoDAO.getHoldInfoByOrderId(orderId);
+			return list;
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error(e.getMessage());
+		}
+		return new ArrayList<Hold>();
+	}
+
 
 	@Override
 	public HoldInfos getHoldInfoByOrderId(String orderId) {
@@ -426,6 +441,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			
 			return arrayList;
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(e.getMessage());
 		}
 		return null;
@@ -486,7 +502,6 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 	public Debt getDebtInfoById(String debtId) {
 		try {
 			Debt debt = companyInfoDAO.getDebtInfoById(debtId);
-System.out.println("server"+debt);			
 			if (debt != null) {
 				debt.setRepayIncome(df.format(Double.parseDouble(debt.getRepayIncome())));
 				debt.setNetAsset(df.format(Double.parseDouble(debt.getNetAsset())));
@@ -1507,4 +1522,5 @@ System.out.println("server"+debt);
 		return list;
 	}
 
+	
 }

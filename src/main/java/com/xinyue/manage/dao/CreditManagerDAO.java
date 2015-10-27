@@ -12,6 +12,7 @@ import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
 import com.xinyue.manage.model.MoneyOutline;
 import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.Select;
 
 public interface CreditManagerDAO {
 
@@ -57,7 +58,7 @@ public interface CreditManagerDAO {
 	 * @param orgid 机构id
 	 * @return
 	 */
-	public List<CreditManager> findCreditByOrgid(@Param("orgid")String orgid);
+	public List<CreditManagerInfo> findCreditByOrgid(@Param("orgid")String orgid);
 	
 	/**
 	 * 信贷经理保存
@@ -151,5 +152,14 @@ public interface CreditManagerDAO {
 	 * @return
 	 */
 	int getServerRatingCount(String managerId);
+	
+	//ywh start
+	/**
+	 * 获取所有信贷经理
+	 * @return
+	 */
+	public List<Select> getAllCredit();
+	
+	//ywh over
 
 }

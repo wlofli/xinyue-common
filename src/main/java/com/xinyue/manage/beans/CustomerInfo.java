@@ -8,6 +8,8 @@ package com.xinyue.manage.beans;
  */
 public class CustomerInfo {
 
+	private String id = "";
+	
 	//订单编号
 	private String orderId = "";
 	
@@ -15,6 +17,7 @@ public class CustomerInfo {
 	private String applicant = "";
 	
 	//产品名称
+	private String productId = "";
 	private String productName = "";
 	
 	//申请人电话
@@ -26,7 +29,7 @@ public class CustomerInfo {
 	//贷款期限
 	private String loanLimit = "";
 	
-	//贷款单
+	//贷款单位
 	private String company = "";
 	
 	//申请时间
@@ -37,6 +40,9 @@ public class CustomerInfo {
 	
 	//领取方式
 	private String orderType = "";
+	
+	//机构
+	private String organization = "";
 
 	/**
 	 * @return the orderId
@@ -176,6 +182,48 @@ public class CustomerInfo {
 	 */
 	public void setOrderType(String orderType) {
 		this.orderType = orderType;
+	}
+
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the productId
+	 */
+	public String getProductId() {
+		return productId;
+	}
+
+	/**
+	 * @param productId the productId to set
+	 */
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
+	/**
+	 * @return the organization
+	 */
+	public String getOrganization() {
+		return organization;
+	}
+
+	/**
+	 * @param organization the organization to set
+	 */
+	public void setOrganization(String organization) {
+		this.organization = organization;
 	}
 	
 

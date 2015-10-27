@@ -5,7 +5,9 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.OrganizationInfo;
+import com.xinyue.manage.beans.SearchCreditManager;
 import com.xinyue.manage.beans.SelectInfo;
+import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.LinkMan;
 import com.xinyue.manage.model.Organization;
 
@@ -33,7 +35,7 @@ public interface OrganizationDao {
 	//add by mzj 2015/07/06 end
 	
 	
-	public Organization findShop(@Param("orgid") String orgid);
+	
 	
 	public Organization checkOrgNameOrDomain(@Param("orgid")String orgid ,@Param("domain")String domain , @Param("orgName")String orgName);
 	
@@ -139,5 +141,29 @@ public interface OrganizationDao {
 	 * ywh 获取所有机构  代后台调用 
 	 * @return
 	 */
-	public List<SelectInfo> getOrgs(); 
+	public List<SelectInfo> getOrgs();
+	
+	
+	/**
+	 * 下显示店铺设置信息 和 显示机构基本信息和联系人信息
+	 * @param orgid
+	 * @return
+	 */
+	public Organization findShop(@Param("orgid") String orgid);
+	
+	/**
+	 * ywh admin 根据机构显示信贷经理信息
+	 * @param sc
+	 * @param start
+	 * @param pageSize
+	 * @return
+	 */
+	public List<CreditManager> findCreditByOrgid(@Param("sc")SearchCreditManager sc , @Param("start")int start , @Param("pageSize")int pageSize);
+	
+	/**
+	 * ywh admin 根据机构显示信贷经理信息 记录数
+	 * @param sc
+	 * @return
+	 */
+	public int getCreditByOrgidCount(SearchCreditManager sc);
 }

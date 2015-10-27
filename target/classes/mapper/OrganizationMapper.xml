@@ -55,7 +55,7 @@
 		left join m_organization_type d on d.otypeid = o.genre and d.deleted = 0 
 		left join m_linkman_info i on i.orgid = o.id 
 		left join m_select_info si on si.select_key = i.sex and si.type_code = 'sex' 
-		left join m_select_info m  on m.select_key = o.genre and m.type_code = 'org_scale' 
+		left join m_select_info m  on m.select_key = o.scale and m.type_code = 'org_scale' 
 		left join m_area_province a on a.code = o.province_id 
 		left join m_area_city b on b.code = o.city_id 
 		left join m_area_zone z on z.code = o.zone_id 
@@ -74,8 +74,8 @@
 		<result property="genreName" column="genreName"/>
 		<result property="establish" column="establish"/>
 		<result property="scale" column="scale"/>
-		<result property="status" column="status"/>
 		<result property="scaleName" column="scaleName"/>
+		<result property="status" column="status"/>
 		<result property="provinceid" column="province_id"/>
 		<result property="cityid" column="city_id"/>
 		<result property="cid" column="city_id"/>
@@ -149,8 +149,8 @@
 	<!--ywh 修改机构信息 包括店铺信息和机构基本信息 -->
 	<update id="updateOrg">
 		update m_organization_info set 
-			<if test="org.description != null and org.description != ''">
-				description = #{org.description} ,
+			<if test="org.content != null and org.content != ''">
+				description = #{org.content} ,
 			</if>
 			<if test="org.name != null and org.name != ''">
 				name = #{org.name}, 
@@ -158,8 +158,8 @@
 			<if test="org.shortName != null and org.shortName != ''">
 				shortName = #{org.shortName},
 			</if>
-			<if test="org.pinying != null and org.pinying != ''">
-				pinying = #{org.pinying},
+			<if test="org.pinyin != null and org.pinyin != ''">
+				pinying = #{org.pinyin},
 			</if>
 			<if test="org.genre != null and org.genre != ''">
 				genre = #{org.genre}, 
@@ -294,4 +294,106 @@
 		where
 		    deleted = 0 
 	</select>
+	
+	<!-- ywh admin 店铺设置 credit  -->
+	<select id="findCreditByOrgid" resultType="com.xinyue.manage.model.CreditManager">
+		select 
+	    m.id as id,
+	    m.real_name as realName,
+	    case m.sex
+	        when 1 then '女'
+	        when 2 then '男'
+	        when 3 then '保密'
+	    end as sex,
+	    case i.audit 
+			when 4 then '已认证' 
+			else '未认证' 
+		end as auditName, 
+		m.status , 
+		case when level = 1 then num else 0 end  as one , 
+		case when level = 2 then  num  else 0 end as two ,
+		case when level = 3 then  num  else 0 end as three ,
+		case when level = 4 then  num  else 0 end as four ,
+		case when level = 5 then  num  else 0 end as five ,
+		i.idcard card,
+	    m.star_level as star,
+		m.email as email,
+	    p.name as province,
+	    c.name as city,
+	    m.tel_number tel , 
+	    date_format(m.created_time, '%Y-%m-%d') as registerDate 
+		from c_manager_info m
+	    left join m_area_province p ON p.code = m.province
+	    left join m_area_city c ON c.code = m.city 
+	    left join c_certification_info i on i.userid = m.id 
+		left join (select level, credit_manager_id , count(*) num from m_order_info group by credit_manager_id , level) t on t.credit_manager_id = m.id
+	where 
+		m.deleted = 0 and m.organization = #{sc.orgid} 
+		<if test="sc.creditManagerName != null and sc.creditManagerName != '' ">
+			and m.real_name like concat(#{sc.creditManagerName} , '%') 
+		</if> 
+		<if test="sc.sex != null and sc.sex != ''">
+			and m.sex = #{sc.sex} 
+		</if>
+		<if test="sc.telPhone != null and sc.telPhone != ''">
+			and m.tel_number like concat(#{sc.telPhone}, '%') 
+		</if>
+		<if test="sc.province != null and sc.province != ''">
+			and p.code = #{sc.province}
+		</if>
+		<if test="sc.city != null and sc.city != ''">
+			and c.code = #{sc.city}
+		</if>
+		<if test="sc.serverStar != null and sc.serverStar != ''">
+			and m.star_level = #{sc.serverStar}
+		</if>
+		<if test="sc.audit != null and sc.audit != ''">
+			<choose>
+				<when test="sc.audit == 4">
+					and i.audit = 4
+				</when>
+				<otherwise>
+					and (i.audit != 4 or i.audit is null ) 
+				</otherwise>
+			</choose>			
+		</if>
+		limit #{start} , #{pageSize}
+	</select>
+	<select id="getCreditByOrgidCount" resultType="int">
+		select count(*) from c_manager_info m
+	        left join m_area_province p ON p.code = m.province
+	        left join m_area_city c ON c.code = m.city 
+	        left join c_certification_info i on i.userid = m.id 
+			left join (select level, credit_manager_id , count(*) num from m_order_info group by credit_manager_id , level) t on t.credit_manager_id = m.id
+		where m.deleted = 0 and m.organization = #{orgid} 
+		<if test="creditManagerName != null and creditManagerName != '' ">
+			and m.real_name like concat(#{creditManagerName} , '%') 
+		</if> 
+		<if test="sex != null and sex != ''">
+			and m.sex = #{sex} 
+		</if>
+		<if test="telPhone != null and telPhone != ''">
+			and m.tel_number like concat(#{telPhone}, '%') 
+		</if>
+		<if test="province != null and province != ''">
+			and p.code = #{province}
+		</if>
+		<if test="city != null and city != ''">
+			and c.code = #{city}
+		</if>
+		<if test="serverStar != null and serverStar != ''">
+			and m.star_level = #{serverStar}
+		</if>
+		<if test="audit != null and audit != ''">
+			<choose>
+				<when test="audit == 4">
+					and i.audit = 4
+				</when>
+				<otherwise>
+					and (i.audit != 4 or i.audit is null ) 
+				</otherwise>
+			</choose>			
+		</if>
+	</select>
+	
 </mapper>

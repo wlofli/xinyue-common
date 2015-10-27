@@ -178,7 +178,7 @@
 	    oi.name as organization,
 	    count(di.id) as customerAmount,
 	    count(sc.id) as successCaseAmount,
-	    ro.remaining_sum as moneyRemaind,
+	    ro.cash_remain as moneyRemaind,
 	    mi.status as status,
 	    date_format(mi.created_time, '%Y-%m-%d') as registerDate
 	from
@@ -301,6 +301,11 @@
 		    ap.name as province,
 		    ac.name as city,
 		    mi.email as email,
+		    <!-- ywh start -->
+		    mi.status status,
+		    mi.star_level star ,
+		    mi.created_time	registerDate ,
+		    <!-- ywh over -->
 		    case mi.sex
 		        when 1 then '男'
 		        when 2 then '女'
@@ -322,28 +327,32 @@
 	
 	<select id="getAuthenticationById" parameterType="String" resultType="com.xinyue.manage.model.AuthenticationCM">
 		select 
-			id as id,
-		    organization as organization,
-		    real_name as realName,
-		    case sex
+		    ci.id as id,
+		    ci.organization as organization,
+		    ci.real_name as realName,
+		    case ci.sex
 		        when 1 then '男'
 		        when 2 then '女'
 		        when 3 then '保密'
 		    end as sex,
-		    idcard as idCard,
-		    position as position,
-		    province as province,
-		    city as city,
-		    address as address,
-		    card_img as cardImg,
-		    work_img as workImg,
-		    half_img as halfImg,
-		    audit as audit,
-		    audit_message as auditMessage
+		    ci.idcard as idCard,
+		    ci.position as position,
+		    ap.name as province,
+		    ac.name as city,
+		    ci.address as address,
+		    ci.card_img as cardImg,
+		    ci.work_img as workImg,
+		    ci.half_img as halfImg,
+		    ci.audit as audit,
+		    ci.audit_message as auditMessage
 		from
-		    c_certification_info
+		    c_certification_info ci,
+		    m_area_province ap,
+		    m_area_city ac
 		where
-		    userid = #{managerId};
+		    ci.province = ap.code
+        		and ci.city = ac.code
+		    	and ci.userid = #{managerId};
 	</select>
 	
 	<select id="getInvitationMemberCount" parameterType="String" resultType="int">
@@ -425,23 +434,30 @@
 		        mi0.invitation_code = mi1.invited_code
 		            and mi0.id = #{managerId}) mi
 		        left join
-		    m_recharge_info ri ON mi.id = ri.user_id and user_type = 'c'
+		    (select 
+		        *
+		    from
+		        (select 
+		        *
+		    from
+		        m_recharge_info
+		    order by recharge_time desc) a
+		    group by a.user_id
+		    order by a.user_id) ri ON mi.id = ri.user_id
+		        and ri.user_type = 'c'
+		order by mi.created_time desc
 		limit #{index} , 10;	
 	</select>
 	
 	<select id="getInvitationManagerRecords" parameterType="String" resultType="int">
 		select 
-		    count(mi.id)
+		    count(mi1.id)
 		from
-		    (select 
-		        mi1.id, mi1.real_name, mi1.tel_number, mi1.created_time
-		    from
-		        c_manager_info mi0, c_manager_info mi1
-		    where
-		        mi0.invitation_code = mi1.invited_code
-		            and mi0.id = #{managerId}) mi
-		        left join
-		    m_recharge_info ri ON mi.id = ri.user_id and user_type = 'c'	
+		    c_manager_info mi0,
+		    c_manager_info mi1
+		where
+		    mi0.invitation_code = mi1.invited_code
+		        and mi0.id = #{managerId}
 	</select>
 	
 	<select id="getMoneyAccountByManagerId" parameterType="string" resultType="com.xinyue.manage.model.MoneyOutline">
@@ -456,7 +472,7 @@
 		    user_type = 'c' and user_id = #{managerId};	
 	</select>
 	
-	<select id="getServerRatingByManagerId" parameterType="hashmap" resultType="com.xinyue.manage.model.Order">
+	<select id="getServerRating" parameterType="hashmap" resultType="com.xinyue.manage.model.Order">
 		select 
 		    name as applicant, 
 		    level as level, 
@@ -482,4 +498,13 @@
 		where
 		    credit_manager_id = #{managerId} and deleted = 0;		
 	</select>
+	
+	<!-- ywh 获取所有信贷经理 start -->
+	<select id="getAllCredit" resultType="com.xinyue.manage.model.Select">
+		select 
+		id dicKey , 
+		real_name dicVal 
+		from c_manager_info where deleted = 0  
+	</select>
+	<!-- over -->
 </mapper>

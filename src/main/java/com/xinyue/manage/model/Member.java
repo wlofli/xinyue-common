@@ -29,6 +29,9 @@ public class Member implements Serializable {
 	private String cityid;
 	private String provinceid;
 	private String zoneid;
+	private String province;
+	private String city;
+	private String zone;
 	private String cityids;
 	private String zoneids;
 	private String address;
@@ -43,6 +46,24 @@ public class Member implements Serializable {
 	//2015/07/15 茅 追加 END
 	private String invitationCode;//邀请码
 	
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getZone() {
+		return zone;
+	}
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
 	public String getInvitationCode() {
 		return invitationCode;
 	}
