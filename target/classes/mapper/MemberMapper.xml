@@ -29,6 +29,9 @@
 		left join m_control_info a on a.id = l.control_info 
 		where 
 		s.type_code = 'member_type' 
+		<if test="type != null and type != ''">
+		 and s.select_key = #{type} 
+		</if>
 		and m.deleted = 0 
 		<if test="company != null and company != ''"> 
 			and m.company like concat(#{company},'%') 
@@ -69,7 +72,10 @@
 		<if test="endCount != null and endCount != ''"> 
 			and	t.orderCount<![CDATA[ <= ]]>#{endCount}
 		</if> 
-		limit #{start} , #{pageSize}
+		<if test="page == 1">
+			limit #{start} , #{pageSize}
+		</if>
+		
 	</select>
 	
 	<select id="getCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
@@ -96,7 +102,11 @@
 		left join m_license_info l on m.license_info = l.id 
 		left join m_control_info a on a.id = l.control_info 
 		where s.type_code = 'member_type' 
+		<if test="type != null and type != ''">
+		 and s.select_key = #{type} 
+		</if>
 		and m.deleted = 0 
+		
 		<if test="company != null and company != ''"> 
 			and m.company like concat(#{company},'%') 
 		</if>
@@ -185,7 +195,7 @@
 			m.address address,
 			m.login_time loginTime,
 			m.created_time regTime ,
-			(select count(*) from m_order_info where member_id = id) as orderCount,
+			(select count(*) from m_order_info where member_id = m.id) as orderCount,
 			s.select_value memberName,
 			m.memberCount memberCount
 		from m_member_info m 
@@ -205,8 +215,10 @@
 			area_city = #{cityid}, 
 			area_zone = #{zoneid}, 
 			address = #{address},
+			memberid = #{memberid} , 
 			modified_time = now(),
-			modified_id = #{modifyUser}
+			modified_id = #{modifyUser},
+			membercount = #{memberCount}
 			where id = #{id}
 	</update>
 	
@@ -225,10 +237,10 @@
 			memberid , 
 			register_time ,
 			created_time , 
-			created_id , deleted , membercount) values
-			(uuid() , #{loginName} , concat(#{loginName} , '123456') , #{contactName} , 
+			created_id , deleted , membercount , invitation_code) values
+			(replace(uuid() , '-' , '') , #{loginName} , md5(123456) , #{contactName} , 
 			#{contactPhone} , #{company} , #{provinceid} , #{cityid} , #{zoneid} , #{address} , #{memberid} ,
-			now() , now() , #{createUser} , 0 , #{memberCount})
+			now() , now() , #{createUser} , 0 , #{memberCount} , #{invitationCode})
 	</insert>
 	
 	<update id="delMember">
@@ -238,1030 +250,7 @@
 	    </foreach> 
 	</update>
 	
-	<!-- 新越网 -->
-	<select id="findXinYuePage" resultType="com.xinyue.manage.model.Member" parameterType="com.xinyue.manage.beans.MemberInfo">
-		select * from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		m.status status,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '2'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			and m.register_time<![CDATA[ >= ]]> #{startTime} 
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			and m.register_time<![CDATA[ <= ]]>#{endTime} 
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			and l.registered_capital<![CDATA[ >= ]]>#{startCapital} 
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			
-				and l.registered_capital <![CDATA[<=]]> #{endCapital} 
-			
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		
-		order by m.created_time desc 
-		) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount<![CDATA[ >= ]]>#{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			and t.orderCount<![CDATA[ <= ]]>#{endCount}
-		</if>
-		limit #{start} , #{pageSize}
-	</select>
-	<select id="getXinYueCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
-		
-		select count(*) from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '2'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''">
-			<![CDATA[ 
-			and m.register_time >= #{startTime} 
-			]]>
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			<![CDATA[
-				and m.register_time <= #{endTime}
-			]]>
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			<![CDATA[
-			and l.registered_capital >= #{startCapital} 
-			]]>
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			<![CDATA[
-				and l.registered_capital <= #{endCapital} 
-			]]>
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			<![CDATA[
-			and t.orderCount >= #{startCount} 
-			]]>
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			<![CDATA[
-				and t.orderCount <= #{endCount}
-			]]>
-		</if>
-	</select>
 	
-	<!-- QQ会员 -->
-	<select id="findQQPage" resultType="com.xinyue.manage.model.Member" parameterType="com.xinyue.manage.beans.MemberInfo">
-		select * from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		m.status status,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '1'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			and m.register_time<![CDATA[ >= ]]> #{startTime} 
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			and m.register_time<![CDATA[ <= ]]>#{endTime} 
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%')  
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			and l.registered_capital<![CDATA[ >= ]]>#{startCapital} 
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			
-				and l.registered_capital <![CDATA[<=]]> #{endCapital} 
-			
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc 
-		) t where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount<![CDATA[ >= ]]>#{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			and	t.orderCount<![CDATA[ <= ]]>#{endCount}
-		</if>
-		 limit #{start} , #{pageSize}
-	</select>
-	<select id="getQQCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
-		
-		select count(*) from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '1'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			<![CDATA[
-			and m.register_time >= #{startTime} 
-			]]>
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			<![CDATA[
-				and m.register_time <= #{endTime}
-			]]>
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			<![CDATA[
-			and l.registered_capital >= #{startCapital} 
-			]]>
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			<![CDATA[
-				and l.registered_capital <= #{endCapital} 
-			]]>
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			<![CDATA[
-			and t.orderCount >= #{startCount} 
-			]]>
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			<![CDATA[
-				and t.orderCount <= #{endCount}
-			]]>
-		</if>
-		
-	</select>
-	
-	
-	<!-- 微信会员 -->
-	<select id="findWeixinPage" resultType="com.xinyue.manage.model.Member" parameterType="com.xinyue.manage.beans.MemberInfo">
-		select * from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		m.status status,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '3'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			and m.register_time<![CDATA[ >= ]]> #{startTime} 
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			and m.register_time<![CDATA[ <= ]]>#{endTime}
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			and l.registered_capital<![CDATA[ >= ]]>#{startCapital} 
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			and l.registered_capital <![CDATA[<=]]> #{endCapital} 
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		
-		order by m.created_time desc 
-		
-		) t where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount<![CDATA[ >= ]]>#{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			and t.orderCount<![CDATA[ <= ]]>#{endCount}
-			
-		</if>
-		limit #{start} , #{pageSize}
-	</select>
-	<select id="getWeixinCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
-		
-		select count(*) from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '3'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			<![CDATA[
-			and m.register_time >= #{startTime} 
-			]]>
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			<![CDATA[
-				and m.register_time <= #{endTime}
-			]]>
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			<![CDATA[
-			and l.registered_capital >= #{startCapital} 
-			]]>
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			<![CDATA[
-				and l.registered_capital <= #{endCapital} 
-			]]>
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			<![CDATA[
-			and t.orderCount >= #{startCount} 
-			]]>
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			<![CDATA[
-				and	t.orderCount <= #{endCount}
-			]]>
-		</if>
-	</select>
-	
-	
-	<!-- 微博会员 -->
-	<select id="findWeiboPage" resultType="com.xinyue.manage.model.Member" parameterType="com.xinyue.manage.beans.MemberInfo">
-		select * from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		m.status status,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '4'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			and m.register_time<![CDATA[ >= ]]> #{startTime} 
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			and m.register_time<![CDATA[ <= ]]>#{endTime} 
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			and l.registered_capital<![CDATA[ >= ]]>#{startCapital} 
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			and l.registered_capital <![CDATA[<=]]> #{endCapital} 
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount<![CDATA[ >= ]]>#{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			and t.orderCount<![CDATA[ <= ]]>#{endCount} 
-		</if>
-		limit #{start} , #{pageSize}
-		
-	</select>
-	<select id="getWeiboCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
-		
-		select count(*) from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '4'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			<![CDATA[
-			and m.register_time >= #{startTime} 
-			]]>
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			<![CDATA[
-				and m.register_time <= #{endTime}
-			]]>
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			<![CDATA[
-			and l.registered_capital >= #{startCapital} 
-			]]>
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			<![CDATA[
-				and l.registered_capital <= #{endCapital} 
-			]]>
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			<![CDATA[
-			and t.orderCount >= #{startCount} 
-			]]>
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			<![CDATA[
-				and t.orderCount <= #{endCount}
-			]]>
-		</if>
-	</select>
-	
-	<!-- 税务会员 -->
-	<select id="findSuiwuPage" resultType="com.xinyue.manage.model.Member" parameterType="com.xinyue.manage.beans.MemberInfo">
-		select * from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		m.status status,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '5'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			and m.register_time<![CDATA[ >= ]]> #{startTime} 
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			and m.register_time<![CDATA[ <= ]]>#{endTime}
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			and l.registered_capital<![CDATA[ >= ]]>#{startCapital} 
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			
-				and l.registered_capital <![CDATA[<=]]> #{endCapital} 
-			
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount<![CDATA[ >= ]]>#{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			and t.orderCount<![CDATA[ <= ]]>#{endCount}
-			
-		</if>
-		limit #{start} , #{pageSize} 
-	</select>
-	<select id="getSuiwuCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
-		
-		select count(*) from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '5'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			<![CDATA[
-			and m.register_time >= #{startTime} 
-			]]>
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			<![CDATA[
-				and m.register_time <= #{endTime}
-			]]>
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			<![CDATA[
-			and l.registered_capital >= #{startCapital} 
-			]]>
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			<![CDATA[
-				and l.registered_capital <= #{endCapital} 
-			]]>
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount >= #{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			<![CDATA[
-				and t.orderCount <= #{endCount}
-			]]>
-		</if>
-	</select>
-	
-	<!-- 地税会员 -->
-	<select id="findDisuiPage" resultType="com.xinyue.manage.model.Member" parameterType="com.xinyue.manage.beans.MemberInfo">
-		select * from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		m.status status,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '6'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			and m.register_time<![CDATA[ >= ]]> #{startTime} 
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			and m.register_time<![CDATA[ <= ]]>#{endTime}
-			
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			and l.registered_capital<![CDATA[ >= ]]>#{startCapital} 
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			
-				and l.registered_capital <![CDATA[<=]]> #{endCapital} 
-			
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount<![CDATA[ >= ]]>#{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			and t.orderCount<![CDATA[ <= ]]>#{endCount}
-			
-		</if>
-		limit #{start} , #{pageSize}
-		
-	</select>
-	<select id="getDisuiCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
-		
-		select count(*) from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '6'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			<![CDATA[
-			and m.register_time >= #{startTime} 
-			]]>
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			<![CDATA[
-				and m.register_time <= #{endTime}
-			]]>
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			<![CDATA[
-			and l.registered_capital >= #{startCapital} 
-			]]>
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			<![CDATA[
-				and l.registered_capital <= #{endCapital} 
-			]]>
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			<![CDATA[
-			and t.orderCount >= #{startCount} 
-			]]>
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			<![CDATA[
-				and t.orderCount <= #{endCount}
-			]]>
-		</if>
-	</select>
-	
-	<!-- 国税会员 -->
-	<select id="findGuoPage" resultType="com.xinyue.manage.model.Member" parameterType="com.xinyue.manage.beans.MemberInfo">
-		select * from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		m.status status,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '7'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			and m.register_time<![CDATA[ >= ]]> #{startTime} 
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			and m.register_time<![CDATA[ <= ]]>#{endTime}
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			and l.registered_capital<![CDATA[ >= ]]>#{startCapital} 
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			
-				and l.registered_capital <![CDATA[<=]]> #{endCapital} 
-			
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			and t.orderCount<![CDATA[ >= ]]>#{startCount} 
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-				and t.orderCount<![CDATA[ <= ]]>#{endCount}
-		</if>
-		limit #{start} , #{pageSize} 
-	</select>
-	<select id="getGuoCount" resultType="int" parameterType="com.xinyue.manage.beans.MemberInfo">
-		
-		select count(*) from (select  
-		m.id id,
-		m.login_name loginName, 
-		s.select_value memberName,
-		m.company company,
-		concat_ws('',p.name , c.name , z.name , m.address) area,
-		m.membercount memberCount,
-		m.contact_name contactName,
-		m.contact_phone contactPhone,
-		m.email email,
-		m.register_time regTime,
-		m.login_time loginTime,
-		(select count(*) from m_order_info where member_id = m.id) as orderCount
-		
-		
-		from m_member_info m 
-		left join m_select_info s on s.select_key = m.memberid 
-		left join m_area_province p on m.area_province = p.code 
-		left join m_area_city c on m.area_city = c.code 
-		left join m_area_zone z on m.area_zone = z.code 
-		left join m_license_info l on m.license_info = l.id 
-		left join m_control_info a on a.id = l.control_info 
-		where s.type_code = 'member_type' and s.select_key = '7'
-		and m.deleted = 0 
-		<if test="company != null and company != ''"> 
-			and m.company like concat(#{company},'%') 
-		</if>
-		<if test="startTime != null and startTime != ''"> 
-			<![CDATA[
-			and m.register_time >= #{startTime} 
-			]]>
-		</if>
-		<if test="endTime != null and endTime != ''"> 
-			<![CDATA[
-				and m.register_time <= #{endTime}
-			]]>
-		</if>
-		<if test="contactName != null and contactName != ''"> 
-			and  m.contact_name like concat(#{contactName} , '%') 
-		</if>
-		<if test="contactPhone != null and contactPhone != ''"> 
-			and m.contact_phone like concat(#{contactPhone} , '%')
-		</if>
-		<if test="legalRepresentative != null and legalRepresentative != ''"> 
-			and l.legal_representative like concat(#{legalRepresentative} , '%') 
-		</if>
-		<if test="taxRegistrationArea != null and taxRegistrationArea != ''"> 
-			and l.tax_registration_area like concat(#{taxRegistrationArea} , '%') 
-		</if>
-		<if test="startCapital != null and startCapital != ''"> 
-			<![CDATA[
-			and l.registered_capital >= #{startCapital} 
-			]]>
-		</if>
-		<if test="endCapital != null and endCapital != ''"> 
-			<![CDATA[
-				and l.registered_capital <= #{endCapital} 
-			]]>
-		</if>
-		<if test="industry != null and industry != ''"> 
-			and a.industry = #{industry} 
-		</if>
-		order by m.created_time desc) t 
-		where 1=1  
-		<if test="startCount != null and startCount != ''"> 
-			<![CDATA[
-				and t.orderCount >= #{startCount} 
-			]]>
-		</if>
-		<if test="endCount != null and endCount != ''"> 
-			<![CDATA[
-				and t.orderCount <= #{endCount}
-			]]>
-		</if>
-	</select>
 	
 	<select id="findMemberByPhone" parameterType="String" resultType="int">
 		select count(*) from m_member_info where contact_phone=#{contactPhone} and deleted=0;
@@ -1279,7 +268,19 @@
 		from m_member_info ml 
 		inner join m_member_info mr on ml.invitation_code = mr.invited_code and mr.deleted = 0 
 		left join m_order_info o on o.member_id = mr.id and o.deleted = 0 and o.status = 10 
-		where ml.id = #{memberid} limit #{start} , #{pageSize}
+		where ml.id = #{memberid}  
+		<if test="rank != null and rank != ''">
+			<choose>
+				<when test="rank == 1">
+					order by mr.register_time desc 
+				</when>
+				<otherwise>
+					order by mr.register_time asc 
+				</otherwise>
+			</choose>
+		</if>
+		
+		limit #{start} , #{pageSize}
 	</select>
 	<select id="getRecommendMemberCount" resultType="int">
 		 select count(*) from m_member_info ml 
@@ -1294,7 +295,18 @@
 		from m_member_info m 
 		inner join c_manager_info c on m.invitation_code = c.invited_code  
 		left join  m_recharge_info r on r.user_id = c.id and r.deleted = 0 
-		where m.id = #{memberid} limit #{start} , #{pageSize} 
+		where m.id = #{memberid} 
+		<if test="rank != null and rank != ''">
+			<choose>
+				<when test="rank == 1">
+					order by c.created_time desc 
+				</when>
+				<otherwise>
+					order by c.created_time asc 
+				</otherwise>
+			</choose>
+		</if>
+		limit #{start} , #{pageSize} 
 	</select>
 	<select id="getRecommendCredit" resultType="int">
 		select count(*) from m_member_info m 
@@ -1306,8 +318,10 @@
 	<!-- member ywh order -->
 	<select id="findMemberOrder" resultType="com.xinyue.manage.model.Order">
 		select 
-		o.id , o.code , p.name productName, p.code productCode, i.name bank, o.credit , o.credit_real realCredit, a.deadline limitDate, o.commit_time commitTime, 
-		o.status , s.select_value statusName ,  o.tax_audite_person taxAuditePerson, o.tax_audite_time taxAuditeTime,o.remark, o.blank_audite_time blankAuditeTime, o.blank_audite_person blankAuditePerson
+		 <!--ywh start modify 2015-12-23-->
+		o.id , o.code , p.name productName, p.code productCode, i.name bank, o.credit , o.credit_real realCredit, a.deadline limitDate, o.created_time commitTime, 
+		o.status , s.select_value statusName ,  o.tax_audite_person taxAuditePerson, o.tax_audite_time taxAuditeTime,o.tax_audite_remark remark, o.blank_audite_time blankAuditeTime, o.blank_audite_person blankAuditePerson
+		 <!--ywh end-->
 		from m_order_info o 
 		left join m_product_info p on o.product_info = p.id 
 		left join m_organization_info i on i.id = o.bank 

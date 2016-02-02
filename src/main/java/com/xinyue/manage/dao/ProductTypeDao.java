@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.xinyue.manage.beans.ProductTypeInfo;
 import com.xinyue.manage.model.ProductType;
 
 /**
@@ -76,6 +75,13 @@ public interface ProductTypeDao {
 	public void delProductType(@Param("id") String id , @Param("modifyUser") String modifyUser);
 	
 	/**
+	 * 获取要删除的id
+	 * @param parentid
+	 * @return
+	 */
+	public List<String> findIdByParentid(String parentid);
+	
+	/**
 	 * ywh 根据产品分类 标识符 加载产品分类 
 	 * @param id
 	 * @return
@@ -103,9 +109,9 @@ public interface ProductTypeDao {
 	public List<ProductType> findTypeFirstList(); 
 	
 	/**
-	 * ywh 删除产品分类时 修改产品外键
+	 * ywh 删除产品分类时 清空产品外键
 	 * @param id
 	 * @param modifyUser
 	 */
-	public void updateProductByType(@Param("id") String id, @Param("modifyUser") String modifyUser);
+	public void updateProductByType(@Param("list") List<String> list, @Param("modifyUser") String modifyUser);
 }

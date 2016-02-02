@@ -53,7 +53,7 @@
 			count(id)
 		from m_question_type where 
 		<choose>
-			<when test="type == 2">
+			<when test="type == 1">
 				parent_id is null 
 			</when>
 			<otherwise>
@@ -65,14 +65,24 @@
 	
 	
 	<update id="delAnswertype">
-		update m_question_type set deleted = 1 where id = #{id}
+		update m_question_type set deleted = 1 where id = #{id} or parent_id = #{id}
 	</update>
-	<update id="delAllAnswerTypeByParentid">
-		update m_question_type set deleted = 1 where parent_id = #{id}
-	</update>
+	<select id="findIdByParentid" resultType="String">
+		select 
+			id 
+		from m_question_type where parent_id = #{parentid}  and deleted = 0 
+	</select>
 	
 	<insert id="addAnswertype" parameterType="com.xinyue.manage.model.AnswerType">
-		insert into m_question_type(name , parent_id , status , deleted) values(#{name} , #{parentid} , #{status} , 0)
+		insert into m_question_type(name , 
+		<if test="parentid != null and parentid != ''">
+		parent_id ,
+		</if>
+		 status , deleted) values(#{name} , 
+		<if test="parentid != null and parentid != ''">
+		#{parentid} ,
+		</if>
+		 #{status} , 0)
 	</insert>
 	
 	<update id="updateStatus">

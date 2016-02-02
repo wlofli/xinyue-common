@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+modify ywh 2015-12-01
+searchC 
+deleteCreditManagers
+updateCreditmanagers
+-->
 <mapper namespace="com.xinyue.manage.dao.CreditManagerDAO">
 	<select id="getManagerCount" resultType="int">
 		select count(*) from c_manager_info where deleted=0;
@@ -25,14 +31,14 @@
 	        left join
 	    c_certification_info ci ON ci.userid = mi.id and ci.deleted = 0
 	        left join
-	    m_organization_info oi ON oi.number = mi.organization
+	    m_organization_info oi ON oi.id = mi.organization
 	        left join
 	    m_area_city ac ON ac.code = mi.city
 	        left join
 	    m_area_province ap ON ap.code = mi.province
 	        left join
 	    m_order_info di ON di.blank_audite_person = mi.id
-	where 1=1
+	where 1=1 and mi.status = 0 and mi.deleted = 0 <!-- ywh 2015-11-13  前台 原因后台 把屏蔽和删除了前台还显示 -->
 		<if test="goodBusiness != '' and goodBusiness != null">
 		and mi.good_business like concat(concat('%', #{goodBusiness}),'%') 
 		</if>
@@ -57,7 +63,9 @@
 			order by mi.star_level desc
 		</otherwise>
 	</choose>
-	<if test="index != ''">
+<!-- 	modified by lzc 15-12-9 判断条件修改 '' 改为 null-->
+	<if test="index != null">
+<!-- 	end -->
 	limit #{index},10
 	</if>
 	;
@@ -74,7 +82,7 @@
 		        left join
 		    c_certification_info ci ON ci.userid = mi.id and ci.deleted = 0
 		        left join
-		    m_organization_info oi ON oi.number = mi.organization
+		    m_organization_info oi ON oi.id = mi.organization
 		where 1=1
 			<if test="goodBusiness != '' and goodBusiness != null">
 			and mi.good_business like concat(concat('%', #{goodBusiness}),'%') 
@@ -102,13 +110,18 @@
 	    and mi.sex = #{sex}
 	    </if>
 	    <if test="telPhone != ''">
-	    and mi.tel_number = #{telPhone}
+	    and mi.tel_number concat(#{telPhone} , '%')
 	    </if>
 	    <if test="province !=''">
 	    and mi.province like concat(substring(#{province},1,2),'%')
 	    </if>
 	    <if test="city !=''">
-	    and mi.city like concat(substring(#{city},1,2),'%')
+	   <!-- 
+	   2015-11-12 ywh 
+	   	 注释 并加区域搜索
+	     and mi.city like concat(substring(#{city},1,2),'%')  
+	    -->
+	    and mi.city =#{city}
 	    </if>
 	    <if test="organization !=''">
 	    and mi.organization = #{organization}
@@ -151,10 +164,12 @@
 				count(sc.id) desc
 			</when>
 			<when test="sortRemaind ==1">
-				count(ro.remaining_sum)
+			<!-- ywh cash_remain count(ro.remaining_sum) -->
+				count(ro.cash_remain)
 			</when>
 			<when test="sortRemaind ==2">
-				count(ro.remaining_sum) desc
+			<!-- ywh cash_remain count(ro.remaining_sum) -->
+				count(ro.cash_remain) desc
 			</when>
 			<otherwise>
 				mi.id
@@ -205,22 +220,24 @@
 	</select>
 	
 	<update id="deleteCreditManagers" parameterType="List">
-		<foreach collection="ids" item="id" index="index" separator=";">
+		
 			update c_manager_info 
 			set 
 			    deleted = 1
-			where
-			    id = #{id}
+			where  
+			<foreach collection="ids" item="id" index="index" open=" id = " separator=" or id = ">
+			    #{id}
 		</foreach>
 	</update>
 	
 	<update id="updateCreditmanagers" parameterType="List">
-		<foreach collection="ids" item="id" index="index" separator=";">
+		
 			update c_manager_info 
 			set 
 			    status = #{status}
 			where
-			    id = #{id}
+			<foreach collection="ids" item="id" index="index" open=" id = " separator=" or id = ">
+			   #{id}
 		</foreach>
 	</update>
 	
@@ -250,7 +267,7 @@
 	    m_area_province ap ON ap.code = mi.province 
 		where mi.deleted = 0 and oi.id = #{orgid};
 	</select>
-	
+	<!--ywh  2015-0-12-08  添加推荐标志和推荐时间-->
 	<insert id="saveCreditManager" parameterType="com.xinyue.manage.model.CreditManager">
 	insert into 
 		c_manager_info(
@@ -265,7 +282,9 @@
 			created_time,
 			deleted,
 			sex,
-			status
+			status,
+			recommend,
+			recommend_time
 		)
 	values(
 		#{id},
@@ -279,7 +298,9 @@
 		now(),
 		0,
 		3,
-		0
+		0,
+		#{recommend},
+		now()
 	);
 	</insert>
 	
@@ -291,7 +312,7 @@
 		where
 		    invitation_code = #{invitationCode};
 	</select>
-	
+	<!--ywh  2015-0-12-08  添加推荐标志-->
 	<select id="getCreditManagerById" parameterType="String" resultType="com.xinyue.manage.model.CreditManager">
 		select 
 		    mi.id as id,
@@ -305,6 +326,7 @@
 		    mi.status status,
 		    mi.star_level star ,
 		    mi.created_time	registerDate ,
+		    mi.recommend recommend ,
 		    <!-- ywh over -->
 		    case mi.sex
 		        when 1 then '男'
@@ -355,6 +377,15 @@
 		    	and ci.userid = #{managerId};
 	</select>
 	
+	<!-- ywh 2015-11-13 start 审核提交 -->
+	<update id="updateAudit" parameterType="com.xinyue.manage.model.AuthenticationCM">
+		update c_certification_info set audit = #{audit} , audit_message = #{auditMessage} where id = #{id}
+	</update>	
+	<!--ywh  2015-0-12-08  修改推荐标志和推荐时间-->
+	<update id="updateCreditRecommend" parameterType="com.xinyue.manage.model.AuthenticationCM">
+		update c_manager_info set recommend=#{recommend} <if test="recommend == 1">, recommend_time = now()</if> where id  = #{managerId}
+	</update>
+	<!-- ywh over -->
 	<select id="getInvitationMemberCount" parameterType="String" resultType="int">
 		select 
 		    count(nt.id)
@@ -507,4 +538,140 @@
 		from c_manager_info where deleted = 0  
 	</select>
 	<!-- over -->
+	
+	
+	<sql id="invitationMemberCondition">
+		WHERE 1 = 1
+		<if test="search != null">
+			<if test="search.regigsterStartTime != null || search.regigsterStartTime != ''">
+				and nt.register_time >= #{search.regigsterStartTime}
+			</if>
+			<if test="search.registerEndTime != null || search.registerEndTime != ''">
+				and nt.register_time <![CDATA[<=]]> #{search.registerEndTime}
+			</if>
+		</if>
+	</sql>
+	<select id="getInvitationMember" resultType="com.xinyue.manage.beans.InvitationMemberInfo">
+		select 
+		    nt.contact_name as name,
+		    nt.contact_phone as telPhone,
+		    date_format(nt.register_time,'%Y-%m-%d') as registerTime
+		  
+		from
+		    (select 
+		        mi.id, mi.contact_name, mi.contact_phone, mi.register_time
+		    from
+		        c_manager_info cm, m_member_info mi
+		    where
+		        cm.id = #{managerId}
+		            and cm.invitation_code = mi.invited_code
+		            and mi.deleted = 0) nt
+		 <include refid="invitationMemberCondition"></include>
+		 limit #{index},10;
+	</select>
+	
+	<select id="countInvitationMember" resultType="int">
+		SELECT 
+			count(mi.id)
+		FROM
+			m_member_info mi
+		WHERE mi.invited_code = (SELECT cm.invitation_code FROM c_manager_info cm WHERE cm.id = #{managerId})
+		<if test="search != null">
+			<if test="search.regigsterStartTime != null || search.regigsterStartTime != ''">
+				and mi.register_time >= #{search.regigsterStartTime}
+			</if>
+			<if test="search.registerEndTime != null || search.registerEndTime != ''">
+				and mi.register_time <![CDATA[<=]]> #{search.registerEndTime}
+			</if>
+		</if>
+		
+	</select>
+	
+	
+	<sql id="invitationManagerCondition">
+			
+		<if test="search != null">
+			<if test="search.regigsterStartTime != null || search.regigsterStartTime != ''">
+				and mi.created_time >= #{search.regigsterStartTime}
+			</if>
+			<if test="search.registerEndTime != null || search.registerEndTime != ''">
+				and mi.created_time <![CDATA[<=]]> #{search.registerEndTime}
+			</if>
+		</if>
+	</sql>
+	
+	<select id="getInvitationManager" resultType="com.xinyue.manage.beans.InvitationMemberInfo">
+		select 
+		    mi.real_name as name,
+		    mi.tel_number as telPhone,
+		    date_format(mi.created_time,'%Y-%m-%d') as registerTime
+		from
+		    (select 
+		        mi1.id, mi1.real_name, mi1.tel_number, mi1.created_time
+		    from
+		        c_manager_info mi0, c_manager_info mi1
+		    where
+		        mi0.invitation_code = mi1.invited_code
+		            and mi0.id = #{managerId}) mi
+		WHERE 1 = 1
+		<include refid="invitationManagerCondition"></include>       
+		order by mi.created_time desc
+		limit #{index} , 10;	
+	</select>
+	
+	<select id="countInvitationMangager" resultType="int">
+		select 
+		    count(mi1.id)
+		from
+		    c_manager_info mi0,
+		    c_manager_info mi1
+		where
+		    mi0.invitation_code = mi1.invited_code
+		        and mi0.id = #{managerId}
+		<if test="search != null">
+			<if test="search.regigsterStartTime != null || search.regigsterStartTime != ''">
+				and mi1.created_time >= #{search.regigsterStartTime}
+			</if>
+			<if test="search.registerEndTime != null || search.registerEndTime != ''">
+				and mi1.created_time <![CDATA[<=]]> #{search.registerEndTime}
+			</if>
+		</if>
+	</select>
+	
+	<select id="getCreditManagerInfoByIndex" resultType="com.xinyue.manage.model.CreditManagerInfo">
+		select
+		    mi.id as creditManagerId,
+		    mi.real_name as personName,
+		    mi.star_level as starLevel,
+		    mi.good_business as goodBusiness,
+		    mi.organization as organizationId,
+		    ci.half_img as personImg,
+		    oi.name as organization,
+		    
+	       (SELECT count(di.id) FROM m_order_info di WHERE mi.id =  di.blank_audite_person) as applyCount,
+		    concat(ap.name,ac.name) as serverZone,
+		    case
+		        when ci.id is null then 0
+		        else 1
+		    end as realNameStatus,
+		    oi.status as organizationAuthStatus,
+		    oi.id as organizationId
+		from
+		    c_manager_info mi
+		        left join
+		    c_certification_info ci ON ci.userid = mi.id and ci.deleted = 0
+		        left join
+		    m_organization_info oi ON oi.id = mi.organization
+		        left join
+		    m_area_city ac ON ac.code = mi.city
+		        left join
+		    m_area_province ap ON ap.code = mi.province 
+		where mi.deleted = 0 and mi.recommend = 1
+		order by mi.recommend_time desc
+		limit #{pageNo},#{pageSize}
+	
+	</select>
+	
+	
+	
 </mapper>

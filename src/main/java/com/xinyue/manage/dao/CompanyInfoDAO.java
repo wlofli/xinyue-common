@@ -32,6 +32,13 @@ public interface CompanyInfoDAO {
 	HashMap<String, String> getDetailIdByMemberId(String code);
 
 	Applicant getApplicantInfoById(String id);
+	
+	/**获取可以非可视化的申请人数据->属性是简单的数字而非具体的文字 ex. 省  -> 330000(可视化数据为 ->浙江省)
+	 * add by lzc     date: 2015年11月18日
+	 * @param applicantId
+	 * @return
+	 */
+	Applicant getApplicantInfoByIdUnvisual(String applicantId);
 
 	CompanyBase getCompanyBaseInfoById(String id);
 

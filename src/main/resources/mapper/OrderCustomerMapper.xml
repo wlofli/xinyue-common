@@ -180,6 +180,18 @@
 		where id = #{id} and deleted = 0
 	</update>
 	
+	<update id="addReceiver">
+		UPDATE
+			${tabName}
+		SET
+			receiver = #{manageId},
+			receive_time = now(),
+			modified_id = #{modifiedId},
+			modified_time = now()
+		WHERE
+			id = #{orderId}
+	</update>
+	
 	
 	<select id="getOrderFixedById" resultMap="fixed">
 		select * 
@@ -336,7 +348,8 @@
 	 	
 	 	left join  m_order_info  o  on o.id = f.order_id 
 	 	left join  m_applicant_info a on o.applicant_info = a.id
-	 	where f.deleted = 0 and f.manage_id is null and f.type = 1
+	 	where f.deleted = 0 and f.manage_id is null and f.type = 1 
+	 	and o.`status` in (6,7,8,9,10,11)
 	 	<if test="search.collateral != null and search.collateral != 0">
 	 		and #{search.collateral} = f.collateral
 	 	</if>
@@ -375,6 +388,7 @@
 	 	
 	 	
 	 	where f.deleted = 0 and f.manage_id is null and f.type = 2
+	 	and fa.status in (6,7,8,9,10,11)
 	 	<if test="search.collateral != null and search.collateral != 0">
 	 		and #{search.collateral} = f.collateral
 	 	</if>
@@ -387,7 +401,11 @@
 	 <select id="countFixedListByPage" resultType="int">
 	 	select count(*)
 	 		from c_order_fixed f
-	 	where f.deleted = 0 and f.manage_id is null
+	 	LEFT JOIN m_product_fast_info fa ON fa.id = f.order_id AND f.type = 2
+		LEFT JOIN m_order_info o ON o.id = f.order_id AND f.type = 1	
+	 		
+	 	where f.deleted = 0 and f.manage_id is null 
+	 	AND (fa.`status` IN (6,7,8,9,10,11) OR o.`status` IN (6,7,8,9,10,11))
 	 	<if test="search.collateral != null and search.collateral != 0">
 	 		and #{search.collateral} = f.collateral
 	 	</if>
@@ -411,6 +429,7 @@
 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
 		where a.deleted = 0 and a.type = '1'
 		and o.deleted = 0 and o.order_type = '4'  and o.order_status != '1'
+		and o.status in (6,7,8,9,10,11)
 		and a.manage_id = #{manageId}
 		<choose>
 		<when test="search.status != null and search.status != ''">
@@ -456,6 +475,7 @@
 			left join m_select_info    s   on s.select_key = f.status and s.type_code = 'order_status'
 			where a.deleted = 0 and a.type = '2'
 			and f.deleted = 0 and f.order_type = '4' and f.order_status != '1'
+			and f.status in (6,7,8,9,10,11)
 			and a.manage_id = #{manageId}
 			<choose>
 				<when test="search.status != null and search.status != ''">
@@ -487,41 +507,46 @@
 		limit #{pageNo}, #{pageSize}
 	</select>
 	
+<!-- 	modified by lzc -->
 	<select id="countAppointedListByManageId" resultType="int">
 		select count(*)
 			from c_order_appoint a
-		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '4'
-		left join m_product_fast_info  f on f.id = a.order_id  and f.deleted = 0 and f.order_type = '4' and f.order_status = '4'
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 
+		left join m_product_fast_info  f on f.id = a.order_id  and f.deleted = 0 
 		where a.deleted = 0 
+		AND (f.order_type = '4' AND f.order_status = '4' AND f.`status` in(6,7,8,9,10,11)) 
+		OR ( o.order_type = '4' AND o.order_status = '4' AND o.`status` IN (6,7,8,9,10,11))
 		and a.manage_id = #{manageId}
-		<choose>
-		<when test="search.status != null and search.status != ''">
-<!-- 		快速筛选 -->
-			and (o.status = #{search.status} || f.status = #{search.status})
-		</when>
-		<otherwise>
-			<if test="search.startTime != null and search.startTime !=''">
-			and a.applicant_time > #{search.startTime}
-			</if>
-			<if test="search.endTime != null and search.endTime != ''">
-				<![CDATA[
-					and a.applicant_time < #{search.endTime}
-				]]>
-			</if>
-			<if test="search.code != null and search.code != ''">
-				and o.code like '%' #{search.code} '%'
-			</if>
-			<if test="search.applicantPhone != null and search.applicantPhone != ''">
-				and a.applicant_phone like '%' #{search.applicantPhone} '%'
-			</if>
-			<if test="search.applicantName != null and search.applicantName != ''">
-				and a.applicant_name like '%' #{search.applicantName} '%'
-			</if>
-			<if test="search.product != null and search.product != ''">
-				and o.product_info = #{search.product}
-			</if>
-		</otherwise>
-		</choose>
+		<if test="search != null">
+			<choose>
+			<when test="search.status != null and search.status != ''">
+	<!-- 		快速筛选 -->
+				and (o.status = #{search.status} || f.status = #{search.status})
+			</when>
+			<otherwise>
+				<if test="search.startTime != null and search.startTime !=''">
+				and a.applicant_time > #{search.startTime}
+				</if>
+				<if test="search.endTime != null and search.endTime != ''">
+					<![CDATA[
+						and a.applicant_time < #{search.endTime}
+					]]>
+				</if>
+				<if test="search.code != null and search.code != ''">
+					and o.code like '%' #{search.code} '%'
+				</if>
+				<if test="search.applicantPhone != null and search.applicantPhone != ''">
+					and a.applicant_phone like '%' #{search.applicantPhone} '%'
+				</if>
+				<if test="search.applicantName != null and search.applicantName != ''">
+					and a.applicant_name like '%' #{search.applicantName} '%'
+				</if>
+				<if test="search.product != null and search.product != ''">
+					and o.product_info = #{search.product}
+				</if>
+			</otherwise>
+			</choose>
+		</if>
 	</select>
 	
 <!-- orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送	 -->
@@ -694,11 +719,11 @@ type;//1.订单2快速申贷 -->
 			s.select_value as `status`
 		from
 			c_order_appoint a
-		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 
 		left join m_product_info   d   on d.id = o.product_info
 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
-		where a.deleted = 0 and a.type = '1'
+		where a.deleted = 0 and a.type = '1' and o.order_type = '4' and o.order_status = '1'
 		and a.manage_id = #{manageId}
 		<include refid="getMyCustomerConditionByAppoint"></include>
 <!-- 		订单立即领取 -->
@@ -718,13 +743,13 @@ type;//1.订单2快速申贷 -->
 			s.select_value as `status`
 		from
 			c_order_fixed a
-		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 
 		left join m_product_info   d   on d.id = o.product_info
 		left join m_license_info   l   on o.license_info = l.id
 		left join m_applicant_info ap  on ap.id = o.applicant_info 
 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
-		where a.deleted = 0 and a.type = '1'
+		where a.deleted = 0 and a.type = '1' and o.order_type = '1' and o.order_status = '1'
 		and a.manage_id = #{manageId}
 		<include refid="getMyCustomerConditionByOrderFixed"></include>
 <!-- 		快速申贷指定推送 -->
@@ -735,7 +760,7 @@ type;//1.订单2快速申贷 -->
 				o.order_type as type,
 				o.code as code,
 				a.applicant_name as applicant_name,
-				NULL as product_name,
+				p.name as product_name,
 				a.applicant_phone as applicant_phone,
 				a.credit as credit,
 				a.limit_date as limit_date,
@@ -745,10 +770,11 @@ type;//1.订单2快速申贷 -->
 				s.select_value as `status`
 			from
 				c_order_appoint a
-			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 
 			left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
 			left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
-			where a.deleted = 0 and a.type = '2'
+			left join m_product_info   p on p.id = o.product_id
+			where a.deleted = 0 and a.type = '2' and o.order_type = '4' and o.order_status = '1'
 			and a.manage_id = #{manageId}	
 			<include refid="getMyCustomerConditionByAppoint"></include>
 	<!-- 快速申贷立即领取 -->
@@ -758,7 +784,7 @@ type;//1.订单2快速申贷 -->
 				o.order_type as type,
 				o.code as code,
 				o.contact_name as applicant_name,
-				NULL as product_name,
+				p.name as product_name,
 				o.contact_phone as applicant_phone,
 				a.credit as credit,
 				a.limit_date as limit_date,
@@ -768,10 +794,11 @@ type;//1.订单2快速申贷 -->
 				s.select_value as `status`
 			from
 				c_order_fixed a
-			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 
 			left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status'
 			left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type'
-			where a.deleted = 0 and a.type = '2'
+			left join m_product_info   p on p.id = o.product_id
+			where a.deleted = 0 and a.type = '2' and o.order_type = '1' and o.order_status = '1'
 			and a.manage_id = #{manageId}	
 			<include refid="getMyCustomerConditionByFastOrderFixed"></include>
 		</if>
@@ -782,40 +809,40 @@ type;//1.订单2快速申贷 -->
 		select ((select count(*)
 		from 
 			c_order_appoint a
-		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 
 <!-- 		left join m_product_info   d   on d.id = o.product_info -->
 <!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
 <!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
-		where a.deleted = 0 and a.type = '1'
+		where a.deleted = 0 and a.type = '1' and o.order_type = '4' and o.order_status = '1'
 		and a.manage_id = #{manageId}
 		<include refid="getMyCustomerConditionByAppoint"></include>)
 		+(select count(*)
 		from
 			c_order_fixed a
-		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+		left join m_order_info     o   on o.id = a.order_id  and o.deleted = 0 
 <!-- 		left join m_product_info   d   on d.id = o.product_info -->
 <!-- 		left join m_license_info   l   on o.license_info = l.id -->
 		left join m_applicant_info ap  on ap.id = o.applicant_info 
 <!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
 <!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
-		where a.deleted = 0 and a.type = '1'
+		where a.deleted = 0 and a.type = '1' and o.order_type = '1' and o.order_status = '1'
 		and a.manage_id = #{manageId}
 		<include refid="getMyCustomerConditionByOrderFixed"></include>)
 		<if test="search.product == null || search.product == ''">
 			+(select count(*)
 			from c_order_appoint a
-			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '4' and o.order_status = '1'
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0
 	<!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
 	<!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
-			where a.deleted = 0 and a.type = '2'
+			where a.deleted = 0 and a.type = '2'  and o.order_type = '4' and o.order_status = '1'
 			and a.manage_id = #{manageId}	
 			<include refid="getMyCustomerConditionByAppoint"></include>)
 			+(select count(*)
 			from c_order_fixed a
-			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 and o.order_type = '1' and o.order_status = '1'
+			left join m_product_fast_info     o   on o.id = a.order_id  and o.deleted = 0 
 	<!-- 		left join m_select_info    s   on s.select_key = o.status and s.type_code = 'order_status' -->
 	<!-- 		left join m_select_info    s1  on s1.select_key = o.order_type and s1.type_code = 'order_type' -->
-			where a.deleted = 0 and a.type = '2'
+			where a.deleted = 0 and a.type = '2' and o.order_type = '1' and o.order_status = '1'
 			and a.manage_id = #{manageId}	
 			<include refid="getMyCustomerConditionByFastOrderFixed"></include>)
 		</if>
@@ -879,7 +906,7 @@ type;//1.订单2快速申贷 -->
 		select
 			o.id as id,
 			c.type as type,
-			d.`name` as productName,
+			d.`name` as productName,<!--ywh 2015-12-28-->
 			b.name as organization,
 			c.credit as credit,
 			c.limit_date as limitDate,
@@ -887,14 +914,16 @@ type;//1.订单2快速申贷 -->
 			ap.phone as applicantPhone,
 			l.company_name as companyName,
 			o.created_time as applicantTime,
-			o.status,
+			s.select_value status,
+			o.status orderStatus,
 			o.blank_audite_remark as remark,
 			o.credit_real as creditReal,
 			o.audite_time as receiveTime
 		from c_order_fixed c
 		left join m_order_info     o   on o.id = c.order_id and o.deleted = 0
+		left join m_select_info s on s.type_code = 'order_status' and s.select_key = o.status
 		left join m_product_info   d   on d.id = o.product_info
-		left join m_bank_info      b   on o.bank = b.id
+		left join m_organization_info      b   on o.bank = b.id
 		left join m_license_info   l   on o.license_info = l.id
 		left join m_applicant_info ap  on ap.id = o.applicant_info 
 		where c.id = #{customerId} and c.deleted = 0 and c.type = 1
@@ -904,20 +933,33 @@ type;//1.订单2快速申贷 -->
 		select
 			o.id as id,
 			c.type as type,
-			NULL as productName,
-			NULL as organization,
+			p.name as productInfo,<!--ywh modify 2015-12-24-->
+			b.name as organization,
 			c.credit as credit,
 			c.limit_date as limitDate,
-			o.contact_name as applicantName,
+			o.contact_name as applicantName,<!--ywh modify 2015-12-24-->
 			o.contact_phone as applicantPhone,
 			o.company as companyName,
 			o.created_time as applicantTime,
-			o.status,
+			 <!--ywh start modify 2015-12-23-->
+			s.select_value status,
+			 <!--ywh end-->
+			o.status orderStatus,
 			o.blank_audite_remark as remark,
 			o.credit_real as creditReal,
 			o.receive_time as receiveTime
 		from c_order_fixed c
-		left join m_product_fast_info     o   on o.id = c.order_id and o.deleted = 0
+		left join m_product_fast_info  o   on o.id = c.order_id and o.deleted = 0 
+		left join m_product_info       p   on p.id = o.product_id
+		left join m_organization_info  b   on b.id = p.bank
+
+		 <!--ywh start modify 2015-12-23-->
+		left join m_select_info s on s.type_code = 'order_status' and s.select_key = o.status
+		 <!--ywh end-->
+		 <!--ywh modify start 2015-12-24-->
+		 left join c_manager_info m on m.id = c.manage_id 
+		 left join m_applicant_fast_info f on f.applicant_fast_id = o.applicant_fast_id 
+		 <!--ywh modify  end 2015-12-24-->
 		where c.id = #{customerId} and c.deleted = 0 and c.type = 2
 	</select>
 	
@@ -925,7 +967,7 @@ type;//1.订单2快速申贷 -->
 		select
 			o.id as id,
 			c.type as type,
-			d.`name` as productName,
+			d.`name` as productInfo,<!--ywh modify 2015-12-24-->
 			b.name as organization,
 			c.credit as credit,
 			c.limit_date as limitDate,
@@ -933,14 +975,16 @@ type;//1.订单2快速申贷 -->
 			c.applicant_phone as applicantPhone,
 			c.company_name as companyName,
 			c.applicant_time as applicantTime,
-			o.status,
+			s.select_value status,
+			o.status orderStatus,
 			o.blank_audite_remark as remark,
 			o.credit_real as creditReal,
 			o.audite_time as receiveTime
 		from c_order_appoint c
 		left join m_order_info     o   on o.id = c.order_id and o.deleted = 0
 		left join m_product_info   d   on d.id = o.product_info
-		left join m_bank_info      b   on o.bank = b.id
+		left join m_organization_info      b   on o.bank = b.id
+		left join m_select_info s on s.type_code = 'order_status' and s.select_key = o.status
 		where c.id = #{customerId} and c.deleted = 0 and c.type = 1
 	</select>
 	
@@ -948,20 +992,24 @@ type;//1.订单2快速申贷 -->
 		select
 			o.id as id,
 			c.type as type,
-			NULL as productName,
-			NULL as organization,
+			p.name as productName,<!--ywh 2015-12-28-->
+			b.name as organization,
 			c.credit as credit,
 			c.limit_date as limitDate,
 			c.applicant_name as applicantName,
 			c.applicant_phone as applicantPhone,
 			c.company_name as companyName,
 			c.applicant_time as applicantTime,
-			o.status,
+			s.select_value status,
+			o.status orderStatus,
 			o.blank_audite_remark as remark,
 			o.credit_real as creditReal,
 			o.receive_time as receiveTime
 		from c_order_appoint c
-		left join m_product_fast_info     o   on o.id = c.order_id and o.deleted = 0
+		left join m_product_fast_info     o   on o.id = c.order_id and o.deleted = 0<!--ywh 2015-12-28-->
+		left join m_select_info s on s.type_code = 'order_status' and s.select_key = o.status<!--ywh 2015-12-28-->
+		left join m_product_info       p   on p.id = o.product_id
+		left join m_organization_info  b   on b.id = p.bank
 		where c.id = #{customerId} and c.deleted = 0 and c.type = 2
 	</select>
 	

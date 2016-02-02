@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.xinyue.authe.UserInfo;
 import com.xinyue.manage.beans.QuestionBean;
 import com.xinyue.manage.beans.ShowAnswer;
 import com.xinyue.manage.model.Answer;
@@ -311,4 +310,10 @@ public interface AnswerDao {
 	 * @return
 	 */
 	public int getMemberQuest(@Param("memberid")String memberid);
+	
+	/**
+	 * 删除问题类型时 得清空问题对应问题类型外键
+	 * @param list
+	 */
+	public void cleanForeignByQuestionType(@Param("list") List<String> list , @Param("createUser") String createUser);
 }

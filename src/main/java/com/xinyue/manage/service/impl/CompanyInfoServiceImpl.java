@@ -32,7 +32,12 @@ import com.xinyue.manage.model.RealEstate;
 import com.xinyue.manage.service.CompanyInfoService;
 import com.xinyue.manage.util.CommonFunction;
 import com.xinyue.manage.util.GlobalConstant;
-
+/**
+ * modify: ywh 2015-11-30 
+ * getBusinessInfoById
+ * getDebtInfoById
+ * downloadFile
+ */
 /**
  * 企业信息service
  * @author MK)茅
@@ -280,6 +285,24 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		
 		return applicant;
 	}
+	
+	@Override
+	public Applicant getApplicantInfoByIdUnvisual(String applicantId){
+		Applicant applicant = null;
+		try {
+			applicant = companyInfoDAO.getApplicantInfoByIdUnvisual(applicantId);
+			
+			if (applicant !=  null) {
+				applicant.setMoney(df.format(Double.parseDouble(applicant.getMoney())));
+				applicant.setGuaranteeMoney(df.format(Double.parseDouble(applicant.getGuaranteeMoney())));
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		
+		return applicant;
+		
+	}
 
 
 	@Override
@@ -428,16 +451,38 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			List<Business> list = companyInfoDAO.getBusinessInfoById(memberId);
 			
 			ArrayList<Business> arrayList = new ArrayList<>();
-			for (Business business : list) {
-				business.setTotalSales(df.format(Double.parseDouble(business.getTotalSales())));
-				business.setMonthWaterMoney(df.format(Double.parseDouble(business.getMonthWaterMoney())));
-				business.setMonthOrderMoney(df.format(Double.parseDouble(business.getMonthOrderMoney())));
-				business.setMonthElectricMoney(df.format(Double.parseDouble(business.getMonthElectricMoney())));
-				business.setTotalVAT(df.format(Double.parseDouble(business.getTotalVAT())));
-				business.setTotalIncomeTax(df.format(Double.parseDouble(business.getTotalIncomeTax())));
+			//modify ywh 2015-11-30 只取当年信息
+			//modify ywh 2015-12-18 改为输入多少年的信息就显示 多少的信息
+			for (int i = 0; i < list.size(); i++) {
+				Business business = list.get(0);
+				if(!GlobalConstant.isNull(business.getTotalSales())){
+					business.setTotalSales(df.format(Double.parseDouble(business.getTotalSales())));
+				}
 				
+				if(!GlobalConstant.isNull(business.getMonthWaterMoney())){
+					business.setMonthWaterMoney(df.format(Double.parseDouble(business.getMonthWaterMoney())));
+				}
+				
+				if(!GlobalConstant.isNull(business.getMonthOrderMoney())){
+					business.setMonthOrderMoney(df.format(Double.parseDouble(business.getMonthOrderMoney())));
+				}
+				
+				if(!GlobalConstant.isNull(business.getMonthElectricMoney())){
+					business.setMonthElectricMoney(df.format(Double.parseDouble(business.getMonthElectricMoney())));
+				}
+				
+				if(!GlobalConstant.isNull(business.getTotalVAT())){
+					business.setTotalVAT(df.format(Double.parseDouble(business.getTotalVAT())));
+				}
+				
+				if(!GlobalConstant.isNull(business.getTotalIncomeTax())){
+					business.setTotalIncomeTax(df.format(Double.parseDouble(business.getTotalIncomeTax())));
+				}
 				arrayList.add(business);
 			}
+				
+			
+			
 			
 			return arrayList;
 		} catch (Exception e) {
@@ -503,7 +548,8 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		try {
 			Debt debt = companyInfoDAO.getDebtInfoById(debtId);
 			if (debt != null) {
-				debt.setRepayIncome(df.format(Double.parseDouble(debt.getRepayIncome())));
+				//ywh modify 2015-11-30 原因 getRepayIncome() 为空
+				//debt.setRepayIncome(df.format(Double.parseDouble(debt.getRepayIncome())));
 				debt.setNetAsset(df.format(Double.parseDouble(debt.getNetAsset())));
 				debt.setFactAsset(df.format(Double.parseDouble(debt.getFactAsset())));
 			}
@@ -557,8 +603,10 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 			CommonFunction cf = new CommonFunction();
 
 			if (document != null) {
+				//modify 2015-11-30 ywh 
+				String dir = cf.getValue("upload.path");
 				// 文件地址
-				String filePath = document.getDocumentDir()
+				String filePath = dir.substring(0, dir.indexOf("images/")+7)+document.getDocumentDir()
 						+ document.getDocumentName();
 
 				// 下载
@@ -568,6 +616,7 @@ public class CompanyInfoServiceImpl implements CompanyInfoService {
 		
 	}
 
+	
 	@Override
 	public Applicant editApplicantInfoById(String applicantId) {
 		Applicant applicant = null;

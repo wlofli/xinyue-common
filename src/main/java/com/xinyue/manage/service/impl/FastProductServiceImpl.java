@@ -9,12 +9,15 @@ import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.FastProductDAO;
+import com.xinyue.manage.dao.SelectDao;
 import com.xinyue.manage.model.FastProduct;
 import com.xinyue.manage.model.FastProductApplicant;
 import com.xinyue.manage.model.FastProductCompany;
+import com.xinyue.manage.model.Select;
 import com.xinyue.manage.service.FastProductService;
 import com.xinyue.manage.util.GlobalConstant;
 /**
@@ -22,10 +25,17 @@ import com.xinyue.manage.util.GlobalConstant;
  * @author lzc
  * @date 2015年6月26日
  */
+/**
+ * lzc 15-12-01   saveFastOrder状态添加
+ *
+ */
 @Service
 public class FastProductServiceImpl implements FastProductService{
 	@Resource
 	private FastProductDAO fastProductDAO;
+	
+	@Resource
+	private SelectDao selectDao;
 	
 	Logger logger  = Logger.getLogger(getClass());
 	
@@ -41,7 +51,11 @@ public class FastProductServiceImpl implements FastProductService{
 		// TODO Auto-generated method stub
 		return fastProductDAO.getFastProduct(id, GlobalConstant.ORDER_STATUS);
 	}
-
+	@Override
+	public FastProduct getTypeFastProduct(String id) {
+		// TODO Auto-generated method stub
+		return fastProductDAO.getTypeFastProduct(id, GlobalConstant.ORDER_STATUS);
+	}
 	@Override
 	public int countFastProduct(FastProduct fastProduct) {
 		// TODO Auto-generated method stub
@@ -97,7 +111,8 @@ public class FastProductServiceImpl implements FastProductService{
 			
 			//add by lzc
 			fastLoanInfo.setType("1");
-			
+			fastLoanInfo.setStatus("1");
+//			end
 			int result = fastProductDAO.saveFastOrder(fastLoanInfo);
 			if (result > 0) {
 				return true;
@@ -131,6 +146,42 @@ public class FastProductServiceImpl implements FastProductService{
 	public FastProductCompany getCompany(String id) {
 		// TODO Auto-generated method stub
 		return fastProductDAO.getCompany(id);
+	}
+
+	@Override
+	public void initFastApplicant(Model model) {
+		// TODO Auto-generated method stub
+		model.addAttribute("applicantFast", new FastProductApplicant());
+		model.addAttribute("companyFast", new FastProductCompany());
+		
+		//职业
+		List<SelectInfo> professions = selectDao.findSelectByType(GlobalConstant.PROFESSION_TYPE);
+		model.addAttribute("professions", professions);
+		
+		//省
+		List<SelectInfo> provinces = selectDao.findProvince();
+		model.addAttribute("provinces", provinces);
+		
+		//两年内信用
+		List<SelectInfo> twoYearCredits = selectDao.findSelectByType(GlobalConstant.COMPANY_CREDIT_TYPE);
+		model.addAttribute("twoYearCredits", twoYearCredits);
+		
+		//名下房产类型
+		List<SelectInfo> houseTypes = selectDao.findSelectByType(GlobalConstant.HOUSE_TYPE);
+		model.addAttribute("houseTypes", houseTypes);
+		
+		//证件类型
+		List<SelectInfo> parpersTypes = selectDao.findSelectByType(GlobalConstant.COMPANY_IDCARD_TYPE);
+		model.addAttribute("parpersTypes", parpersTypes);
+		
+		//企业性质
+		List<SelectInfo> companyTypes = selectDao.findSelectByType(GlobalConstant.COMPANY_TYPE);
+		model.addAttribute("companyTypes", companyTypes);
+		
+		//所属行业
+		List<Select> industries = selectDao.getIndustryList();
+		model.addAttribute("industries", industries);
+		
 	}
 
 

@@ -32,7 +32,7 @@ public class Product implements Serializable {
 	private String content;//内容
 	private String code;//产品编号
 	private String area;//适用地区 
-	private Boolean recommend;//推荐标志位
+	private int recommend;//推荐标志位
 	private String logo;//缩略图
 	private Date downTime;//下架时间
 	private Date addTime;//上架时间
@@ -197,10 +197,10 @@ public class Product implements Serializable {
 	public void setArea(String area) {
 		this.area = area;
 	}
-	public Boolean getRecommend() {
+	public int getRecommend() {
 		return recommend;
 	}
-	public void setRecommend(Boolean recommend) {
+	public void setRecommend(int recommend) {
 		this.recommend = recommend;
 	}
 	public String getLogo() {
@@ -266,8 +266,6 @@ public class Product implements Serializable {
 	
 	public Integer getState() {
 		Integer status;
-		System.out.println("addTime:"+addTime);
-		System.out.println("downTime:"+downTime);
 		if(addTime==null&&downTime==null){
 			status=1;
 		}else if(addTime==null&&downTime!=null&&(new java.util.Date().compareTo(downTime)>0)){

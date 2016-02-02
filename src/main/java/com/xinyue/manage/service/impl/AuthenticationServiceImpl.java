@@ -21,6 +21,13 @@ import com.xinyue.manage.service.AuthenticationService;
 import com.xinyue.manage.util.CommonFunction;
 import com.xinyue.manage.util.GlobalConstant;
 
+
+/**
+ * 修改日志
+ * 2015年11月24日  lzc saveMemberAuth()中更新认证信息添加修改认证标志位信息,业务逻辑修改
+ * 2015-11-26 ywh 修改方法为: getDetailByCode
+ * 2015-12-01 ywh getAllCount
+ */
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -72,10 +79,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public int getAllCount() {
+	public int getAllCount(SearchAuthentication searchAuthentication) {
 		int res = 0;
+		HashMap<String, Object> map = new HashMap<>();
+		map.clear();
 		
-		res = authenticationDAO.getAllCount();
+		//参数整理
+		//企业名称
+		map.put("companyName", searchAuthentication.getCompanyName());
+		//法人
+		map.put("legalPersonName", searchAuthentication.getLegalPersonName());
+		//纳税识别号
+		map.put("taxCode", searchAuthentication.getTaxCode());
+		//行业
+		map.put("industry", searchAuthentication.getIndustry());
+		//联系人
+		map.put("contactName", searchAuthentication.getContactName());
+		//联系电话
+		map.put("contactTel", searchAuthentication.getContactTel());
+		//认证时间段
+		map.put("timeStart", searchAuthentication.getAuthenticationTimeStart());
+		map.put("timeEnd", searchAuthentication.getAuthenticationTimeEnd());
+		//注册资金段
+		map.put("fundStart", searchAuthentication.getRegFundStart());
+		map.put("fundEnd", searchAuthentication.getRegFundEnd());
+		res = authenticationDAO.getAllCount(map);
 		
 		return res;
 	}
@@ -87,6 +115,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		
 		if (authentication != null) {
 			authentication.setCode(code);
+			//to do: modify ywh 2015-11-26  重新定义imgPath
+			String imgPath = CommonFunction.getValue("down.path");
 			if (!authentication.getBusinessLicense().equals("")) {
 				authentication.setBusinessLicense(imgPath+authentication.getBusinessLicense());
 			}
@@ -262,11 +292,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			map.put("loginName", memberId);
 			map.put("postCode", authInfo.getPostCode());
 			
+			
 			//持久化
 			int result = 0;
 			if (authInfo.getCode().equals("")) {
 				result = authenticationDAO.saveMemberAuth(map);
 			}else {
+				//add by lzc 2015-11-24 更新认证的状态为等待审核
+				HashMap<String, Object> map2 = new HashMap<>();
+				map2.put("status", 0);
+				map2.put("code", id);
+				map2.put("user", memberId);
+				authenticationDAO.updateAuthenticationStatusByCode(map2);
+				//end
 				result = authenticationDAO.updateMemberAuth(map);
 			}
 			
@@ -281,6 +319,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 					authenticationDAO.updateMemberById(map);
 				}
 				
+				//modified by lzc if条件取反
 				//图片从临时文件夹移出
 				for (int i = 0; i < 6; i++) {
 					String tempImg = "";
@@ -289,7 +328,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 					switch (i) {
 					case 0:
 						tempImg = uploadPath+authInfo.getBusinessLicense();
-						if (tempImg.contains("temp")) {
+						if (!tempImg.contains("temp")) {
 							continue;
 						}
 						realImg = realFilePath+authInfo.getBusinessLicense().split("/")[3];
@@ -297,7 +336,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 						break;
 					case 1:
 						tempImg = uploadPath+authInfo.getOrganizationCode();
-						if (tempImg.contains("temp")) {
+						if (!tempImg.contains("temp")) {
 							continue;
 						}
 						realImg = realFilePath+authInfo.getOrganizationCode().split("/")[3];
@@ -305,7 +344,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 						break;
 					case 2:
 						tempImg = uploadPath+authInfo.getTaxRegistration();
-						if (tempImg.contains("temp")) {
+						if (!tempImg.contains("temp")) {
 							continue;
 						}
 						realImg = realFilePath+authInfo.getTaxRegistration().split("/")[3];
@@ -313,7 +352,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 						break;
 					case 3:
 						tempImg = uploadPath+authInfo.getIdentityCarda();
-						if (tempImg.contains("temp")) {
+						if (!tempImg.contains("temp")) {
 							continue;
 						}
 						realImg = realFilePath+authInfo.getIdentityCarda().split("/")[3];
@@ -321,7 +360,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 						break;
 					case 4:
 						tempImg = uploadPath+authInfo.getIdentityCardn();
-						if (tempImg.contains("temp")) {
+						if (!tempImg.contains("temp")) {
 							continue;
 						}
 						realImg = realFilePath+authInfo.getIdentityCardn().split("/")[3];
@@ -329,7 +368,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 						break;
 					case 5:
 						tempImg = uploadPath+authInfo.getIdentityCardp();
-						if (tempImg.contains("temp")) {
+						if (!tempImg.contains("temp")) {
 							continue;
 						}
 						realImg = realFilePath+authInfo.getIdentityCardp().split("/")[3];
@@ -351,7 +390,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				return true;
 			}
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("error",e);
 			throw new RuntimeException(e.getMessage());
 		}
 		

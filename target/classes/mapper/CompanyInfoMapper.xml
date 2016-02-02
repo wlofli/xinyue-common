@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--modify ywh 2015-11-30 
+getDebtInfoById  
+getDocumentInfo
+-->
 <mapper namespace="com.xinyue.manage.dao.CompanyInfoDAO">
 	<resultMap type="com.xinyue.manage.model.CompanyInfo" id="infoResault">
 		<result column="id" property="id"/>
@@ -267,6 +271,35 @@
 		    a.id = #{id};
 	</select>
 	
+	<select id="getApplicantInfoByIdUnvisual" parameterType="string" resultType="com.xinyue.manage.model.Applicant">
+		select 
+		    a.id as id,
+		    a.name as name,
+		    a.phone as phone,
+		    a.email as email,
+		    a.deadline as limitDate,
+		    a.amount as money,
+		    a.two_year_credit as twoYearCredit,
+			a.credit_purpose as creditPurpose,
+		    a.max_rate as interestRate,
+		    a.repayment as repayType,
+		    a.guarantee as guaranteeType,
+		    a.guarantor_user_name as guaranteePerson,
+		    a.guarantor_name as guaranteeGoods,
+		    a.guarantor_amount as guaranteeMoney,
+		    a.area_province as guaranteeProvince,
+		    a.area_city as guaranteeCity,
+		    a.area_zone as guaranteeZone,
+		    guarantor_is_area as isLocation
+		from
+		    m_applicant_info a
+		where
+		    a.id = #{id};
+	</select>
+	
+	
+	
+	
 	<select id="getCompanyBaseInfoById" parameterType="string" resultType="com.xinyue.manage.model.CompanyBase">
 		select 
 		    l.control_info as controlInfo,
@@ -289,7 +322,7 @@
 		    z.name as companyZone,
 		    l.business_limit as businessRange,
 		    l.agency_number as organizationCode,
-		    l.household_number as companyEdoorNum,
+		    l.company_household_number as companyEdoorNum,
 		    l.company_phone as companyTel,
 		    l.company_fax as companyFax,
 		    date_format(l.company_end_time, '%Y-%m-%d') as licenseeDeadLine,
@@ -525,7 +558,7 @@
 		select 
 		    d.capital_debt_ratio as rate,
 		    s1.select_value as collateral,
-		    d.income_debt_ratio as repayIncome,
+		    d.repayment_income as repayIncome,<!--modify ywh 2015-11-30修改字段-->
 		    d.big_company as isBig,
 		    d.company_capital as netAsset,
 		    d.capital_turnover_rate as floatRate,
@@ -551,6 +584,7 @@
 		    di.id as id,
 		    dt.name as name,
 		    dt.type_id as type,
+		    di.file_dir dir,<!--modify ywh 2015-11-30 字段目录-->
 		    date_format(di.created_time,'%Y-%m-%d') as time
 		from
 		    m_document_type dt
@@ -564,6 +598,7 @@
 		where
 		    dt.deleted = 0 order by dt.id
 		limit #{index},10;
+		
 	</select>
 	
 	<select id="getDocumentCount" resultType="int">
@@ -628,13 +663,14 @@
 		    l.area_zone as companyZone,
 		    l.business_limit as businessRange,
 		    l.agency_number as organizationCode,
-		    l.household_number as companyEdoorNum,
+		    l.company_household_number as companyEdoorNum,
 		    l.company_phone as companyTel,
 		    l.company_fax as companyFax,
 		    date_format(l.company_end_time, '%Y-%m-%d') as licenseeDeadLine,
 		    l.business_registration_type as licenseeType,
 		    l.agency_type as organizationType,
-		    l.tax_registration_area as taxCode
+		    l.tax_registration_area as taxCode,
+		    l.tax_registration_country as taxCodeN
 		from
 		    m_license_info l
 		where

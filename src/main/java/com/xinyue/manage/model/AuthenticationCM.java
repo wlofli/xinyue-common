@@ -7,6 +7,8 @@ import java.io.Serializable;
  * @author MK)茅
  * @version v1.0
  * @date 创建时间：2015年9月2日
+ * 
+ * ywh 2015-12-08 添加推荐标志  recommend
  */
 public class AuthenticationCM implements Serializable{
 
@@ -66,6 +68,17 @@ public class AuthenticationCM implements Serializable{
 	//审核信息
 	private String auditMessage = "";
 
+	//ywh start
+	private String recommend;
+	
+	public String getRecommend() {
+		return recommend;
+	}
+
+	public void setRecommend(String recommend) {
+		this.recommend = recommend;
+	}
+	//end
 	/**
 	 * @return the id
 	 */

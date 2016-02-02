@@ -22,12 +22,18 @@ import com.xinyue.manage.model.Reward;
 import com.xinyue.manage.service.MemberService;
 import com.xinyue.manage.util.CommonFunction;
 import com.xinyue.manage.util.GlobalConstant;
+import com.xinyue.manage.util.SecurityUtils;
 
 /**
  * 
  * @author wenhai.you
  * @2015年6月9日
  * @下午4:28:06
+ */
+/**
+ *  lzc findRecommendMember() 15-11-30 修改rank参数
+ *  lzc	findRecommendCredit() 15-11-30 修改rank参数
+ *
  */
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
@@ -37,9 +43,12 @@ public class MemberServiceImpl implements MemberService {
 	
 	private Logger logger = Logger.getLogger(MemberServiceImpl.class);
 	@Override
-	public List<Member> findPageList(MemberInfo memberinfo) {
+	public PageData<Member> findPageList(MemberInfo memberinfo) {
 		// TODO Auto-generated method stub
-		return memberDao.findPageList(memberinfo);
+		String topage = memberinfo.getTopage();
+		int currentPage = (GlobalConstant.isNull(topage) || topage.equals("0"))?1:Integer.valueOf(topage);
+		memberinfo.setStart((currentPage-1)*GlobalConstant.PAGE_SIZE);
+		return new PageData<Member>(memberDao.findPageList(memberinfo), memberDao.getCount(memberinfo), currentPage);
 	}
 
 	@Override
@@ -84,6 +93,7 @@ public class MemberServiceImpl implements MemberService {
 			
 			if(GlobalConstant.isNull(memberedit.getId())){
 				memberedit.setCreateUser(modifyUser);
+				memberedit.setInvitationCode(SecurityUtils.randomStr(6));
 				memberDao.addMember(memberedit);
 				logger.info("添加会员成功 数据为:"+memberedit+"操作者为:"+modifyUser);
 			}else{
@@ -94,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error("编辑会员失败 数据为:"+memberedit+"操作者为:"+modifyUser, e);
+			logger.error("编辑会员失败 数据为操作者为:"+modifyUser, e);
 			return false;
 		}
 		
@@ -122,76 +132,7 @@ public class MemberServiceImpl implements MemberService {
 	
 	
 	
-	@Override
-	public List<Member> findDisuiPage(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.findDisuiPage(memberinfo);
-	}
-	@Override
-	public List<Member> findGuoPage(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.findGuoPage(memberinfo);
-	}
-	@Override
-	public List<Member> findQQPage(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.findQQPage(memberinfo);
-	}
-	@Override
-	public List<Member> findSuiwuPage(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.findSuiwuPage(memberinfo);
-	}
-	@Override
-	public List<Member> findWeiboPage(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.findWeiboPage(memberinfo);
-	}
-	@Override
-	public List<Member> findWeixinPage(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.findWeixinPage(memberinfo);
-	}
-	@Override
-	public List<Member> findXinYuePage(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.findXinYuePage(memberinfo);
-	}
-	@Override
-	public int getDisuiCount(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.getDisuiCount(memberinfo);
-	}
-	@Override
-	public int getGuoCount(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.getGuoCount(memberinfo);
-	}
-	@Override
-	public int getQQCount(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.getQQCount(memberinfo);
-	}
-	@Override
-	public int getSuiwuCount(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.getSuiwuCount(memberinfo);
-	}
-	@Override
-	public int getWeiboCount(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.getWeiboCount(memberinfo);
-	}
-	@Override
-	public int getWeixinCount(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.getWeixinCount(memberinfo);
-	}
-	@Override
-	public int getXinYueCount(MemberInfo memberinfo) {
-		// TODO Auto-generated method stub
-		return memberDao.getXinYueCount(memberinfo);
-	}
+	
 	
 	@Override
 	public void exprot(HttpServletResponse response, List<Member> list)throws Exception {
@@ -243,32 +184,35 @@ public class MemberServiceImpl implements MemberService {
 	public void exprotMember(HttpServletResponse response, String type) {
 		// TODO Auto-generated method stub
 		MemberInfo memberinfo = new MemberInfo();
+		memberinfo.setPage(2);
+		
 		try {
 			if(GlobalConstant.isNull(type)){
 				
-				this.exprot(response, this.findPageList(memberinfo));
+				this.exprot(response, memberDao.findPageList(memberinfo));
 			}else{
+				memberinfo.setType(type);
 				switch (type) {
 					case "1":
-						this.exprot(response, this.findQQPage(memberinfo));
+						this.exprot(response, memberDao.findPageList(memberinfo));
 						break;
 					case "2":
-						this.exprot(response, this.findXinYuePage(memberinfo));			
+						this.exprot(response, memberDao.findPageList(memberinfo));			
 						break;
 					case "3":
-						this.exprot(response, this.findWeixinPage(memberinfo));
+						this.exprot(response, memberDao.findPageList(memberinfo));
 						break;
 					case "4":
-						this.exprot(response, this.findWeiboPage(memberinfo));
+						this.exprot(response, memberDao.findPageList(memberinfo));
 						break;
 					case "5":
-						this.exprot(response, this.findSuiwuPage(memberinfo));
+						this.exprot(response, memberDao.findPageList(memberinfo));
 						break;
 					case "6":
-						this.exprot(response, this.findDisuiPage(memberinfo));
+						this.exprot(response, memberDao.findPageList(memberinfo));
 						break;
 					case "7":
-						this.exprot(response, this.findGuoPage(memberinfo));
+						this.exprot(response, memberDao.findPageList(memberinfo));
 						break;
 				}
 			}
@@ -298,7 +242,10 @@ public class MemberServiceImpl implements MemberService {
 		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
 		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
 		return new PageData<InvitationMemberInfo>(
-				memberDao.findRecommendCredit(rec.getMemberid(), start, GlobalConstant.PAGE_SIZE), 
+				//modified by lzc
+//				memberDao.findRecommendCredit(rec.getMemberid(), null ,start, GlobalConstant.PAGE_SIZE), 
+				memberDao.findRecommendCredit(rec.getMemberid(), rec.getRank() ,start, GlobalConstant.PAGE_SIZE), 
+				//end
 				memberDao.getRecommendCredit(rec.getMemberid()), 
 				currentPage);
 	}
@@ -311,7 +258,10 @@ public class MemberServiceImpl implements MemberService {
 		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
 		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
 		return new PageData<InvitationMemberInfo>(
-				memberDao.findRecommendMember(rec.getMemberid(), start, GlobalConstant.PAGE_SIZE), 
+				//modified by lzc
+//				memberDao.findRecommendMember(rec.getMemberid(),null, start, GlobalConstant.PAGE_SIZE), 
+				memberDao.findRecommendMember(rec.getMemberid(),rec.getRank(), start, GlobalConstant.PAGE_SIZE), 
+				//end
 				memberDao.getRecommendMemberCount(rec.getMemberid()), 
 				currentPage);
 	}

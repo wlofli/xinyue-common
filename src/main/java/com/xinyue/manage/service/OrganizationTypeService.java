@@ -2,6 +2,8 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.xinyue.manage.model.OrganizationType;
 
 /**
@@ -17,7 +19,7 @@ public interface OrganizationTypeService {
 	
 	public int getCount();
 	
-	public void delOrganizationType(List<String> id, String modifyUser);
+	public void delOrganizationType(List<String> list, String modifyUser);
 	
 	public boolean saveOrganizationType(OrganizationType otype , String modifyUser);
 	

@@ -26,13 +26,13 @@
 		FROM
 		    m_assist_info a
 		        LEFT JOIN
-		    m_select_info s ON s.select_key = a.help_status
+		    m_select_info s ON s.select_key = a.help_status AND s.type_code = 'publish_type'
 		        LEFT JOIN
 		    m_help_type h ON a.type = h.id
 		WHERE
 		    a.deleted = 0
-		        AND s.type_code = 'publish_type'
-		ORDER BY created_time
+		        
+		ORDER BY a.created_time
 		LIMIT #{index},10;
 	</select>
 	
@@ -41,31 +41,37 @@
 	</select>
 	
 	<update id="publishHelperByCode" parameterType="list">
-		<foreach collection="codeList" item="item" index="index" separator=";">
+		
 			UPDATE m_assist_info SET
 				help_status=2,modified_time=now(),modified_id=#{user} 
-			WHERE id=#{item}
+			WHERE id=
+			<foreach collection="codeList" item="item" index="index" separator=" or id = ">
+			#{item}
 		</foreach>
 	</update>
 	
 	<update id="forbidHelperByCode" parameterType="list">
-		<foreach collection="codeList" item="item" separator=";">
+		
 			UPDATE m_assist_info SET
 				help_status=3,modified_time=now(),modified_id=#{user} 
-			WHERE id=#{item}
+			WHERE id = 
+			<foreach collection="codeList" item="item" separator=" or id = ">
+			#{item}
 		</foreach>
 	</update>
 	
 	<update id="deleteHelperByCode" parameterType="list">
-		<foreach collection="codeList" item="item" separator=";">
+		
 			UPDATE m_assist_info SET
 				deleted=1,modified_time=now(),modified_id=#{user} 
-			WHERE id=#{item}
+			WHERE id = 
+			<foreach collection="codeList" item="item" separator=" or id = ">
+			 #{item}
 		</foreach>
 	</update>
 	
 	<select id="getHelperByCode" parameterType="String" resultMap="helpResault">
-		SELECT id as id,title as title,DATE_FORMAT(spread_time,'%Y-%m-%d') as date,
+		SELECT id as id,title as title,DATE_FORMAT(spread_time,'%Y-%m-%d') as date, type ,
 			   help_status as status,content as content,author as author
 		FROM m_assist_info WHERE deleted=0 AND id=#{code}
 	</select>
@@ -92,8 +98,8 @@
 	
 	<insert id="addHelpType" parameterType="com.xinyue.manage.model.HelpType">
 		insert into 
-			m_help_type(name,order_num)
-		values (#{name},#{orderNum});
+			m_help_type(name,order_num , modified_time , created_time , modified_id , created_id)
+		values (#{name},#{orderNum} , now() , now() , #{createName} , #{createName});
 	</insert>
 	
 	<select id="getTypes" resultMap="selectResault">
@@ -116,7 +122,55 @@
 		from
 		    m_assist_info
 		where
-		    deleted = 0 and order_num is not null
+<!-- 		modified by lzc 对order_num条件判断删除,添加发布判断 -->
+		    deleted = 0 and help_status = 2
+<!-- 		    end -->
 		order by order_num;
 	</select>
+	
+	<!-- ywh 2015-11-19  帮助分类 -->
+	<select id="findHelpType" resultType="com.xinyue.manage.model.HelpType">
+		select 
+		h.id , h.name , h.order_num orderNum , s.select_value publish , count(m.id) total
+		from m_help_type h 
+		left join m_select_info s on s.select_key = h.publish and s.type_code = 'publish_type' 
+		left join m_assist_info m on m.type = h.id and m.deleted = 0 
+		where h.deleted = 0 group by h.id
+		limit #{start} , #{pageSize}
+	</select>
+	<select id="findHelpTypeCount" resultType="int">
+		select 
+		count(*)
+		from m_help_type  
+		where deleted = 0 
+	</select>
+	<update id="upatePublishHelperType" parameterType="list">
+		
+		UPDATE m_help_type SET
+			publish=2,modified_time=now(),modified_id=#{user} 
+		WHERE id=
+		<foreach collection="list" item="item" index="index" separator=" or id = ">
+			#{item}
+		</foreach>
+	</update>
+	
+	<update id="deleteHelperType" parameterType="list">
+		
+		UPDATE m_help_type SET
+			deleted=1,modified_time=now(),modified_id=#{user} 
+		WHERE id = 
+			<foreach collection="list" item="item" separator=" or id = ">
+			 #{item}
+		</foreach>
+	</update>
+	
+	
+	<select id="findHelpTypeById" resultType="com.xinyue.manage.model.HelpType">
+		select 
+		id , name , order_num orderNum
+		from m_help_type  
+		where deleted = 0 and id = #{id}
+	</select>
+	
+	<!-- ywh over -->
 </mapper>

@@ -335,4 +335,11 @@ public class ProductServiceImpl implements ProductService{
 		pc.setStart(start);
 		return new PageData<Product>(pdao.getProductByOrgid(pc), pdao.getProductByOrgidCount(pc), currentPage);
 	}
+
+	@Override
+	public List<Product> getListByType(String typeId, String Recommend,
+			int pageNo, int pageSize) {
+		// TODO Auto-generated method stub
+		return pdao.getListByType(typeId, Recommend, pageNo, pageSize);
+	}
 }

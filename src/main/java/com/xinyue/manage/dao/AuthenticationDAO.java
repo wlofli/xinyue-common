@@ -5,14 +5,17 @@ import java.util.List;
 
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Authentication;
-
+/**
+ * modify ywh 2015-12-01 getAllCount
+ */
 public interface AuthenticationDAO {
 
 	List<SelectInfo> getIndustryList();
 
 	List<Authentication> getAuthenticationInfo(HashMap<String, Object> map);
 
-	int getAllCount();
+	//modify ywh 2015-12-01 
+	int getAllCount(HashMap<String, Object> map);
 
 	Authentication getDetailByCode(String code);
 

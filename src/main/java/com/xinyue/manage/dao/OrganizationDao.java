@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.xinyue.manage.beans.OrgOrder;
 import com.xinyue.manage.beans.OrganizationInfo;
 import com.xinyue.manage.beans.SearchCreditManager;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.LinkMan;
+import com.xinyue.manage.model.Order;
 import com.xinyue.manage.model.Organization;
 
 /**
@@ -166,4 +168,11 @@ public interface OrganizationDao {
 	 * @return
 	 */
 	public int getCreditByOrgidCount(SearchCreditManager sc);
+	
+	
+	/**
+	 * admin organization order
+	 */
+	public List<Order> findOrgOrder(@Param("org")OrgOrder org , @Param("start")int start , @Param("pageSize")int pageSize);
+	public int getOrgOrder(@Param("org")OrgOrder org);
 }

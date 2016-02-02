@@ -16,6 +16,10 @@ import com.xinyue.manage.model.NewType;
  * @author lzc
  * @date 2015年6月26日上午10:56:31
  */
+/**
+ * lzc 15-12-03 getNewInfoByNewTypeNamet方法添加
+ *
+ */
 public interface NewService {
 	
 	//newType类操作
@@ -67,6 +71,16 @@ public interface NewService {
 	public List<SelectInfo> getAllSubstationList();
 	//获取固定的seleInfoList
 	public List<SelectInfo> getSearchNewList(String typeCode);
+	
+	
+	/**
+	 * add by lzc     date: 2015年12月3日
+	 * @param typeName新闻类型名称 e.t.c 贷款攻略
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	public List<NewInfo> getNewInfoByNewTypeName(String typeName, int pageNo, int pageSize);
 	
 	
 	/**

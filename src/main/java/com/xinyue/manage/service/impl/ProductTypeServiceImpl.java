@@ -32,8 +32,9 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 	public void delProductType(String id , String modifyUser) {
 		// TODO Auto-generated method stub
 		try {
+			List<String> ids = ptdao.findIdByParentid(id);
 			ptdao.delProductType(id,modifyUser);
-			ptdao.updateProductByType(id,modifyUser);
+			ptdao.updateProductByType(ids,modifyUser);
 			logger.info("删除产品类型和更新产品成功 , 产品类型id:"+id+",删除者为:"+modifyUser);
 		} catch (Exception e) {
 			logger.error("删除产品类型和更新产品失败 , 产品类型id:"+id+",删除者为:"+modifyUser, e);

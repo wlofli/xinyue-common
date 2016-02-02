@@ -37,6 +37,11 @@ import com.xinyue.manage.util.CommonFunction;
  * @version v1.0
  * @date 创建时间：2015年7月3日
  */
+/**改动日志
+ * 	15-11-23 lzc saveFile() retPath不做_filteStr()操作
+ * 
+ *
+ */
 @Service
 public class CommonServiceImpl implements CommonService {
 
@@ -211,8 +216,10 @@ public class CommonServiceImpl implements CommonService {
 						
 						JSONObject jsonObject = new JSONObject();
 						jsonObject.put("name", imagePath+code+"."+suffix);
-						jsonObject.put("path", _filterStr(retPath));
-
+						//modified by lzc 
+//						jsonObject.put("path", _filterStr(retPath));
+						jsonObject.put("path", retPath);
+						//end
 						json.add(jsonObject);
 					} catch (IOException e) {
 						log.error(e.getMessage());

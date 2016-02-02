@@ -2,6 +2,8 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import org.springframework.ui.Model;
+
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.FastProduct;
 import com.xinyue.manage.model.FastProductApplicant;
@@ -33,7 +35,9 @@ public interface FastProductService {
 	
 	
 	public FastProduct getFastProduct(String id);
-	
+	//ywh start 2015-12-23 
+	public FastProduct getTypeFastProduct(String id);
+	//ywh end
 	/**获取快速申贷申请人信息
 	 * add by lzc     date: 2015年10月8日
 	 * @param id
@@ -65,6 +69,13 @@ public interface FastProductService {
 	 * @return 获取status对应的相关文字描述
 	 */
 	public List<SelectInfo> getStatus(String typeCode);
+	
+	
+	/**初始化有产品的快速申贷订单
+	 * add by lzc     date: 2015年12月3日
+	 * @param model
+	 */
+	public void initFastApplicant(Model model);
 	
 	
 	//2015/08/07 茅 追加 START

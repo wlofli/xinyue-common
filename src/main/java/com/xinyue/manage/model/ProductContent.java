@@ -12,225 +12,225 @@ public class ProductContent {
 	private String productcode;
 
 	// 申请人姓名
-	private boolean applicantname = true;
+	private boolean applicantname ;
 
 	// 手机号码
-	private boolean phonenumber = true;
+	private boolean phonenumber;
 
 	// 电子邮箱
-	private boolean email = true;
+	private boolean email;
 
 	// 申贷期限
-	private boolean loandate = true;
+	private boolean loandate;
 
 	// 申贷金额
-	private boolean loanamount = true;
+	private boolean loanamount;
 	
-	private boolean purpose = true;//申请用途
+	private boolean purpose;//申请用途
 	// 可接受最高利率
-	private boolean interestrate = true;
+	private boolean interestrate;
 
 	// 还款方式
-	private boolean repaymenttype = true;
+	private boolean repaymenttype;
 
 	// 主要担保方式
-	private boolean collateraltype = true;
+	private boolean collateraltype;
 	
-	private boolean collateralname = true;//担保人姓名
+	private boolean collateralname;//担保人姓名
 	// 担保金额
-	private boolean guaranteeamount = true;
-	private boolean collateralthinkname = true;//担保物名称
+	private boolean guaranteeamount;
+	private boolean collateralthinkname;//担保物名称
 	// 担保物所在地区
-	private boolean guarantearea = true;
+	private boolean guarantearea;
 
 	// 担保物是否在本地
-	private boolean localareathing = true;
+	private boolean localareathing;
 
 	// 推荐我的渠道经理
-	//private boolean channelmanager = true;
+	//private boolean channelmanager;
 
 	// 工号
-	//private boolean jobnumber = true;
+	//private boolean jobnumber;
 
 	// 公司名称
-	private boolean companyname = true;
+	private boolean companyname;
 
 	// 法人代表
-	private boolean legalperson = true;
+	private boolean legalperson;
 
 	// 证件类型1
-	private boolean certificatetype_1 = true;
+	private boolean certificatetype_1;
 
 	// 证件号码1
-	private boolean certificatenum_1 = true;
+	private boolean certificatenum_1;
 
 	// 营业执照注册号
-	private boolean businesslicensenum = true;
+	private boolean businesslicensenum;
 
 	// 工商注册时间
-	private boolean registerdate = true;
+	private boolean registerdate;
 
 	// 最近一年年检时间
-	private boolean lastinspectiondate = true;
+	private boolean lastinspectiondate;
 
 	// 是否有年检记录
-	private boolean inspectionrecord = true;
+	private boolean inspectionrecord;
 
 	// 注册资本
-	private boolean registercapital = true;
+	private boolean registercapital;
 
 	// 实收资本
-	private boolean realcapital = true;
+	private boolean realcapital;
 
 	// 企业性质
-	private boolean companytype = true;
+	private boolean companytype;
 
 	// 实际经营场所所属地区
-	private boolean placearea = true;
+	private boolean placearea;
 
 	// 组织机构代码证编号
-	private boolean codenum = true;
+	private boolean codenum;
 
 	private boolean enterpriseno;//企业电户号
 	// 公司联系电话
-	private boolean companyphone = true;
+	private boolean companyphone;
 
 	// 公司传真号码
-	private boolean companyfax = true;
+	private boolean companyfax;
 
 	// 营业执照到期日
-	private boolean licensedate = true;
+	private boolean licensedate;
 
 	// 工商登记类型
-	private boolean registertype = true;
+	private boolean registertype;
 
 	// 机构类型
-	private boolean organizationtype = true;
+	private boolean organizationtype;
 
 	// 税务登记证号码（国）
-	private boolean nationtaxnum = true;
+	private boolean nationtaxnum;
 
 	// 税务登记证号码（地）
-	private boolean localtaxnum = true;
+	private boolean localtaxnum;
 
 	// 股东控股方式
-	private boolean staketype = true;
+	private boolean staketype;
 
 	// 实际控制人之一
-	private boolean stakeperson = true;
+	private boolean stakeperson;
 
 	// 证件类型2
-	private boolean certificatetype_2 = true;
+	private boolean certificatetype_2;
 
 	// 证件号码2
-	private boolean certificatenum_2 = true;
+	private boolean certificatenum_2;
 
 	// 从业年限
-	private boolean employeeage = true;
+	private boolean employeeage;
 
 	// 学历
-	private boolean education = true;
+	private boolean education;
 
 	// 婚姻状况
-	private boolean marriage = true;
+	private boolean marriage;
 	//private boolean salesgrowth=true;//销售增长情况
 	// 所属行业
-	private boolean industry = true;
+	private boolean industry;
 
 	// 持续经营开始时间
-	private boolean managementstartdate = true;
+	private boolean managementstartdate;
 
 	// 主要经营地点是否在本地
-	private boolean localarea = true;
+	private boolean localarea;
 
 	// 主要产品销售区域
-	private boolean salearea = true;
+	private boolean salearea;
 
 	// 是否固定营业场所
-	private boolean managementplace = true;
+	private boolean managementplace;
 
 	// 进入园区或市场的年限
-	private boolean entertime = true;
+	private boolean entertime;
 
 	// 是否存在多个股东在我行、他行授信
-	private boolean creditstatus = true;
+	private boolean creditstatus;
 
 	// 企业财务报表的审计意见类型
-	private boolean audittype = true;
-	private boolean annualvatamount = true;//年度增值税纳额
-	private boolean annualtaxamount = true;//年度所得税纳额
+	private boolean audittype;
+	private boolean annualvatamount;//年度增值税纳额
+	private boolean annualtaxamount;//年度所得税纳额
 	// 员工人数
-	private boolean employeenum = true;
+	private boolean employeenum;
 
 	// 是否有贷款卡
-	private boolean loancard = true;
+	private boolean loancard;
 
 	// 贷款卡卡号
-	private boolean loancardnum = true;
+	private boolean loancardnum;
 
 	// 年度总销售收入
-	private boolean totalincome = true;
+	private boolean totalincome;
 
 	// 年度月均水费
-	private boolean monthlywater = true;
+	private boolean monthlywater;
 
 	// 年度订单总金额
-	private boolean totalordermoney = true;
+	private boolean totalordermoney;
 
 	// 年度月均电费
-	private boolean monthlyelectric = true;
+	private boolean monthlyelectric;
 
 	// 厂房
-	private boolean workshop = true;
+	private boolean workshop;
 
 	// 土地
-	private boolean land = true;
+	private boolean land;
 
 	// 办公楼
-	private boolean officebuilding = true;
+	private boolean officebuilding;
 
 	// 店铺
-	private boolean shop = true;
+	private boolean shop;
 
 	// 法人私有房产
-	private boolean priviatehouse = true;
+	private boolean priviatehouse;
 
 	// 机器设备
-	private boolean machine = true;
+	private boolean machine;
 
 	// 其他
-	private boolean other = true;
+	private boolean other;
 
 	// 公司资产负债率
-	private boolean debtrate = true;
+	private boolean debtrate;
 
 	// 公司收入负债比
-	private boolean incomerate = true;
+	private boolean incomerate;
 
 	// 抵质押物情况
-	private boolean collateral = true;
+	private boolean collateral;
 
 	// 可作为第一还款来源的年净收入
-	private boolean fristincome = true;
+	private boolean fristincome;
 
 	// 是否大型企业的上下游行业
-	private boolean relevantindustry = true;
+	private boolean relevantindustry;
 
 	// 企业净资产
-	private boolean netasset = true;
+	private boolean netasset;
 
 	// 企业资产流动比率
-	private boolean assetflowrate = true;
+	private boolean assetflowrate;
 
 	// 企业主资产
-	private boolean mainasset = true;
+	private boolean mainasset;
 	
 	// 删除标志位
-	private boolean deleted = true;	
+	private boolean deleted;	
 	
 	//2014/09/11 茅 追加 START
 	// 销售增长情况
-	private boolean salegrowthtype = true;
+	private boolean salegrowthtype;
 	//2014/09/11 茅 追加 END
 
 	/**

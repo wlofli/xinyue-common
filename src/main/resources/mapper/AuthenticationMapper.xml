@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ywh 2015-11-26修改方法为:getDetailByCode -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+modify ywh 2015-12-01 
+getAuthenticationInfo
+getAllCount
+-->
 <mapper namespace="com.xinyue.manage.dao.AuthenticationDAO">
 	<resultMap type="com.xinyue.manage.model.Authentication" id="authenticationResault">
 		<result column="code" property="code"/>
@@ -72,45 +78,39 @@
 		 LEFT JOIN m_industry_info t ON t.code=a.industry
 		 LEFT JOIN m_member_info m ON m.realname_info=a.id
 		 LEFT JOIN m_license_info l ON l.id=m.license_info
-		 LEFT JOIN m_select_info s ON s.select_key=a.success_flag
-		 LEFT JOIN m_select_info s1 ON s1.select_key=a.authenticate_type
+		 LEFT JOIN m_select_info s ON s.select_key=a.success_flag and s.type_code='auth_status' 
+		 LEFT JOIN m_select_info s1 ON s1.select_key=a.authenticate_type AND s1.type_code='auth_type' 
 		 LEFT JOIN m_area_city c ON c.code=a.business_license_code
 		 LEFT JOIN m_area_province p ON p.code=concat_ws('',substring(a.business_license_code,1,2),'0000')
-		WHERE s.type_code='auth_status' AND s1.type_code='auth_type' 
+		WHERE  1=1  
 		<if test="companyName != null and companyName != ''">
-			AND a.company_name LIKE '%'#{companyName}'%'
+			AND a.company_name LIKE concat(#{companyName} , '%')  
 		</if>
 		<if test="legalPersonName !=null and legalPersonName !=''">
-			AND a.legal_person_name LIKE '%'#{legalPersonName}'%'
+			AND a.legal_person_name LIKE concat(#{legalPersonName} , '%')
 		</if>
 		<if test="taxCode !=null and taxCode !=''">
-			AND l.tax_registration_country LIKE '%'#{taxCode}'%'
+			AND l.tax_registration_country LIKE concat(#{taxCode} , '%')
 		</if>
 		<if test="industry !=null and industry !=0">
 			AND a.industry=#{industry}
 		</if>
 		<if test="contactName !=null and contactName !=''">
-			AND a.contact_name LIKE '%'#{contactName}'%'
+			AND a.contact_name LIKE concat(#{contactName} , '%')
 		</if>
 		<if test="contactTel !=null and contactTel !=''">
-			AND a.contact_tel LIKE '%'#{contactTel}'%'
+			AND a.contact_tel LIKE concat(#{contactTel} , '%')
 		</if>
-		<if test="timeStart != '' and timeEnd !=''">
-			AND (a.created_time BETWEEN #{timeStart} AND #{timeEnd})
-		</if>
-		<if test="timeStart != '' and timeEnd ==''">
+		<if test="timeStart != ''">
 			<![CDATA[AND a.created_time >= #{timeStart}]]>
 		</if>
-		<if test="timeEnd != '' and timeStart ==''">
+		<if test="timeEnd != ''">
 			<![CDATA[AND a.created_time <= #{timeEnd}]]>
 		</if>
-		<if test="fundStart != '' and fundEnd !=''">
-			AND (a.registration_fund BETWEEN #{fundStart} AND #{fundEnd})
-		</if>
-		<if test="fundStart != '' and fundEnd ==''">
+		<if test="fundStart != ''">
 			<![CDATA[AND a.registration_fund >= #{fundStart}]]>
 		</if>
-		<if test="fundEnd != '' and fundStart ==''">
+		<if test="fundEnd != ''">
 			<![CDATA[AND a.registration_fund <= #{fundEnd}]]>
 		</if>
 		ORDER BY a.created_time 
@@ -121,7 +121,47 @@
 	</select>
 	
 	<select id="getAllCount" resultType="int">
-		SELECT COUNT(*) FROM m_authentication_info;
+		SELECT 
+			count(*) 
+		FROM m_authentication_info a
+		 LEFT JOIN m_industry_info t ON t.code=a.industry
+		 LEFT JOIN m_member_info m ON m.realname_info=a.id
+		 LEFT JOIN m_license_info l ON l.id=m.license_info
+		 LEFT JOIN m_select_info s ON s.select_key=a.success_flag and s.type_code='auth_status' 
+		 LEFT JOIN m_select_info s1 ON s1.select_key=a.authenticate_type AND s1.type_code='auth_type' 
+		 LEFT JOIN m_area_city c ON c.code=a.business_license_code
+		 LEFT JOIN m_area_province p ON p.code=concat_ws('',substring(a.business_license_code,1,2),'0000')
+		WHERE  1=1  
+		<if test="companyName != null and companyName != ''">
+			AND a.company_name LIKE concat(#{companyName} , '%')  
+		</if>
+		<if test="legalPersonName !=null and legalPersonName !=''">
+			AND a.legal_person_name LIKE concat(#{legalPersonName} , '%')
+		</if>
+		<if test="taxCode !=null and taxCode !=''">
+			AND l.tax_registration_country LIKE concat(#{taxCode} , '%')
+		</if>
+		<if test="industry !=null and industry !=0">
+			AND a.industry=#{industry}
+		</if>
+		<if test="contactName !=null and contactName !=''">
+			AND a.contact_name LIKE concat(#{contactName} , '%')
+		</if>
+		<if test="contactTel !=null and contactTel !=''">
+			AND a.contact_tel LIKE concat(#{contactTel} , '%')
+		</if>
+		<if test="timeStart != ''">
+			<![CDATA[AND a.created_time >= #{timeStart}]]>
+		</if>
+		<if test="timeEnd != ''">
+			<![CDATA[AND a.created_time <= #{timeEnd}]]>
+		</if>
+		<if test="fundStart != ''">
+			<![CDATA[AND a.registration_fund >= #{fundStart}]]>
+		</if>
+		<if test="fundEnd != ''">
+			<![CDATA[AND a.registration_fund <= #{fundEnd}]]>
+		</if>
 	</select>
 	
 	<select id="getDetailByCode" parameterType="String" resultMap="detailResault">
@@ -139,7 +179,8 @@
 		    a.contact_sex as contact_sex,
 		    a.contact_tel as contact_tel,
 		    a.post_code as post_code,
-		    a.address as address,
+		    <!--todo: modify ywh 2015-11-26 a.address 改为a.contact_address -->
+		    a.contact_address as address,
 		    a.business_license_name as business_license_name,
 		    a.tax_registration_name as tax_registration_name,
 		    a.organization_code_name as organization_code_name,
@@ -256,7 +297,8 @@
 			modified_time=now(),
 			modified_id=#{loginName}
 		where 
-			code=#{id};
+<!-- 	modified by lzc	code改为id -->
+			id=#{id};
 	</update>
 	
 	<select id="findByMemberId" parameterType="String" resultType="com.xinyue.manage.model.Authentication">

@@ -24,6 +24,10 @@ import com.xinyue.manage.util.GlobalConstant;
  * author lzc
  * 2015年7月1日下午5:01:44
  */
+/**
+ *  lzc @date 2015年12月16日  saveOrderFixed()添加receiver
+ *
+ */
 @Service
 public class OrderCustomerServiceImpl implements OrderCustomerService{
 	
@@ -232,6 +236,7 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 			orderCustomerDAO.updateOrderType(tabName, GlobalConstant.ORDER_ORDERSTATUS_GET, null, 
 					modifiedId, orderFixed.getOrderId(), null);
 			
+			orderCustomerDAO.addReceiver(tabName, manageId, orderFixed.getOrderId(), modifiedId);
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -239,6 +244,34 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 			log.warn(e.toString());
 			throw new RuntimeException();
 		}
+	}
+	
+	
+	@Override
+	public boolean saveOrderAppointed(String appointId, String manageId,
+			String modifiedId) {
+		OrderAppointed appointed = orderCustomerDAO.getOrderAppointById(appointId);
+		try {
+//			undone->信贷经理资金未扣除
+			orderCustomerDAO.updateOrderCustomerManageId(GlobalConstant.ORDER_TABNAME_APPOINTED,
+					appointId, manageId, modifiedId);
+			String tabName;
+			if(appointed.getType() == 1){
+				tabName = GlobalConstant.ORDER_TABLENAME;
+			}else {
+				tabName = GlobalConstant.FASTPRODUCT_TABNAME_FAST;
+			}
+			orderCustomerDAO.updateOrderType(tabName, GlobalConstant.ORDER_ORDERSTATUS_GET, null, 
+					modifiedId, appointed.getOrderId(), null);
+			orderCustomerDAO.addReceiver(tabName, manageId, appointed.getOrderId(), modifiedId);
+			
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.warn("获取指定推送订单失败", e);
+		}
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
@@ -279,6 +312,8 @@ public class OrderCustomerServiceImpl implements OrderCustomerService{
 		// TODO Auto-generated method stub
 		return orderCustomerDAO.getMyCustomerSearchOrderCredit(typeCode, orderStatus, manageId);
 	}
+
+	
 
 
 }

@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * 信贷经理列表(后台)
  * author lzc
+ * ywh 2015-12-08 添加 推荐标志 recommend
  */
 public class CreditManager implements Serializable{
 
@@ -66,10 +67,19 @@ public class CreditManager implements Serializable{
 	private String three;
 	private String four;
 	private String five;
+	private String recommend;
 	//ywh over
 	
 	public String getId() {
 		return id;
+	}
+
+	public String getRecommend() {
+		return recommend;
+	}
+
+	public void setRecommend(String recommend) {
+		this.recommend = recommend;
 	}
 
 	public String getCard() {

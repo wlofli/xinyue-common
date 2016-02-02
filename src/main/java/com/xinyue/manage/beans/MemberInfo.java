@@ -28,7 +28,14 @@ public class MemberInfo implements Serializable {
 	private String type;
 	private String topage;
 	private int pageSize = GlobalConstant.PAGE_SIZE;
+	private int page=1;//1分页  2 不分页查询所有数据
 	
+	public int getPage() {
+		return page;
+	}
+	public void setPage(int page) {
+		this.page = page;
+	}
 	public String getType() {
 		return type;
 	}

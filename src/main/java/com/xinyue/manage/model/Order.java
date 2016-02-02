@@ -89,15 +89,38 @@ public class Order  implements Serializable{
 	private String zone;//区
 	private String productName;//产品名称
 	private String productCode;//产品编号
+	private String productImg;//产品图片
+	
 	
 	//ywh start 
 	private String limitDate;//贷款周期
 	private String realCredit;//
 	private String statusName;
+	private String creditManager;
+	private String type;
 	//ywh over
 	
+	
+	public String getProductImg() {
+		return productImg;
+	}
+	public void setProductImg(String productImg) {
+		this.productImg = productImg;
+	}
 	public String getReceiver() {
 		return receiver;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getCreditManager() {
+		return creditManager;
+	}
+	public void setCreditManager(String creditManager) {
+		this.creditManager = creditManager;
 	}
 	public String getStatusName() {
 		return statusName;

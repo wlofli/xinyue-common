@@ -41,7 +41,7 @@ public class FastProduct {
 	private Date blankAuditeTime;//银行审核时间
 	private String blankAuditeRemark;//银行备注
 	private String blankAuditePerson;//银行审核人员
-	private int blankAuditeStatus;
+	private String blankAuditeStatus;//ywh 2015-12-24
 	@DateTimeFormat(pattern = "yyyy-MM-dd" )
 	private Date taxAuditeTime;//新越审核时间
 	private String taxAuditeRemark;//新越备注
@@ -149,10 +149,10 @@ public class FastProduct {
 	public void setBlankAuditePerson(String blankAuditePerson) {
 		this.blankAuditePerson = blankAuditePerson;
 	}
-	public int getBlankAuditeStatus() {
+	public String getBlankAuditeStatus() {
 		return blankAuditeStatus;
 	}
-	public void setBlankAuditeStatus(int blankAuditeStatus) {
+	public void setBlankAuditeStatus(String blankAuditeStatus) {
 		this.blankAuditeStatus = blankAuditeStatus;
 	}
 	public Date getTaxAuditeTime() {

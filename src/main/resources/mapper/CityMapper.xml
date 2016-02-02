@@ -105,6 +105,9 @@
 		LEFT JOIN m_area_city c ON s.city_id = c.code
 		LEFT JOIN m_chinese_word_info cw ON p.location = cw.code
 		WHERE s.deleted=0 
+		<if test="searchName != '' and searchName != null">
+			AND s.substation_name like '%' #{searchName} '%'
+		</if>
 		<if test="searchLetter != '' and searchLetter != null">
 			AND s.first_letter like '%' #{searchLetter} '%'
 		</if>
@@ -117,7 +120,7 @@
 		<if test="searchZone != '' and searchZone != 0">
 			AND s.zone_id = #{searchZone}
 		</if>
-			LIMIT #{searchPage},10
+			LIMIT #{start},10
 	</select>
 	
 	<select id="getCountBySearchConditions" parameterType="com.xinyue.manage.beans.SearchCity" resultType="int">

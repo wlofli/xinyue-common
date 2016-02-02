@@ -2,12 +2,17 @@ package com.xinyue.manage.model;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
 /**
  * 产品类别 m_product_type
  * @author wenhai.you
  * @2015年5月22日
  * @下午6:23:43
+ */
+/**
+ * lzc 15-12-02 添加产品列表
+ *
  */
 public class ProductType implements Serializable {
 
@@ -21,8 +26,19 @@ public class ProductType implements Serializable {
 	private String createUser;
 	private String modifyUser;
 	
+	//add by lzc
+	private List<Product> products;
+	//end
+	
+	
 	public String getParentid() {
 		return parentid;
+	}
+	public List<Product> getProducts() {
+		return products;
+	}
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
 	public void setParentid(String parentid) {
 		this.parentid = parentid;
@@ -78,10 +94,10 @@ public class ProductType implements Serializable {
 	@Override
 	public String toString() {
 		return "ProductType [id=" + id + ", name=" + name + ", status="
-				+ status + ", deleted=" + deleted + ", createdTime="
-				+ createdTime + ", modifiedTime=" + modifiedTime
-				+ ", createUser=" + createUser + ", modifyUser=" + modifyUser
-				+ "]";
+				+ status + ", deleted=" + deleted + ", parentid=" + parentid
+				+ ", createdTime=" + createdTime + ", modifiedTime="
+				+ modifiedTime + ", createUser=" + createUser + ", modifyUser="
+				+ modifyUser + "]";
 	}
 	
 }

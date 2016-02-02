@@ -32,8 +32,9 @@ public interface FastProductDAO {
 	
 	
 	public FastProduct getFastProduct(@Param("id")String id,@Param("typeCode")String typeCode);
-	
-	
+	//ywh modify 2015-12-23 start
+	public FastProduct getTypeFastProduct(@Param("id")String id,@Param("typeCode")String typeCode);
+	//ywh end
 	/**获取快速申贷申请人信息
 	 * add by lzc     date: 2015年10月8日
 	 * @param id

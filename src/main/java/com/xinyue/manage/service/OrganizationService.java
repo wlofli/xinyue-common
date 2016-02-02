@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.xinyue.manage.beans.OrgOrder;
 import com.xinyue.manage.beans.OrganizationInfo;
 import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.beans.QuestionBean;
@@ -12,6 +13,7 @@ import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.beans.ShowAnswer;
 import com.xinyue.manage.model.Answer;
 import com.xinyue.manage.model.CreditManager;
+import com.xinyue.manage.model.Order;
 import com.xinyue.manage.model.Organization;
 import com.xinyue.manage.model.OrganizationType;
 import com.xinyue.manage.model.ProductType;
@@ -191,4 +193,12 @@ public interface OrganizationService {
 	 * @return
 	 */
 	public PageData<CreditManager> findCreditByOrgid(SearchCreditManager sc);
+	
+	
+	/**
+	 * ywh admin org order
+	 * @param order
+	 * @return
+	 */
+	public PageData<Order> findOrgOrder(OrgOrder order);
 }

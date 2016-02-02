@@ -42,6 +42,10 @@ public class GlobalConstant {
 	
 	public static final String RET_FAIL = "fail";
 	
+	
+	//add by lzc
+	public static final String INDEX_LOAN = "贷款攻略";//首页贷款攻略类新闻
+	
 	//add by lzc
 	public static final String RET_JSON_RESULT = "result";//json格式返回的名称
 	public static final String RET_MESSAGE = "message";//json格式的消息
@@ -96,18 +100,7 @@ public class GlobalConstant {
 	public static boolean isNull(Object obj){
 		return obj == null || obj.toString().trim().equals("");
 	}
-	
-	public synchronized static int getCurrentPage(String topage ,int total){
-		int totalPage = total/PAGE_SIZE;
-		if(total%PAGE_SIZE != 0){
-			totalPage++;
-		}
-		int c = (GlobalConstant.isNull(topage)|| topage.equals("0"))?1:Integer.valueOf(topage);
-		if(c >totalPage){
-			c = totalPage;
-		}
-		return c;
-	}
+
 	
 	//mzj add 2015/05/20 实名认证导出相关
 	public static final String AUTHENTICATION_EXCEL_NAME = "authentication_data.xls";

@@ -96,7 +96,8 @@ public class SuccessCaseServiceImpl implements SuccessCaseService {
 		
 		int result = 0;
 		try {
-			if (caseInfo.getId().equals("")) {
+			//ywh 
+			if (caseInfo.getId() == null || "".equals(caseInfo.getId())) {
 				//新增
 				String id = UUID.randomUUID().toString().replace("-", "");
 				caseInfo.setId(id);
@@ -134,7 +135,7 @@ public class SuccessCaseServiceImpl implements SuccessCaseService {
 	}
 
 	@Override
-	public boolean updateOrgSuccessCaseUseFlag(String code, String type) {
+	public boolean updateOrgSuccessCaseUseFlag(String code, String type , String updateUser) {
 		
 		try {
 			String[] temp = code.split("~");
@@ -143,7 +144,7 @@ public class SuccessCaseServiceImpl implements SuccessCaseService {
 				codes.add(temp[i]);
 			}
 			
-			int result = successCaseDAO.updateOrgSuccessCaseUseFlag(codes,type);
+			int result = successCaseDAO.updateOrgSuccessCaseUseFlag(codes,type , updateUser);
 			
 			if (result > 0) {
 				return true;
@@ -175,6 +176,18 @@ public class SuccessCaseServiceImpl implements SuccessCaseService {
 		
 		
 		return false;
+	}
+
+	@Override
+	public int countSuccessCaseByManagerId(SuccessCaseSearch search) {
+		// TODO Auto-generated method stub
+		return successCaseDAO.getCountByManagerId(search);
+	}
+
+	@Override
+	public List<SuccessCase> getSuccessByTime(int index, int pageSize) {
+		// TODO Auto-generated method stub
+		return successCaseDAO.getSuccessByTime(index, pageSize);
 	}
 
 }

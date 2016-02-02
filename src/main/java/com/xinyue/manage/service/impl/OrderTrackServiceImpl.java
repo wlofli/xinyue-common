@@ -82,7 +82,7 @@ public class OrderTrackServiceImpl implements OrderTrackService{
 			if(orderTrack.getOrderType().equals("1")){//订单
 				Order order = new Order();
 				order.setId(orderTrack.getOrderId());
-				order.setStatus(orderTrack.getStatus());
+				order.setStatus(orderTrack.getOrderStatus());
 				order.setBlankAuditePerson(user);
 				order.setBlankAuditeRemark(orderTrack.getRemark());
 				order.setRemark(orderTrack.getRemark());
@@ -94,8 +94,8 @@ public class OrderTrackServiceImpl implements OrderTrackService{
 			}else {//快速申贷
 				FastProduct fastProduct = new FastProduct();
 				fastProduct.setId(orderTrack.getOrderId());
-				fastProduct.setStatus(orderTrack.getStatus());
-				fastProduct.setBlankAuditePerson(orderTrack.getCreatedId());
+				fastProduct.setStatus(orderTrack.getOrderStatus());
+				fastProduct.setBlankAuditePerson(user);
 				fastProduct.setBlankAuditeRemark(orderTrack.getRemark());
 				fastProduct.setRemark(orderTrack.getRemark());
 				fastProduct.setCreditReal(orderTrack.getCreditReal());

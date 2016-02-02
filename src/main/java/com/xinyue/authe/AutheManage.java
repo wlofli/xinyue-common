@@ -52,23 +52,21 @@ public class AutheManage {
 	 * @throws Exception
 	 */
 	public static boolean login(HttpServletRequest request,HttpServletResponse response)throws Exception{
-//		String userName = request.getParameter("name");
-//		String password = request.getParameter("password");
-		String userName = "admin";
-		String password = "111111";
-//		HttpSession hSession = request.getSession();
-//		if (hSession==null || hSession.getAttribute("randcode")==null)
-//			throw new Exception("验证码错误，请刷新网页");
-//		
-//		String code = request.getParameter("imgcode");
-//		if (code.equals(""))
-//			throw new Exception("验证码为空");
-//		
-//		String rCode = hSession.getAttribute("randcode").toString();
-//		
-//		if (!rCode.equalsIgnoreCase(code))
-//			throw new Exception("验证码错误");
-//		
+		String userName = request.getParameter("name");
+		String password = request.getParameter("password");
+		HttpSession hSession = request.getSession();
+		if (hSession==null || hSession.getAttribute("randcode")==null)
+			throw new Exception("验证码错误，请刷新网页");
+		
+		String code = request.getParameter("imgcode");
+		if (code.equals(""))
+			throw new Exception("验证码为空");
+		
+		String rCode = hSession.getAttribute("randcode").toString();
+		
+		if (!rCode.equalsIgnoreCase(code))
+			throw new Exception("验证码错误");
+		
 		UserInfo userInfo = UserInfo.getUserInfo(userName);
 		
 		String ip = request.getRemoteAddr();
@@ -211,19 +209,6 @@ public class AutheManage {
 			return "";
 		
 		return lUserInfo.getLoginTime();
-	}
-	
-	/**获取登录用户id
-	 * add by lzc     date: 2015年9月17日
-	 * @param request
-	 * @return
-	 */
-	public static String getUserId(HttpServletRequest request) {
-		LoginUserInfo lUserInfo = getUser(request);
-		if (lUserInfo == null) {
-			return "";
-		}
-		return lUserInfo.getUserId();
 	}
 	
 	/**

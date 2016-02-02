@@ -6,7 +6,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 public class OptionInfo {
 	
 	/**
-	 * 判断用户是否有权限
+	 * 判断用户是否有权限 代码由金修改 ywh提交
 	 * @param uid  用户 id
 	 * @param gid  用户组id 列表   gid = -999  为管理员
 	 * @return
@@ -63,34 +63,34 @@ public class OptionInfo {
 		String rGroupList = "";
 		
 		if (allowUserList!=null){
-			for (int i=0;i<allowUserList.length;i++){
+			for (int i=0;i<a_allowUserList.length;i++){
 				if (i>0)
 					aUserList += ",";
-				aUserList += allowUserList[i];
+				aUserList += a_allowUserList[i];
 			}
 		}
 		
 		if (allowGroupList != null){
-			for (int i=0;i<allowGroupList.length;i++){
+			for (int i=0;i<a_allowGroupList.length;i++){
 				if (i>0)
 					aGroupList += ",";
-				aGroupList += allowGroupList[i];
+				aGroupList += a_allowGroupList[i];
 			}
 		}
 		
 		if (refuseUserList!=null){
-			for (int i=0;i<refuseUserList.length;i++){
+			for (int i=0;i<a_refuseUserList.length;i++){
 				if (i>0)
 					rUserList += ",";
-				rUserList += refuseUserList[i];
+				rUserList += a_refuseUserList[i];
 			}
 		}
 		
 		if (refuseGroupList!=null){
-			for (int i=0;i<refuseGroupList.length;i++){
+			for (int i=0;i<a_refuseGroupList.length;i++){
 				if (i>0)
 					rGroupList += ",";
-				rGroupList += refuseGroupList[i];
+				rGroupList += a_refuseGroupList[i];
 			}
 		}
 		
@@ -135,19 +135,19 @@ public class OptionInfo {
 		int[] outList = null;
 		if (isAllow){
 			if (isGroup){
-				srcList  = allowGroupList;
+				srcList  = a_allowGroupList;
 			}
 			else{
-				srcList = allowUserList;
+				srcList = a_allowUserList;
 			}
 			
 		}
 		else{
 			if (isGroup){
-				srcList = refuseGroupList;
+				srcList = a_refuseGroupList;
 			}
 			else{
-				srcList = refuseUserList;
+				srcList = a_refuseUserList;
 			}
 		}
 		
@@ -207,19 +207,19 @@ public class OptionInfo {
 		}
 		if (isAllow){
 			if (isGroup){
-				allowGroupList  = rSet==true ? outList:srcList;
+				a_allowGroupList  = rSet==true ? outList:srcList;
 			}
 			else{
-				allowUserList = rSet==true ? outList:srcList;
+				a_allowUserList = rSet==true ? outList:srcList;
 			}
 			
 		}
 		else{
 			if (isGroup){
-				refuseGroupList = rSet==true ? outList:srcList;
+				a_refuseGroupList = rSet==true ? outList:srcList;
 			}
 			else{
-				refuseUserList = rSet==true ? outList:srcList;
+				a_refuseUserList = rSet==true ? outList:srcList;
 			}
 		}
 		
@@ -231,15 +231,16 @@ public class OptionInfo {
 			this.allowUserList = null;
 			return;
 		}
+		this.allowUserList = allowUserList;
 		String[] list = allowUserList.split(",");
 		int len = list.length;
-		this.allowUserList = new int[len + 10];
-		for (int i=0;i<len + bufLen;i++){
+		this.a_allowUserList = new int[len + bufLen];
+		for (int i=0;i<len;i++){
 			if (i>=len){
-				this.allowUserList[i] = -1;
+				this.a_allowUserList[i] = -1;
 			}
 			else{
-				this.allowUserList[i] = Integer.parseInt(list[i]);
+				this.a_allowUserList[i] = Integer.parseInt(list[i]);
 			}
 		}
 	}
@@ -249,15 +250,16 @@ public class OptionInfo {
 			this.allowGroupList = null;
 			return;
 		}
+		this.allowGroupList = allowGroupList;
 		String[] list = allowGroupList.split(",");
 		int len = list.length;
-		this.allowUserList = new int[len];
-		for (int i=0;i<len + bufLen;i++){
+		this.a_allowGroupList = new int[len+ bufLen];
+		for (int i=0;i<len ;i++){
 			if (i>=len){
-				this.allowGroupList[i] = -1;
+				this.a_allowGroupList[i] = -1;
 			}
 			else{
-				this.allowGroupList[i] = Integer.parseInt(list[i]);
+				this.a_allowGroupList[i] = Integer.parseInt(list[i]);
 			}
 		}
 	}
@@ -267,15 +269,16 @@ public class OptionInfo {
 			this.refuseUserList = null;
 			return;
 		}
+		this.refuseUserList = refuseUserList;
 		String[] list = refuseUserList.split(",");
 		int len = list.length;
-		this.refuseUserList = new int[len];
-		for (int i=0;i<len + bufLen;i++){
+		this.a_refuseUserList = new int[len+ bufLen];
+		for (int i=0;i<len ;i++){
 			if (i>=len){
-				this.refuseUserList[i] = -1;
+				this.a_refuseUserList[i] = -1;
 			}
 			else{
-				this.refuseUserList[i] = Integer.parseInt(list[i]);
+				this.a_refuseUserList[i] = Integer.parseInt(list[i]);
 			}
 		}
 	}
@@ -285,32 +288,34 @@ public class OptionInfo {
 			this.refuseGroupList = null;
 			return;
 		}
+		
+		this.refuseGroupList = refuseGroupList;
 		String[] list = refuseGroupList.split(",");
 		int len = list.length;
-		this.refuseGroupList = new int[len];
-		for (int i=0;i<len + bufLen;i++){
+		this.a_refuseGroupList = new int[len+bufLen];
+		for (int i=0;i<len ;i++){
 			if (i>=len){
-				this.refuseGroupList[i] = -1;
+				this.a_refuseGroupList[i] = -1;
 			}
 			else{
-				this.refuseGroupList[i] = Integer.parseInt(list[i]);
+				this.a_refuseGroupList[i] = Integer.parseInt(list[i]);
 			}
 		}
 	}
 	
-	public int[] getAllowUserList() {
+	public String  getAllowUserList() {
 		return allowUserList;
 	}
 
-	public int[] getAllowGroupList() {
+	public String getAllowGroupList() {
 		return allowGroupList;
 	}
 
-	public int[] getRefuseUserList() {
+	public String getRefuseUserList() {
 		return refuseUserList;
 	}
 
-	public int[] getRefuseGroupList() {
+	public String getRefuseGroupList() {
 		return refuseGroupList;
 	}
 
@@ -370,19 +375,33 @@ public class OptionInfo {
 	/**
 	 * 允许的用户列表
 	 */
-	private int[] allowUserList;
+	private String allowUserList;
 	/**
 	 * 允许的组列表
 	 */
-	private int[] allowGroupList;
+	private String allowGroupList;
 	/**
 	 * 拒绝的用户列表
 	 */
-	private int[] refuseUserList;
+	private String refuseUserList;
 	/**
 	 * 拒绝的组列表
 	 */
-	private int[] refuseGroupList;
+	private String refuseGroupList;
+	
+	private int[] a_allowUserList;
+	/**
+	 * 允许的组列表
+	 */
+	private int[] a_allowGroupList;
+	/**
+	 * 拒绝的用户列表
+	 */
+	private int[] a_refuseUserList;
+	/**
+	 * 拒绝的组列表
+	 */
+	private int[] a_refuseGroupList;
 	
 	private String url;
 	
@@ -398,8 +417,8 @@ public class OptionInfo {
 			return 0;
 		
 		if (refuseUserList!=null){
-			for (int i=0;i<refuseUserList.length;i++){
-				if (refuseUserList[i]==uid)
+			for (int i=0;i<a_refuseUserList.length;i++){
+				if (a_refuseUserList[i]==uid)
 					return -1;
 			}
 		}
@@ -407,8 +426,8 @@ public class OptionInfo {
 		if (allowUserList==null)
 			return 0;
 		
-		for (int i=0;i<allowUserList.length;i++){
-			if (allowUserList[i]==uid)
+		for (int i=0;i<a_allowUserList.length;i++){
+			if (a_allowUserList[i]==uid)
 				return 1;
 		}
 		return 0;
@@ -424,8 +443,8 @@ public class OptionInfo {
 			return 1;
 		
 		if (refuseGroupList!=null){
-			for (int i=0;i<refuseGroupList.length;i++){
-				if (refuseGroupList[i]==gid)
+			for (int i=0;i<a_refuseGroupList.length;i++){
+				if (a_refuseGroupList[i]==gid)
 					return -1;
 			}
 		}
@@ -433,8 +452,8 @@ public class OptionInfo {
 		if (allowGroupList==null)
 			return 0;
 		
-		for (int i=0;i<allowGroupList.length;i++){
-			if (allowGroupList[i]==gid)
+		for (int i=0;i<a_allowGroupList.length;i++){
+			if (a_allowGroupList[i]==gid)
 				return 1;
 		}
 		return 0;

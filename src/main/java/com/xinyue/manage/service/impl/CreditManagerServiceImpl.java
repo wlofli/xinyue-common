@@ -13,12 +13,15 @@ import org.springframework.stereotype.Service;
 import com.xinyue.authe.util.Md5;
 import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.SearchCreditManager;
+import com.xinyue.manage.beans.SearchRecommend;
 import com.xinyue.manage.dao.CreditManagerDAO;
+import com.xinyue.manage.dao.RewardDAO;
 import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
 import com.xinyue.manage.model.MoneyOutline;
 import com.xinyue.manage.model.Order;
+import com.xinyue.manage.model.OutLine;
 import com.xinyue.manage.service.CreditManagerService;
 import com.xinyue.manage.util.SecurityUtils;
 /**
@@ -26,6 +29,9 @@ import com.xinyue.manage.util.SecurityUtils;
  * @author MK)茅
  * @version v1.0
  * @date 创建时间：2015年8月12日
+ * ywh 
+ * 2015-12-08 添加信贷经理时 向No63资金综合信息表插入初始化数据 saveCreditManager
+ * 2015-12-09 getServerStar 空指针处理
  */
 @Service
 public class CreditManagerServiceImpl implements CreditManagerService {
@@ -69,8 +75,9 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 		map.put("organizationType", "");
 		map.put("serverZone", "");
 		map.put("isAuth", "");
-		map.put("index", "");
-		
+		//modified by lzc注释,不需要的就不用传了
+//		map.put("index", "");
+//		end
 		//数据取得
 		List<CreditManagerInfo> info = creditManagerDAO.findCmanagersByConditions(map);
 		if (info !=null && info.size() > 0) {
@@ -163,6 +170,8 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 		return false;
 	}
 
+	@Resource
+	private RewardDAO rewardDAO;
 	@Override
 	public boolean saveCreditManager(CreditManager creditManager) {
 		
@@ -185,15 +194,17 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 				}
 			}
 			
-			int result = creditManagerDAO.saveCreditManager(creditManager);
-			if (result > 0) {
-				return true;
-			}
+			creditManagerDAO.saveCreditManager(creditManager);
+			OutLine outLine = new OutLine();
+			outLine.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+			outLine.setUserId(uuid);
+			outLine.setUserType("c");
+			rewardDAO.initOutline(outLine);
+			return true;
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			throw new RuntimeException(e.getMessage(), e);
 		}
-		
-		return false;
 	}
 
 	@Override
@@ -282,7 +293,7 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 		int size = 0;
 		int stars = 0;
 		for (int i = 0; i < orders.size(); i++) {
-			if (orders.get(i).getLevel() != null && !orders.get(i).getLevel().equals("")) {
+			if (orders.get(i)!= null && orders.get(i).getLevel() != null && !orders.get(i).getLevel().equals("")) {
 				stars = stars + Integer.parseInt(orders.get(i).getLevel());
 				size++;
 			}
@@ -294,7 +305,54 @@ public class CreditManagerServiceImpl implements CreditManagerService {
 		
 		return result;
 	}
-	
-	
 
+	@Override
+	public List<InvitationMemberInfo> getInvitationMember(String managerId,
+			int index, SearchRecommend recommend) {
+		// TODO Auto-generated method stub
+		return creditManagerDAO.getInvitationMember(managerId, index, recommend);
+	}
+
+	@Override
+	public int countInvitationMember(String managerId, SearchRecommend recommend) {
+		// TODO Auto-generated method stub
+		return creditManagerDAO.countInvitationMember(managerId, recommend);
+	}
+
+	@Override
+	public List<InvitationMemberInfo> getInvitationManager(String managerId,
+			int index, SearchRecommend recommend) {
+		// TODO Auto-generated method stub
+		return creditManagerDAO.getInvitationManager(managerId, index, recommend);
+	}
+
+	@Override
+	public int countInvitationMangager(String managerId,
+			SearchRecommend recommend) {
+		// TODO Auto-generated method stub
+		return creditManagerDAO.countInvitationMangager(managerId, recommend);
+	}
+	
+	
+	@Override
+	public boolean updateAudit(AuthenticationCM cm) {
+		// TODO Auto-generated method stub
+		try {
+			creditManagerDAO.updateAudit(cm);
+			creditManagerDAO.updateCreditRecommend(cm);
+			log.info("提交审核信息成功 ");
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("提交审核信息失败", e);
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<CreditManagerInfo> getCreditManagerInfoByIndex(int index,
+			int pageSize) {
+		// TODO Auto-generated method stub
+		return creditManagerDAO.getCreditManagerInfoByIndex(index, pageSize);
+	}
 }

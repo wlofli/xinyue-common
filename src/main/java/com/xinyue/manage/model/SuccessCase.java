@@ -78,6 +78,8 @@ public class SuccessCase implements Serializable{
 	 * 详情描述
 	 */
 	private String description;
+	//ywh 目的和description转换
+	private String content;
 	/**
 	 * 创建人
 	 */
@@ -93,6 +95,12 @@ public class SuccessCase implements Serializable{
 	private boolean useFlag = false;
 	
 	
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
 	/**
 	 * @return the id
 	 */

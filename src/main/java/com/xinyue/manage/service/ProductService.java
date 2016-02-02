@@ -60,7 +60,16 @@ public interface ProductService {
 	 * @return
 	 */
 	public List<Product> getListByRecommend(String Recommend);
-
+	
+	/**获取产品类型下面的产品
+	 * add by lzc     date: 2015年12月2日
+	 * @param typeId 如果为父产品类型id,则包括所有子产品类型
+	 * @param Recommend
+	 * @return
+	 */
+	public List<Product> getListByType(String typeId, String Recommend, int pageNo, int pageSize);
+	
+	
 	/**
 	 * 根据信贷经理id查询对应产品
 	 * add by maozj

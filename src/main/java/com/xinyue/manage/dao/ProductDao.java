@@ -175,4 +175,13 @@ public interface ProductDao {
 	 * @return
 	 */
 	public Product findProductById(@Param("proid")String pid);
+	
+	/**获取产品类型下面的产品
+	 * add by lzc     date: 2015年12月2日
+	 * @param typeId 如果为父产品类型id,则包括所有子产品类型
+	 * @param Recommend
+	 * @return
+	 */
+	public List<Product> getListByType(@Param("typeId")String typeId, @Param("Recommend")String Recommend, 
+			@Param("pageNo")int pageNo, @Param("pageSize")int pageSize);
 }

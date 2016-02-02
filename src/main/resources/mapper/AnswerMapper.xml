@@ -14,8 +14,16 @@
 	
 	<!-- ywh 通用信息 最近回答 -->
 	<select id="getRecentlyAnswer" resultType="com.xinyue.manage.beans.QuestionBean">
-		select distinct(select count(*) from m_answer_info where created_time>=curdate() and deleted=0) as totay ,  
-		(select count(*) from m_answer_info where created_time>=date_sub(curdate(),interval 1 day) and created_time<![CDATA[<]]>curdate() and deleted=0) as yesterday  ,
+		select distinct(select count(*) from m_answer_info where created_time>=curdate() and deleted=0
+<!-- 		add by lzc -->
+		and created_id = #{createid}
+<!-- 		end -->
+		) as today ,  
+		(select count(*) from m_answer_info where created_time>=date_sub(curdate(),interval 1 day) and created_time<![CDATA[<]]>curdate() and deleted=0
+<!-- 		add by lzc  -->
+		and created_id =#{createid}
+<!-- 		end -->
+		) as yesterday  ,
 		(select count(*)+1 from m_answer_info where created_time>=curdate() and created_time<![CDATA[<]]>t.created_time and deleted=0) as rank 
 		from m_answer_info t where t.created_id = #{createid} and created_time>=curdate() and deleted=0 order by id limit 0 , 1 
 	</select>
@@ -43,6 +51,9 @@
 		from  m_question_info q 
 		inner join m_answer_info a on q.id = a.question_id  and a.deleted = 0
 		where q.type_id = 1 and q.deleted = 0 
+<!-- 		modified by lzc 15-12-23 -->
+		GROUP BY q.id
+<!-- 		end -->
 		limit #{start} , #{pageSize}
 	</select>
 	<!-- ywh 新越网 热门问题 -->
@@ -111,6 +122,9 @@
 		from  m_question_info q 
 		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
 		where q.type_id = 2 and q.deleted = 0 
+<!-- 		add by lzc -->
+		group by q.id
+<!-- 		end -->
 		limit #{start} , #{pageSize}
 	</select>
 	<!-- ywh 机构回答 已回答 记录数 -->
@@ -127,6 +141,9 @@
 		from  m_question_info q 
 		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
 		where q.type_id = 2 and q.deleted = 0 and q.status = 2 
+		<!-- 		add by lzc -->
+		group by q.id
+<!-- 		end -->
 		limit #{start} , #{pageSize}
 	</select>
 	<!-- ywh 机构回答 审核记录数 -->
@@ -151,11 +168,11 @@
 		select q.id id , q.title title , q.content content , q.questioner_type qtype , concat('' , p.name , c.name) address , q.created_time qtime , 
 		a.content acontent , a.created_time atime , a.created_id  acreater, m.contact_name mcreateName, i.real_name ccreateName, a.answer_type atype , o.name oname  
 		from m_question_info q 
-		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 
-		left join m_area_province p on p.code = q.province_id 
-		left join m_area_city c on c.code = q.city_id 
-		left join m_member_info m on m.id = a.created_id 
-		left join c_manager_info i on i.id = a.created_id 
+		inner join m_answer_info a on q.id = a.question_id and a.deleted = 0 <!-- 问题回答 -->
+		left join m_area_province p on p.code = q.province_id <!-- 省 -->
+		left join m_area_city c on c.code = q.city_id <!-- 市 -->
+		left join m_member_info m on m.id = a.created_id <!-- 会员回答问题 -->
+		left join c_manager_info i on i.id = a.created_id <!-- 信贷经理回答问题 -->
 		left join m_organization_info o on o.id = q.org_id 
 		where q.id = #{questid} and q.deleted =0 
 		limit #{start} , #{pageSize}
@@ -190,7 +207,7 @@
 	
 	<!-- ywh 机构店铺设置  贷款咨询问题 -->
 	<select id="findOrgQuest" resultType="com.xinyue.manage.model.Question">
-		select * from (select distinct q.id id , q.created_time createtime , q.title , q.content , q.questioner_type questType , count(a.id) answerNum 
+		select * from (select distinct q.id id , date_format(q.created_time , '%Y-%m-%d') createtime , q.title , q.content , q.questioner_type questType , count(a.id) answerNum 
 		from  m_question_info q 
 		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 
 		where q.type_id = 2 and q.deleted = 0 and q.org_id = #{qbean.orgid} 
@@ -213,7 +230,7 @@
 		</if>
 		<if test="qbean.answerstatus != null and qbean.answerstatus == 1">
 		 and answerNum = 0
-		</if>
+		</if> order by createtime desc 
 		limit #{start} , #{pageSize}
 	</select>
 	<!-- ywh 机构店铺设置  贷款咨询问题记录数 -->
@@ -221,7 +238,7 @@
 		select count(*) from (select distinct q.id id , q.created_time createtime , q.title , q.content , q.questioner_type questType , count(a.id) answerNum 
 		from  m_question_info q 
 		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 
-		where q.type_id = 2 and q.deleted = 0 and org_id = #{qbean.orgid} 
+		where q.type_id = 2 and q.deleted = 0 and q.org_id = #{qbean.orgid} 
 		<choose>
 			<when test="qbean.timefrom != null and qbean.timefrom != ''">
 				and q.created_time>= #{qbean.timefrom}
@@ -247,9 +264,10 @@
 	
 	<!-- ywh 机构店铺设置  贷款咨询问题详情   -->
 	<select id="showOrgAnswer" resultType="com.xinyue.manage.beans.ShowAnswer">
-		select q.id id , q.title title , q.content content , q.questioner_type qtype , concat('' , p.name , c.name) address , q.created_time qtime , 
-		mq.contact_name mqcreateName, q.telphone telphone , t.id questTypeid , t.name questTypeName , q.status , a.content acontent , a.created_time atime , 
-		a.id aid , a.created_id  acreater, m.contact_name mcreateName, i.real_name ccreateName, a.answer_type atype , o.name oname  
+		select q.id id , q.title title , q.content content , q.questioner_type qtype , concat('' , p.name , c.name) address , date_format(q.created_time , '%Y-%m-%d %H:%i') qtime , 
+		concat_ws('',pi.username , mq.login_name) mqcreateName, q.telphone telphone , t.id questTypeid , t.name questTypeName , q.status , a.content acontent , 
+		date_format(a.created_time , '%Y-%m-%d %H:%i') atime , a.recommend , 
+		a.id aid , a.created_id  acreater, concat_ws('',m.contact_name , i.real_name) answerName, a.answer_type atype , o.name oname , a.status astatus
 		from m_question_info q 
 		left join m_question_type t on t.id = q.quest_type_id and t.deleted = 0 
 		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 
@@ -259,7 +277,8 @@
 		left join m_member_info mq on mq.id = q.created_id 
 		left join c_manager_info i on i.id = a.created_id 
 		left join m_organization_info o on o.id = q.org_id 
-		where q.id = #{questid} and q.deleted =0 
+		left join passport_user_info pi on cast(pi.id as char) = q.created_id 
+		where q.id = #{questid} and q.deleted =0 order by a.created_time desc
 		limit #{start} , #{pageSize}
 	</select>
 	<!-- ywh 机构店铺设置  贷款咨询问题详情 记录数 -->
@@ -296,12 +315,13 @@
 	
 	<!-- 后台 -->
 	<select id="findQuestList" resultType="com.xinyue.manage.model.Question">
-		select q.id , q.title , q.created_time createtime ,q.created_id createid, i.contact_name createName, q.telphone telphone, q.status , 
-		(select count(*) from m_answer_info where question_id = q.id) answerNum, m.real_name creditName, m.tel_number creditTel
+		select q.id , q.title , date_format(q.created_time , '%Y-%m-%d') createtime ,q.created_id createid, i.login_name memberName,u.username adminName, q.telphone telphone, 
+		q.status , t.name questType , (select count(*) from m_answer_info where question_id = q.id) answerNum, m.real_name creditName, m.tel_number creditTel
 		from m_question_info q 
 		left join m_member_info i on q.created_id = i.id and i.deleted = 0 
+		left join passport_user_info u on cast(u.id as char) = q.created_id and u.status != -1  
 		left join m_question_type t on t.id = q.quest_type_id and t.deleted = 0 
-		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 and a.recommend = 1 
+		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 and a.recommend = 1
 		left join c_manager_info m on m.id = a.created_id and m.deleted = 0 
 		where q.deleted = 0 
 		<if test="qb.name != null and qb.name != '' ">
@@ -312,12 +332,21 @@
 				and q.content like concat('%' , #{qb.name} , '%')
 			</if>
 			<if test="qb.option == 3">
-				and q.title like concat(#{qb.name} , '%') or  q.content like concat('%' , #{qb.name} , '%')
+				and (q.title like concat(#{qb.name} , '%') or  q.content like concat('%' , #{qb.name} , '%'))
 			</if>
 		</if>
-		<if test="qb.answerName != null and qb.answerName != '' ">
-			and i.contact_name like concat(#{qb.answerName} , '%')
-		</if>
+		<choose>
+			<when test="qb.answerName != null and qb.answerName != ''">
+				<choose>
+					<when test="qb.answerName == '匿名' or qb.answerName == '0'.toString()">
+						and q.created_id = 0 
+					</when>
+					<otherwise>
+						and (i.contact_name like concat(#{qb.answerName} , '%') or u.username like concat(#{qb.answerName} , '%')) 
+					</otherwise>
+				</choose>
+			</when>
+		</choose>
 		<if test="qb.answerTime != null and qb.answerTime != '' ">
 			and date_format(q.created_time , '%Y-%m-%d') = #{qb.answerTime}
 		</if>
@@ -326,15 +355,14 @@
 		</if>
 		<if test="qb.status != null and qb.status != ''">
 			and q.status = #{qb.status}
-		</if>
+		</if> group by q.id order by q.created_time desc 
 		limit #{start} , #{pageSize}
 	</select>
 	<select id="getQuestListCount" resultType="int">
 		select count(*) from m_question_info q 
 		left join m_member_info i on q.created_id = i.id and i.deleted = 0 
+		left join passport_user_info u on u.id = q.created_id and u.status != -1  
 		left join m_question_type t on t.id = q.quest_type_id and t.deleted = 0 
-		left join m_answer_info a on q.id = a.question_id and a.deleted = 0 and a.recommend = 1 
-		left join c_manager_info m on m.id = a.created_id and m.deleted = 0 
 		where q.deleted = 0 
 		<if test="name != null and name != '' ">
 			<if test="option == 1">
@@ -344,12 +372,21 @@
 				and q.content like concat('%' , #{name} , '%')
 			</if>
 			<if test="option == 3">
-				and q.title like concat(#{name} , '%') or  q.content like concat('%' , #{name} , '%')
+				and (q.title like concat(#{name} , '%') or  q.content like concat('%' , #{name} , '%'))
 			</if>
 		</if>
-		<if test="answerName != null and answerName != '' ">
-			and i.contact_name like concat(#{answerName} , '%')
-		</if>
+		<choose>
+			<when test="answerName != null and answerName != ''">
+				<choose>
+					<when test="answerName == '匿名' or answerName == '0'.toString()">
+						and q.created_id = 0 
+					</when>
+					<otherwise>
+						and (i.contact_name like concat(#{qb.answerName} , '%') or u.username like concat(#{qb.answerName} , '%')) 
+					</otherwise>
+				</choose>
+			</when>
+		</choose>
 		<if test="answerTime != null and answerTime != '' ">
 			and date_format(q.created_time , '%Y-%m-%d') = #{answerTime}
 		</if>
@@ -357,8 +394,8 @@
 			and t.id = #{questType}
 		</if>
 		<if test="status != null and status != ''">
-			and q.status = #{status}
-		</if>
+			and q.status = #{status} 
+		</if> 
 	</select>
 	
 	<update id="updateQuest">
@@ -438,9 +475,12 @@
 	</update>
 	
 	<select id="findQuestById" resultType="com.xinyue.manage.model.Question">
-		select q.id , q.title , q.content , q.org_id orgid , q.modified_time createtime , q.telphone , q.keyword , q.quest_type_id questType , q.created_id createid , u.username createName
+		select q.id , q.title , q.content , q.org_id orgid , q.modified_time createtime , q.telphone , q.keyword , 
+		q.quest_type_id questType , q.questioner_type questionType , q.created_id createid , q.status status , 
+case  when q.questioner_type='g' or q.questioner_type='m' then concat_ws('',u.username , m.login_name) when q.questioner_type='n' then '匿名' end createName
 		from m_question_info q 
-		inner join passport_user_info u on u.id = q.created_id
+		left join passport_user_info u on cast(u.id as char) = q.created_id and u.status != -1 
+		left join m_member_info m on m.id = q.created_id and m.deleted = 0 
 		where q.id = #{questid} 
 	</select>
 	
@@ -471,4 +511,11 @@
 		where deleted = 0 and  created_id = #{memberid} 
 	</select>
 	
+	<update id="cleanForeignByQuestionType">
+		update m_question_info set quest_type_id = null , modified_id = #{createUser} , modified_time = now() where 
+		
+		<foreach collection="list" item="item" index="index" open="quest_type_id = " separator="or quest_type_id = ">
+			#{item}
+		</foreach>
+	</update>
 </mapper>

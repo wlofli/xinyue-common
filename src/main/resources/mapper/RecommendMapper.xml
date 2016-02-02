@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--modify: ywh 2015-11-27 getRecommendMemberByInvitedCode-->
 <mapper namespace="com.xinyue.manage.dao.RecommendDAO">
 <resultMap id="recommend" type="com.xinyue.manage.beans.Recommend" >
 	<result column="id" property="id"/>
@@ -525,9 +526,9 @@
 		)
 	</if>
 </select>
-
+<!--modify: ywh 加上m.deleted = 0 2015-11-27--> 
 <sql id="memberToMember">
-		WHERE (SELECT count(*)	FROM m_member_info m1	WHERE m1.invited_code = m.invitation_code) > 0
+		WHERE (SELECT count(*)	FROM m_member_info m1	WHERE m1.invited_code = m.invitation_code) > 0  and m.deleted = 0 
 		<if test="search.userName != null and search.userName != ''">
 			AND m.contact_name LIKE '%' #{search.userName} '%'
 		</if>
@@ -552,9 +553,13 @@
 			) >= #{search.recommendOrderNum}
 		</if>
 </sql>
-
+<!--
+modify: 2015-11-27
+ywh 加上m.deleted = 0 
+将表名 c_manager_info 修改为 m_member_info 原因推荐普通会员数
+--> 
 <sql id="creditToMember">
-	WHERE (SELECT count(*) FROM c_manager_info m1 WHERE m1.invited_code = m.invitation_code ) > 0
+	WHERE (SELECT count(*) FROM c_manager_info m1 WHERE m1.invited_code = m.invitation_code ) > 0 and m.deleted = 0 
 		<if test="search.userName != null and search.userName != ''">
 			AND m.real_name LIKE '%' #{search.userName} '%'
 		</if>
@@ -568,7 +573,7 @@
 			AND m.city  = #{search.city}
 		</if>
 		<if test="search.recommendUserNum != null and search.recommendUserNum != ''">
-			AND (SELECT count(*) FROM c_manager_info m1 WHERE m1.invited_code = m.invitation_code ) >= #{search.recommendUserNum}
+			AND (SELECT count(*) FROM m_member_info m1 WHERE m1.invited_code = m.invitation_code ) >= #{search.recommendUserNum}
 		</if>
 		<if test="search.recommendOrderNum != null and search.recommendOrderNum !=''">
 			AND (SELECT count(*) FROM m_order_info o WHERE o.deleted = 0 AND o.status = 10
@@ -576,7 +581,10 @@
 			) >= #{search.recommendOrderNum}
 		</if>
 </sql>
-
+<!--
+modify: 2015-11-27
+将表名 c_manager_info 修改为 m_member_info 原因推荐普通会员数
+--> 
 <select id="getRecommendMemberByInvitedCode" resultMap="recommend">
 <!-- 		普通会员推荐普通会员 -->
 	<if test='search.userType != "c"'>
@@ -629,7 +637,7 @@
 			(SELECT 
 				count(*)
 			FROM
-				c_manager_info m1
+				m_member_info m1
 			WHERE
 				m1.invited_code = m.invitation_code
 			) AS recommend_user_num,

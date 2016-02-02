@@ -14,6 +14,10 @@ import com.xinyue.manage.model.NewType;
  * @author lzc
  * @date 2015年6月26日上午10:55:37
  */
+/**
+ * lzc 15-12-03 getNewInfoByNewTypeNamet方法添加
+ *
+ */
 public interface NewDAO {
 	//newType表
 	public void addNewType(NewType newType);
@@ -54,6 +58,15 @@ public interface NewDAO {
 	
 	//获取置顶的新闻
 	public List<NewInfo> getListByTop(@Param("pageSize")int pageSize,@Param("pageNo")int pageNo);
+	
+	/**
+	 * add by lzc     date: 2015年12月3日
+	 * @param typeName新闻类型名称 e.t.c 贷款攻略
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	public List<NewInfo> getNewInfoByNewTypeName(@Param("name")String typeName, @Param("pageNo")int pageNo, @Param("pageSize")int pageSize);
 	
 	public void addNewInfo(NewInfo newInfo);
 	

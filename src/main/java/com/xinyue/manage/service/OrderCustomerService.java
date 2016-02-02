@@ -149,6 +149,15 @@ public interface OrderCustomerService {
 	 */
 	public boolean saveOrderFixed(String fixId, String manageId, String modifiedId);
 	
+	/**信贷:购买指定推送订单
+	 * add by lzc     date: 2015年12月16日
+	 * @param appointId
+	 * @param manageId
+	 * @param modifiedId
+	 * @return
+	 */
+	public boolean saveOrderAppointed(String appointId, String manageId, String modifiedId);
+	
 	
 	public List<SearchOrderCredit> getSearchOrderCreditList(String typeCode, int[] orderStatus,String manageId);
 

@@ -14,12 +14,20 @@ public class Collect implements Serializable {
 	private String productName;//产品名称
 	private String orgName;//机构名称 
 	private String credit;//信贷额度
-	private String interest;//月息
-	private String period;//贷款周期
+	private String interestFrom;//月息
+	private String interestTo;
+	private String periodFrom;//贷款周期
+	private String periodTo;
 	private String collectTime;//收藏时间
 	private String memberid;//会员id
 	private String productid;//产品id
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getProductName() {
 		return productName;
 	}
@@ -38,17 +46,29 @@ public class Collect implements Serializable {
 	public void setCredit(String credit) {
 		this.credit = credit;
 	}
-	public String getInterest() {
-		return interest;
+	public String getInterestFrom() {
+		return interestFrom;
 	}
-	public void setInterest(String interest) {
-		this.interest = interest;
+	public void setInterestFrom(String interestFrom) {
+		this.interestFrom = interestFrom;
 	}
-	public String getPeriod() {
-		return period;
+	public String getInterestTo() {
+		return interestTo;
 	}
-	public void setPeriod(String period) {
-		this.period = period;
+	public void setInterestTo(String interestTo) {
+		this.interestTo = interestTo;
+	}
+	public String getPeriodFrom() {
+		return periodFrom;
+	}
+	public void setPeriodFrom(String periodFrom) {
+		this.periodFrom = periodFrom;
+	}
+	public String getPeriodTo() {
+		return periodTo;
+	}
+	public void setPeriodTo(String periodTo) {
+		this.periodTo = periodTo;
 	}
 	public String getCollectTime() {
 		return collectTime;
@@ -67,12 +87,6 @@ public class Collect implements Serializable {
 	}
 	public void setProductid(String productid) {
 		this.productid = productid;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	
 }

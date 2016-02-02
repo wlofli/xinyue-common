@@ -3,18 +3,21 @@ package com.xinyue.authe;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import com.xinyue.authe.AutheMapper;
 import com.xinyue.authe.util.IsChinese;
 import com.xinyue.authe.util.MatchString;
 import com.xinyue.authe.util.Md5;
 
 
-
+/**
+ * ywh修改于2015-11- 09 
+ * 原因 前台点击启用无效
+ * @author Administrator
+ *
+ */
 public class UserInfo {
 	
 	public static UserInfo getUserInfo(String username){
@@ -51,6 +54,7 @@ public class UserInfo {
 		if (gid==null)
 			gid = "";
 		
+		/**
 		String qy = request.getParameter("py");
 		if (qy==null)
 			qy = "";
@@ -58,7 +62,13 @@ public class UserInfo {
 		int status = 0;
 		if (!qy.equals("true"))
 			status = 1;
-		
+		*/
+		//you start
+		String qy = request.getParameter("qy");
+		int status = 0;
+		if ("1".equals(qy))
+			status = 1;
+		//you over
 		int type;
 		try{
 			type = Integer.parseInt(request.getParameter("usertype"));

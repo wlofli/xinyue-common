@@ -16,16 +16,16 @@ public class FastProductCompany {
 	private String businessLicenseNumber;//营业执照注册号
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date registerTime;//公司成立时间
-	private double registerFund;//注册资金
+	private Double registerFund;//注册资金
 	private String companyType;//企业性质
 	private String industry;//所属行业
 	private String registerAddress;//注册地址
 	private String factBusinessArea;//实际经营所属地区
-	private double yearTurnover;//年营业额
-	private double yearInvoice;//近一年开票额
-	private double assetLiability;//资产负债率
-	private double businessGrowth;//营业额年均增长率
-	private double yearNetProfit;//上年度净利润
+	private Double yearTurnover;//年营业额
+	private Double yearInvoice;//近一年开票额
+	private Double assetLiability;//资产负债率
+	private Double businessGrowth;//营业额年均增长率
+	private Double yearNetProfit;//上年度净利润
 	private String staffNumber;//员工人数
 	private String personInformation;//个人信息
 	
@@ -72,12 +72,7 @@ public class FastProductCompany {
 	public void setRegisterTime(Date registerTime) {
 		this.registerTime = registerTime;
 	}
-	public double getRegisterFund() {
-		return registerFund;
-	}
-	public void setRegisterFund(double registerFund) {
-		this.registerFund = registerFund;
-	}
+	
 	public String getCompanyType() {
 		return companyType;
 	}
@@ -102,34 +97,43 @@ public class FastProductCompany {
 	public void setFactBusinessArea(String factBusinessArea) {
 		this.factBusinessArea = factBusinessArea;
 	}
-	public double getYearTurnover() {
+	
+	
+	
+	public Double getRegisterFund() {
+		return registerFund;
+	}
+	public void setRegisterFund(Double registerFund) {
+		this.registerFund = registerFund;
+	}
+	public Double getYearTurnover() {
 		return yearTurnover;
 	}
-	public void setYearTurnover(double yearTurnover) {
+	public void setYearTurnover(Double yearTurnover) {
 		this.yearTurnover = yearTurnover;
 	}
-	public double getYearInvoice() {
+	public Double getYearInvoice() {
 		return yearInvoice;
 	}
-	public void setYearInvoice(double yearInvoice) {
+	public void setYearInvoice(Double yearInvoice) {
 		this.yearInvoice = yearInvoice;
 	}
-	public double getAssetLiability() {
+	public Double getAssetLiability() {
 		return assetLiability;
 	}
-	public void setAssetLiability(double assetLiability) {
+	public void setAssetLiability(Double assetLiability) {
 		this.assetLiability = assetLiability;
 	}
-	public double getBusinessGrowth() {
+	public Double getBusinessGrowth() {
 		return businessGrowth;
 	}
-	public void setBusinessGrowth(double businessGrowth) {
+	public void setBusinessGrowth(Double businessGrowth) {
 		this.businessGrowth = businessGrowth;
 	}
-	public double getYearNetProfit() {
+	public Double getYearNetProfit() {
 		return yearNetProfit;
 	}
-	public void setYearNetProfit(double yearNetProfit) {
+	public void setYearNetProfit(Double yearNetProfit) {
 		this.yearNetProfit = yearNetProfit;
 	}
 	public String getStaffNumber() {

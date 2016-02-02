@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xinyue.manage.beans.AdvertisingInfo;
+import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.model.Advertising;
 import com.xinyue.manage.util.CommonFunction;
 
@@ -23,12 +24,8 @@ public interface AdvertisingService {
 	 */
 	public List<Advertising> getAdvertising(AdvertisingInfo info);
 	
-	/**
-	 * 根据广告分类获取相应的总记录数
-	 * @param type 广告分类
-	 * @return
-	 */
-	public int getAdvertCountByType(String title);
+	
+	public PageData<Advertising> findAdvertisingPage(AdvertisingInfo info);
 	
 	/**
 	 * 根据id删除广告

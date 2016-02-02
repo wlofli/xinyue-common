@@ -2,8 +2,11 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.SearchCreditManager;
+import com.xinyue.manage.beans.SearchRecommend;
 import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
@@ -146,4 +149,42 @@ public interface CreditManagerService {
 	 * @return
 	 */
 	int getServerStar(String managerId);
+	
+	
+	//add by lzc
+	/**信贷经理 -分享推荐会员 - 普通
+	 * add by lzc     date: 2015年11月12日
+	 * @param managerId
+	 * @param index
+	 * @param recommend
+	 * @return
+	 */
+	public List<InvitationMemberInfo> getInvitationMember(String managerId,int index,
+			@Param("search")SearchRecommend recommend);
+	
+	public int countInvitationMember(String managerId,SearchRecommend recommend);
+	
+	/**信贷经理 -分享推荐会员 - 信贷
+	 * add by lzc     date: 2015年11月12日
+	 * @param managerId
+	 * @param index
+	 * @param recommend
+	 * @return
+	 */
+	public List<InvitationMemberInfo> getInvitationManager(String managerId,int index,SearchRecommend recommend);
+	
+	public int countInvitationMangager(String managerId,SearchRecommend recommend);
+	
+	
+	/**获取推荐的信贷经理列表
+	 * add by lzc     date: 2015年12月4日
+	 * @param index
+	 * @param pageSize
+	 * @return
+	 */
+	public List<CreditManagerInfo> getCreditManagerInfoByIndex(int index, int pageSize);
+	//end by lzc
+	
+	////2015-11-13 提交审核信息 ywh
+	public boolean updateAudit(AuthenticationCM cm);
 }

@@ -189,6 +189,14 @@ public interface OrderDAO {
 	 * @return
 	 */
 	public CustomerInfo getOrderTrackByOrderId(String id);
+	
+	/**根据申请人申贷金额更新订单金额
+	 * add by lzc     date: 2015年12月18日
+	 * @param credit
+	 * @param id
+	 * @return
+	 */
+	public int updateOrderCredit(@Param("credit")String credit, @Param("applicantId")String id);
 
 	
 }

@@ -18,6 +18,7 @@ public class OrderInfo {
 	private String companyName;//公司名称
 	private Date applicantTime;//申请日期
 	private String status;//订单状态
+	private String orderStatus;//订单状态数字形式
 	private String remark;//备注
 	private Date receiveTime;//放款时间
 	private Double creditReal;//放款金额
@@ -29,8 +30,17 @@ public class OrderInfo {
 	private String memberid;
 	//ywh over
 	
+	
+	
+	
 	public Double getPrice() {
 		return price;
+	}
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
 	}
 	public String getTopage() {
 		return topage;

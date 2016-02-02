@@ -47,11 +47,14 @@ public interface AnswerTypeDao {
 	 */
 	public void delAnswertype(String id);
 	
+	
+	
 	/**
-	 * ywh 删除
-	 * @param id
+	 * 获取所有要删除的id
+	 * @param parentid
+	 * @return
 	 */
-	public void delAllAnswerTypeByParentid(String id);
+	public List<String> findIdByParentid(String parentid);
 	
 	/**
 	 * ywh 添加

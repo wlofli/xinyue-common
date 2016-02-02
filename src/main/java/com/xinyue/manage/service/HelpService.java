@@ -2,6 +2,7 @@ package com.xinyue.manage.service;
 
 import java.util.List;
 
+import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.HelpType;
 import com.xinyue.manage.model.Helper;
@@ -40,4 +41,14 @@ public interface HelpService {
 	 */
 	List<Helper> getAllListByIndex();
 	
+	
+	//2015-11-19  start ywh
+	public PageData<HelpType> findHelpType(String topage);
+	
+	public boolean updateHelpTypePublish(List<String> list , String user);
+	
+	public boolean delHelpType(List<String> list , String user);
+	
+	public HelpType findHelpTypeById(String id);
+	// ywh over
 }

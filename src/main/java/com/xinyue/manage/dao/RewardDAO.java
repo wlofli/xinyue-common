@@ -19,7 +19,13 @@ import com.xinyue.manage.model.WithdrawMoney;
  * author lzc
  */
 public interface RewardDAO {
-	public void addOutline(Outline outLine);
+	public void addOutline(OutLine outLine);
+	
+	/**初始化启动资金 设置为0
+	 * add by lzc     date: 2015年11月30日
+	 * @param outLine
+	 */
+	public void initOutline(OutLine outLine);
 	
 	public void addWithdraw(WithdrawMoney withdraw);
 	

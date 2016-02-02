@@ -32,4 +32,16 @@ public interface HelperDAO {
 	List<SelectInfo> getTypes();
 
 	List<Helper> getAllListByIndex();
+	
+	//ywh start 2015-11-19 帮助分类
+	public List<HelpType> findHelpType(@Param("start")int start , @Param("pageSize")int pageSize);
+	
+	public int findHelpTypeCount();
+	
+	public void upatePublishHelperType(@Param("list")List<String> list , @Param("user")String user);
+	
+	public void deleteHelperType(@Param("list")List<String> list , @Param("user")String user);
+	
+	public HelpType findHelpTypeById(@Param("id")String id);
+	//ywh over
 }

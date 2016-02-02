@@ -11,11 +11,13 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.HelperDAO;
 import com.xinyue.manage.model.HelpType;
 import com.xinyue.manage.model.Helper;
 import com.xinyue.manage.service.HelpService;
+import com.xinyue.manage.util.GlobalConstant;
 
 /**
  * 帮助中心
@@ -214,4 +216,51 @@ public class HelpServiceImpl implements HelpService {
 		return helpers;
 	}
 
+	@Override
+	public PageData<HelpType> findHelpType(String topage) {
+		// TODO Auto-generated method stub
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		PageData<HelpType> pd = new PageData<HelpType>(
+				helperDAO.findHelpType(start, GlobalConstant.PAGE_SIZE), 
+				helperDAO.findHelpTypeCount(), currentPage);
+		return pd;
+	}
+	
+	@Override
+	public boolean delHelpType(List<String> list, String user) {
+		// TODO Auto-generated method stub
+		try {
+			helperDAO.deleteHelperType(list, user);
+			log.info("帮助类型删除成功, 操作者为:"+user);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("帮助类型删除失败", e);
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean updateHelpTypePublish(List<String> list, String user) {
+		// TODO Auto-generated method stub
+		try {
+			helperDAO.upatePublishHelperType(list, user);
+			log.info("帮助类型发布成功, 操作者为:"+user);
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			
+			log.error("帮助类型发布失败", e);
+			return false;
+		}
+		
+	}
+	
+	@Override
+	public HelpType findHelpTypeById(String id) {
+		// TODO Auto-generated method stub
+		
+		return helperDAO.findHelpTypeById(id);
+	}
 }

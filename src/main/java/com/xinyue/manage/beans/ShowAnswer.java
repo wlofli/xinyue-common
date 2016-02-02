@@ -14,7 +14,7 @@ public class ShowAnswer implements Serializable {
 	private String title;//提出问题
 	private String content;//提出问题内容
 	private String qtype;//提出问题类型 普通会员 匿名者  管理员
-	private String mqcreateName;//提出问题 普通会员名 若为null则为匿名
+	private String mqcreateName;//提出问题 普通会员名 匿名 管理员若为null则为匿名
 	private String gcreateName;//提出问题为管理员
 	private String qcid;//创建者id 0为匿名
 	private String questTypeName;//问题分类 
@@ -25,14 +25,28 @@ public class ShowAnswer implements Serializable {
 	private String anum;//
 	private String mcreateName;//普通会员名
 	private String ccreateName;//信贷经理名
+	private String answerName;//回答者
 	private String oname;//机构名
 	private String atype;//回答者类型
 	private String recommend;//推荐回答
 	//后台添加属性
 	private String telphone;
 	private String questTypeid;
-	private String status;
+	private String status;//提问
+	private String astatus;//回答
 	
+	public String getAnswerName() {
+		return answerName;
+	}
+	public void setAnswerName(String answerName) {
+		this.answerName = answerName;
+	}
+	public String getAstatus() {
+		return astatus;
+	}
+	public void setAstatus(String astatus) {
+		this.astatus = astatus;
+	}
 	private String aid;//回答id
 	
 	public String getRecommend() {

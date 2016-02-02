@@ -32,11 +32,12 @@ public interface SuccessCaseDAO {
 	SuccessCase getSuccessCaseDetailByCaseId(String id);
 
 	/**
+	 * (ywh update @Param orgid index)
 	 * 机构管理-店铺设置-成功案例 列表
 	 * @param orgid
 	 * @return
 	 */
-	List<SuccessCase> getSuccessCasesByOrgId(String orgid,int index);
+	List<SuccessCase> getSuccessCasesByOrgId(@Param("orgid") String orgid,@Param("index")int index);
 
 	/**
 	 * 机构管理-店铺设置-成功案例 数量
@@ -51,7 +52,7 @@ public interface SuccessCaseDAO {
 	 * @param type
 	 * @return
 	 */
-	int updateOrgSuccessCaseUseFlag(@Param("codes")List<String> codes, @Param("type")String type);
+	int updateOrgSuccessCaseUseFlag(@Param("codes")List<String> codes, @Param("type")String type , @Param("updateUser")String updateUser);
 
 	/**
 	 * 成功案例删除
@@ -59,5 +60,15 @@ public interface SuccessCaseDAO {
 	 * @return
 	 */
 	int deleteSuccessCaseByIds(@Param("codes")List<String> codes);
+	
+	/**获取最近的成功案例
+	 * add by lzc     date: 2015年12月1日
+	 * @param index 开始
+	 * @param pageSize 
+	 * @return
+	 */
+	List<SuccessCase> getSuccessByTime(@Param("pageNo")int pageNo, @Param("pageSize")int pageSize);
+	
+	
 
 }

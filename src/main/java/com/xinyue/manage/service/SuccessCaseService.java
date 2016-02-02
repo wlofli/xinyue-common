@@ -12,6 +12,10 @@ import com.xinyue.manage.model.SuccessCase;
  * @version v1.0
  * @date 创建时间：2015年8月17日
  */
+/**
+ * lzc 15-12-01 添加获取最近成功案例
+ *
+ */
 public interface SuccessCaseService {
 
 	/**
@@ -78,7 +82,7 @@ public interface SuccessCaseService {
 	 * @param type
 	 * @return
 	 */
-	boolean updateOrgSuccessCaseUseFlag(String code, String type);
+	boolean updateOrgSuccessCaseUseFlag(String code, String type , String updateUser);
 
 	/**
 	 * 成功案例删除
@@ -86,5 +90,20 @@ public interface SuccessCaseService {
 	 * @return
 	 */
 	boolean deleteSuccessCaseByIds(String code);
+	
+	/**获取信贷经理的成功案例数量
+	 * add by lzc     date: 2015年11月13日
+	 * @param successCaseSearch
+	 * @return
+	 */
+	int countSuccessCaseByManagerId(SuccessCaseSearch successCaseSearch);
+	
+	/**获取最近的成功案例
+	 * add by lzc     date: 2015年12月1日
+	 * @param index 开始
+	 * @param pageSize 
+	 * @return
+	 */
+	List<SuccessCase> getSuccessByTime(int index, int pageSize);
 
 }

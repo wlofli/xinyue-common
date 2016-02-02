@@ -7,13 +7,16 @@ import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.SearchCreditManager;
+import com.xinyue.manage.beans.SearchRecommend;
 import com.xinyue.manage.model.AuthenticationCM;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.CreditManagerInfo;
 import com.xinyue.manage.model.MoneyOutline;
 import com.xinyue.manage.model.Order;
 import com.xinyue.manage.model.Select;
-
+/**
+ * ywh  2015-12-08  添加推荐方法updateCreditRecommend
+ */
 public interface CreditManagerDAO {
 
 	int getManagerCount();
@@ -160,6 +163,49 @@ public interface CreditManagerDAO {
 	 */
 	public List<Select> getAllCredit();
 	
+	//2015-11-13 提交审核信息 ywh
+	public void updateAudit(AuthenticationCM cm);
+	//是否设为首页推荐
+	public void updateCreditRecommend(AuthenticationCM cm);
 	//ywh over
+	
+	
+	//add by lzc
+	/**信贷经理 -分享推荐会员 - 普通
+	 * add by lzc     date: 2015年11月12日
+	 * @param managerId
+	 * @param index
+	 * @param recommend
+	 * @return
+	 */
+	public List<InvitationMemberInfo> getInvitationMember(@Param("managerId")String managerId,@Param("index")int index,
+			@Param("search")SearchRecommend recommend);
+	
+	public int countInvitationMember(@Param("managerId")String managerId,@Param("search")SearchRecommend recommend);
+	
+	/**信贷经理 -分享推荐会员 - 信贷
+	 * add by lzc     date: 2015年11月12日
+	 * @param managerId
+	 * @param index
+	 * @param recommend
+	 * @return
+	 */
+	public List<InvitationMemberInfo> getInvitationManager(@Param("managerId")String managerId,@Param("index")int index,
+			@Param("search")SearchRecommend recommend);
+	
+	public int countInvitationMangager(@Param("managerId")String managerId,@Param("search")SearchRecommend recommend);
+	
+	
+	
+	/**首页获取推荐至首页的信贷经理列表
+	 * add by lzc     date: 2015年12月4日
+	 * @param index
+	 * @param pageSize
+	 * @return
+	 */
+	public List<CreditManagerInfo> getCreditManagerInfoByIndex(@Param("pageNo")int pageNo, @Param("pageSize")int pageSize);
+	//end by lzc
+	
+	
 
 }

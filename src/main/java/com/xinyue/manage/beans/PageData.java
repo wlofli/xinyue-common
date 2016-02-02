@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.xinyue.manage.util.GlobalConstant;
 
-
+/**
+ * 
+ * 2015-11-25 ywh  getEnd 原因当总页数只有4页时 page.tag文件分页有异常
+ */
 @SuppressWarnings("unchecked")
 public class PageData<T> {
 
@@ -79,11 +82,13 @@ public class PageData<T> {
 		return start;
 	}
 
-	/**
+	/** 
 	 * @return the end
 	 */
 	public int getEnd() {
-		if (getCurrentPage() + 2 >= getTotalPage()) {
+		//modify by 2015-11-25 ywh 2 改为3
+		if (getCurrentPage() + 3 >= getTotalPage()) {
+			//end 
 			end = getTotalPage();
 		} else {
 			end = getCurrentPage() + 2;

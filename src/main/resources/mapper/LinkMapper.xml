@@ -28,10 +28,10 @@
 	<insert id="addFriendShipLinkInfo" parameterType="hashmap">
 		INSERT INTO m_friendship_info (code,link_name,image_path,link_text,
 					link_url,link_location,link_type,link_status,dead_line,
-					created_time,modified_time,created_id,modified_id)
+					created_time,modified_time,created_id,modified_id , link_publish)
 		VALUES
 			(#{code},#{name},#{imagePath},#{text},#{url},#{location},#{type},#{status},
-			 #{deadLine},now(),now(),#{user},#{user})
+			 #{deadLine},now(),now(),#{user},#{user} , 1)
 	</insert>
 	
 	<select id="getList" parameterType="hashmap" resultMap="friendShipResault">
@@ -47,7 +47,7 @@
 		    s.select_value as type,
 		    f.link_status as status,
 		    date_format(f.dead_line, '%Y-%m-%d') as deadline,
-		    f.link_publish as publish,
+		    s1.select_value as publish,
 		    f.link_index as lindex
 		FROM
 		    m_friendship_info f
@@ -58,10 +58,12 @@
 		        LEFT JOIN
 		    m_area_province p ON substring(p.code,1,2) = substring(f.link_location,1,2)
 		        LEFT JOIN
-		    m_select_info s ON f.link_type = s.select_key
+		    m_select_info s ON f.link_type = s.select_key AND s.type_code = 'link_type' 
+		    	left join
+		    m_select_info s1 on f.link_publish = s1.select_key and s1.type_code = 'publish_type'
 		WHERE
 		    f.deleted = 0
-		        AND s.type_code = 'link_type'
+		        
 		<if test="linkName != ''">
 			AND f.link_name LIKE '%' #{linkName} '%'
 		</if>
@@ -109,26 +111,32 @@
 	</select>
 	
 	<update id="updateStatus" parameterType="list">
-		<foreach collection="code" item="item" index="index" separator=";">
+		
 			UPDATE m_friendship_info SET
 				link_publish=4
-			WHERE code=#{item}
+			WHERE code=
+			<foreach collection="code" item="item" index="index" separator=" or code = ">
+			#{item}
 		</foreach>
 	</update>
 	
 	<update id="publishLinkByCode" parameterType="list">
-		<foreach collection="code" item="item" index="index" separator=";">
+		
 			UPDATE m_friendship_info SET
 				link_publish=2,modified_time=now(),modified_id=#{user} 
-			WHERE id=#{item}
+			WHERE code = 
+			<foreach collection="code" item="item" index="index" separator=" or code = ">
+			#{item}
 		</foreach>
 	</update>
 	
 	<update id="forbidLinkByCode" parameterType="list">
-		<foreach collection="code" item="item" index="index" separator=";">
+		
 			UPDATE m_friendship_info SET
 				link_publish=3,modified_time=now(),modified_id=#{user} 
-			WHERE id=#{item}
+			WHERE code = 
+			<foreach collection="code" item="item" index="index" separator=" or code = ">
+			#{item}
 		</foreach>
 	</update>
 	
@@ -137,10 +145,11 @@
 		WHERE link_index=#{index}
 	</select>
 	
+	<!--ywh modify 2015-12-19 修改表名-->
 	<update id="updateSortIndex">
-		UPDATE m_cooperation_info SET
+		UPDATE m_friendship_info SET
 			link_index=#{index},modified_time=now(),modified_id=#{user} 
-		WHERE id=#{code}
+		WHERE code = #{code}
 	</update>
 	
 	<select id="getCount" parameterType="hashmap" resultType="int">

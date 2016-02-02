@@ -78,8 +78,16 @@
 	
 	<!--ywh 添加产品分类 -->
 	<insert id="addTypeFirst" parameterType="com.xinyue.manage.model.ProductType">
-		insert into m_product_type(id , name , status , created_time , created_id , parent_id , modified_time , modified_id)
-		 values(replace(uuid() , '-','') , #{name} , #{status} , now() , #{createUser} , #{parentid} , #{createUser} , now())
+		insert into m_product_type(id , name , status , created_time , created_id , 
+		<if test="parentid != null and parentid != ''">
+			parent_id ,
+		</if>
+		 modified_time , modified_id)
+		 values(replace(uuid() , '-','') , #{name} , #{status} , now() , #{createUser} , 
+		 <if test="parentid != null and parentid != ''">
+		 	#{parentid} ,
+		 </if>
+		 now() ,  #{createUser})
 	</insert>
 	
 	<!--ywh 修改产品分类 -->
@@ -90,14 +98,19 @@
 	
 	<!-- ywh 删除产品分类时 修改产品外键-->
 	<update id="updateProductByType">
-		update m_product_info set type = null, modified_time = now() , modified_id = #{modifyUser} where type = #{id}
+		update m_product_info set type = null, modified_time = now() , modified_id = #{modifyUser} where 
+		<foreach collection="list" item="item" index="index" open="type = " separator="or type = ">
+			#{item}
+		</foreach>
 	</update>
 	
 	<!-- ywh 删除产品分类 -->
 	<update id="delProductType">
-		update m_product_type set deleted = 1 , modified_time = now() , modified_id = #{modifyUser}  where id = #{id}
+		update m_product_type set deleted = 1 , modified_time = now() , modified_id = #{modifyUser}  where id = #{id} or parent_id = #{id}
 	</update>
-	
+	<select id="findIdByParentid" resultType="String">
+		select id from m_product_type where deleted = 0 and id = #{parentid} or parent_id = #{parentid}
+	</select>
 	<!-- ywh 启用产品分类 -->
 	<update id="enableProductType">
 		update m_product_type set status = 0, modified_time = now() , modified_id = #{modifyUser} where id = #{id}

@@ -253,8 +253,8 @@
 		from m_new_info i
 		left join m_new_type t on t.id = i.new_type 
 		
-		where i.deleted = 0 and t.deleted = 0
-		<choose><when test="searchNew != null ">
+		where i.deleted = 0 and t.deleted = 0 and i.status = 1
+		<if test="searchNew != null ">
 <!-- 			<if test="searchNew.keywords == 1"> -->
 <!-- 				and title like '%' #{searchNew.value} '%' -->
 <!-- 			</if> -->
@@ -279,7 +279,7 @@
 					where tab_substation_id = #{searchNew.city}	
 				)
 			</if>
-		</when></choose>
+		</if>
 		order by i.modified_time	desc
 		limit #{pageNo},#{pageSize}
 	
@@ -298,7 +298,7 @@
 			send_date
 		from m_new_info i
 		left join m_new_type t on t.id = i.new_type 
-		where i.deleted = 0 and t.deleted = 0 and i.top = 1
+		where i.deleted = 0 and t.deleted = 0 and i.top = 1 and i.status = 1
 		order by i.modified_time desc
 		limit #{pageNo},#{pageSize}
 	</select>
@@ -359,6 +359,9 @@
 		set 
 		<if test="status == 0">
 			status = 1,
+		</if>
+		<if test="status == 2">
+			status = 2,
 		</if>
 		<if test="status == 1">
 			deleted =1,
@@ -424,6 +427,26 @@
 		limit #{pageNo}, #{pageSize}
 	</select>
 	
-	
+	<select id="getNewInfoByNewTypeName" resultMap="newInfo" >
+		SELECT
+			i.id,
+			i.title,
+			i.send_date,
+			i.status,
+			i.image_url,
+			i.file_name,
+			i.file_dir
+		FROM m_new_info i 
+		WHERE i.new_type = (
+			SELECT 
+				t.id
+			FROM 
+				m_new_type t
+			WHERE
+				t.name = #{name}
+			)
+		ORDER BY i.modified_time DESC
+		LIMIT #{pageNo}, #{pageSize}		
+	</select>
 
 </mapper>

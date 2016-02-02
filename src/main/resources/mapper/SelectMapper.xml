@@ -76,7 +76,7 @@
 			id as `key`,
 			name as value
 		from
-			 m_product_info	
+			 m_product_info	where deleted = 0 
 	</select>
 	
 	

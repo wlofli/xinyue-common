@@ -86,6 +86,14 @@
 				#{cashRemain},#{rewardRemain},#{awardRemain},#{createdId},now(),#{modifiedId},now())
 	</insert>
 	
+	<insert id="initOutline" parameterType="com.xinyue.manage.model.OutLine">
+		insert into m_reward_outline
+			(id,user_id,user_type,recharge_total,consumption_total,reward_total,withdraw_total,
+				cash_remain,reward_remain,award_remain,created_id,created_time,modified_id,modified_time)
+		values
+			(#{id},#{userId},#{userType},0,0,0,0,0,0,0,#{userId},now(),#{userId},now())
+	</insert>
+	
 	<insert id="addWithdraw" parameterType="com.xinyue.manage.model.WithdrawMoney">
 		insert into m_withdraw_money_info
 			(id,user_id,withdraw_type,withdraw_amount,withdraw_time,status,serical_number,
@@ -104,16 +112,16 @@
 				#{remark},#{deleted},#{userType},#{currentAmount},#{otherRewardAmount},
 				#{otherAwardAmount},#{recommendUserName},#{recommendUserPhone})
 	</insert>
-	
+	<!--ywh  2015-0-12-08 字段错了-->
 	<select id="getAllAwardRemain" resultType="double">
-		select sum(reward_remain)
+		select sum(award_remain)
 		from m_reward_outline
 	</select>
-	
+	<!--ywh  2015-0-12-08  getAllWithdraw 一样-->
 	<select id="getAllReward" resultType="double">
 		select sum(reward_amount)
 		from m_reward_info
-		where deleted = 0
+		where deleted = 0 and status = 1
 	</select>
 	
 	<select id="getAllWithdraw" resultType="double">
@@ -164,7 +172,7 @@
 			</if>
 		</if>
 	</sql>
-	
+	<!--ywh  2015-0-12-08  把查询条件放在where之后-->
 	<select id="getRewardListByCondition" resultMap="reward">
 		select
 			concat_ws('',cm.real_name,m.contact_name) as user_name,
@@ -188,14 +196,15 @@
 		left join m_area_province  p on p.code = cm.province
 		left join m_area_city      c on c.code = cm.city
 		left join m_member_info    m on r.user_id = m.id and r.user_type = 'm'
-		<if test="search.zone != null and search.zone != ''">
-			and   m.area_zone = #{search.zone}
-		</if>
+		
 		left join m_area_province  p1 on p1.code = m.area_province
 		left join m_area_city      c1 on c1.code = m.area_city
 		left join m_area_zone      z1 on z1.code = m.area_zone 
 		
 		where r.deleted = 0 
+		<if test="search.zone != null and search.zone != ''">
+			and   m.area_zone = #{search.zone}
+		</if>
 		<include refid="rewardCondition"></include>
 		order by r.reward_time
 		limit #{pageNo}, #{pageSize}
@@ -243,11 +252,13 @@
 		select count(*)
 		from m_reward_info r
 		where deleted = 0 and  r.user_id = #{userId} 
-			<if test="searchReward.startTime != null">
-				and reward_time > #{searchReward.startTime}
-			</if>
-			<if test="searchReward.endTime != null">
-					<![CDATA[and reward_time < #{searchReward.endTime} ]]> 
+			<if test="searchReward != null">
+				<if test="searchReward.startTime != null">
+					and reward_time > #{searchReward.startTime}
+				</if>
+				<if test="searchReward.endTime != null">
+						<![CDATA[and reward_time < #{searchReward.endTime} ]]> 
+				</if>
 			</if>
 	</select>
 	

@@ -34,19 +34,17 @@
 		FROM
 		    m_cooperation_info c
 		        LEFT JOIN
-		    m_select_info s ON c.logo_type = s.select_key
+		    m_select_info s ON c.logo_type = s.select_key and s.type_code = 'link_type'
 		        LEFT JOIN
-		    m_select_info s1 ON c.link_status = s1.select_key
+		    m_select_info s1 ON c.link_publish = s1.select_key AND s1.type_code = 'publish_type'
 		        LEFT JOIN
 		    m_area_province p ON substring(p.code, 1, 2) = substring(c.location, 1, 2)
 		        LEFT JOIN
 		    m_area_city ci ON substring(ci.code, 1, 4) = substring(c.location, 1, 4)
 		        LEFT JOIN
 		    m_area_zone z ON z.code = c.location
-		WHERE
-		    s.type_code = 'link_type'
-		        AND c.deleted = 0
-		        AND s1.type_code = 'publish_type'
+		WHERE c.deleted = 0
+		        
 		<if test="linkName != ''">
 			AND c.link_name LIKE '%' #{linkName} '%'
 		</if>
@@ -81,9 +79,9 @@
 	<insert id="addFriendShipLinkInfo" parameterType="hashmap">
 		INSERT INTO m_cooperation_info (id,link_name,link_url,logo_file_name,logo_file_dir,
 			logo_type,link_text,location,end_time,link_status,created_time,modified_time,
-			created_id,modified_id) VALUES(
+			created_id,modified_id , link_publish) VALUES(
 				#{code},#{name},#{url},#{imageName},#{imageUrl},#{type},#{text},
-				#{location},#{deadLine},#{status},now(),now(),#{user},#{user});
+				#{location},#{deadLine},#{status},now(),now(),#{user},#{user} , 1);
 	</insert>
 	
 	<update id="updateFriendShipLinkInfo" parameterType="hashmap">
@@ -95,26 +93,33 @@
 	</update>
 	
 	<update id="deleteCooperationByCode" parameterType="list">
-		<foreach collection="code" item="item" index="index" separator=";">
+		
 		UPDATE m_cooperation_info SET
 			deleted=1,modified_time=now(),modified_id=#{user} 
-		WHERE id=#{item}
+		WHERE id=
+		<foreach collection="code" item="item" index="index" separator=" or id = ">
+		#{item}
 		</foreach>
 	</update>
 	
 	<update id="publishCooperationByCode" parameterType="list">
-		<foreach collection="code" item="item" index="index" separator=";">
+		
 			UPDATE m_cooperation_info SET
 				link_publish=2,modified_time=now(),modified_id=#{user} 
-			WHERE id=#{item}
+			WHERE 
+		id=
+		<foreach collection="code" item="item" index="index" separator=" or id = ">
+			#{item}
 		</foreach>
 	</update>
 	
 	<update id="forbidCooperationByCode" parameterType="list">
-		<foreach collection="code" item="item" index="index" separator=";">
+		
 			UPDATE m_cooperation_info SET
 				link_publish=3,modified_time=now(),modified_id=#{user} 
-			WHERE id=#{item}
+			WHERE id=
+			<foreach collection="code" item="item" index="index" separator=" or id = ">
+			#{item}
 		</foreach>
 	</update>
 	
@@ -123,10 +128,12 @@
 	</select>
 	
 	<update id="updateStatus" parameterType="list">
-		<foreach collection="code" item="item" index="index" separator=";">
+		
 			UPDATE m_cooperation_info SET
 				link_publish=4
-			WHERE id=#{item}
+			WHERE id=
+		<foreach collection="code" item="item" index="index" separator=" or id = ">
+			#{item}
 		</foreach>
 	</update>
 	

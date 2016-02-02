@@ -13,6 +13,7 @@ public class OrderTrack {
 	private String orderType;//1订单2快速申贷
 	private String deleted;//删除
 	private String status;//订单状态
+	private String orderStatus;//订单状态数字形式
 	private String price;//下载扣费
 	private String info;//下载企业信息情况
 	private String remark;//备注信息||状态描述
@@ -28,6 +29,13 @@ public class OrderTrack {
 	
 	
 	
+	
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
 	public Date getCreditTime() {
 		return creditTime;
 	}

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.xinyue.manage.beans.SearchFsAndCo;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.LinkInfoDAO;
+import com.xinyue.manage.model.Cooperation;
 import com.xinyue.manage.model.LinkFriendShip;
 import com.xinyue.manage.service.LinkService;
 
@@ -52,14 +53,14 @@ public class LinkServiceImpl implements LinkService {
 			//网址
 			parMap.put("url", linkFriendShip.getLinkUrl());
 			//所属城市
-			if (linkFriendShip.getLinkZone().equals("")) {
-				if (linkFriendShip.getLinkCity().equals("")) {
-					parMap.put("location", linkFriendShip.getLinkProvince());
-				}else {
-					parMap.put("location", linkFriendShip.getLinkCity());
-				}
-			}else {
+			if (linkFriendShip.getLinkZone() != null && !linkFriendShip.getLinkZone().equals("") && !linkFriendShip.getLinkZone().equals("0")) {
 				parMap.put("location", linkFriendShip.getLinkZone());
+			}else if (linkFriendShip.getLinkCity() != null && !linkFriendShip.getLinkCity().equals("") && !linkFriendShip.getLinkCity().equals("0")) {
+				parMap.put("location",linkFriendShip.getLinkCity() );
+			}else if (linkFriendShip.getLinkProvince() != null && !linkFriendShip.getLinkProvince().equals("") && !linkFriendShip.getLinkProvince().equals("0")) {
+				parMap.put("location", linkFriendShip.getLinkProvince() );
+			}else {
+				parMap.put("location", "");
 			}
 			//链接类型
 			parMap.put("type", linkFriendShip.getLinkType());
@@ -97,7 +98,8 @@ public class LinkServiceImpl implements LinkService {
 	@Override
 	public List<LinkFriendShip> getList(SearchFsAndCo searchFriendShip,int index) {
 		
-		List<LinkFriendShip> list = null;
+		List<LinkFriendShip> listTemp = null;
+		List<LinkFriendShip> list = new ArrayList<LinkFriendShip>();
 		HashMap<String, Object> parMap = new HashMap<>();
 		
 		try {
@@ -125,8 +127,18 @@ public class LinkServiceImpl implements LinkService {
 				parMap.put("location", searchFriendShip.getSearchZone());
 			}
 			
-			list = linkInfoDAO.getList(parMap);
-			
+			listTemp = linkInfoDAO.getList(parMap);
+			//判断截止日期（长期 OR 日期）
+			if (listTemp != null && listTemp.size() > 0) {
+				for (int i = 0; i < listTemp.size(); i++) {
+					LinkFriendShip link = listTemp.get(i);
+					
+					if (link.getLinkStatus().equals("1")) {
+						link.setDeadLine("长期");
+					}
+					list.add(link);
+				}
+			}
 		} catch (Exception e) {
 			list = null;
 			log.error(e.toString());

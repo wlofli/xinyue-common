@@ -1,5 +1,7 @@
 package com.xinyue.manage.service.impl;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -27,20 +29,35 @@ import com.xinyue.manage.util.GlobalConstant;
  * @2015年8月6日
  * @下午5:14:13
  */
+/**
+ * lzc  2015年12月22日 getMyAnswer()格式化数字
+ *
+ */
 @Service
 public class AnswerServiceImpl implements AnswerService {
 
 	@Resource
 	private AnswerDao adao;
 	private Logger logger = Logger.getLogger(AnswerServiceImpl.class);
+	
+//	add by lzc
+	DecimalFormat df = new DecimalFormat("######0.00");
+	
 	@Override
 	public QuestionBean getMyAnswer(String createid) {
 		// TODO Auto-generated method stub
 		QuestionBean qb = adao.getMyAnswer(createid);
-		int total = qb.getTotal();
-		if(total !=0){
-			qb.setRate(qb.getPass()/total);
+		//modified by lzc
+		//增加了qb判null条件
+		if (qb != null) {
+			int total = qb.getTotal();
+			if(total !=0){
+				//modified by lzc 2015年12月22日 格式化数字
+				qb.setRate(Double.parseDouble(df.format((double)qb.getPass() * 100 /total)));
+				//end
+			}
 		}
+		
 		
 		return qb;
 	}
@@ -224,20 +241,19 @@ public class AnswerServiceImpl implements AnswerService {
 	public boolean updateQuest(Question question) {
 		// TODO Auto-generated method stub
 		try {
-			Question user = adao.findUserByUserName(question.getCreateName());
-			if(!GlobalConstant.isNull(user)){
+			
+			if(GlobalConstant.isNull(question.getId())){
+				Question user = adao.findUserByUserName(question.getCreateName());
 				question.setCreateid(String.valueOf(user.getId()));
-				if(GlobalConstant.isNull(question.getId())){
-					adao.addQuest(question);
-					logger.info("添加问题成功");
-				}else{
-					adao.updateAdminQuest(question);
-					logger.info("修改问题成功");
-				}
+				adao.addQuest(question);
+				logger.info("添加问题成功");
+				return true;
+			}else{
+				adao.updateAdminQuest(question);
+				logger.info("修改问题成功");
 				return true;
 			}
-			return false;
-			
+				
 		} catch (Exception e) {
 			// TODO: handle exception
 			if(GlobalConstant.isNull(question.getId())){

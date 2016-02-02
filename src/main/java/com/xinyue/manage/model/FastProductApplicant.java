@@ -7,11 +7,11 @@ package com.xinyue.manage.model;
 public class FastProductApplicant {
 	
 	private String applicantFastId;//id
-	private double loanAmount;//贷款金额
+	private Double loanAmount;//贷款金额
 	private String loanPeriod;//贷款期限
 	private String profession;//职业
-	private double monthManagement;//总经营流水/月
-	private double monthCashIncome;//现金结算经营收入/月
+	private Double monthManagement;//总经营流水/月
+	private Double monthCashIncome;//现金结算经营收入/月
 	private String managementLife;//经营年限
 	private String registerProvince;//省
 	private String registerCity;//市
@@ -34,12 +34,7 @@ public class FastProductApplicant {
 	public void setApplicantFastId(String applicantFastId) {
 		this.applicantFastId = applicantFastId;
 	}
-	public double getLoanAmount() {
-		return loanAmount;
-	}
-	public void setLoanAmount(double loanAmount) {
-		this.loanAmount = loanAmount;
-	}
+	
 	public String getLoanPeriod() {
 		return loanPeriod;
 	}
@@ -52,16 +47,23 @@ public class FastProductApplicant {
 	public void setProfession(String profession) {
 		this.profession = profession;
 	}
-	public double getMonthManagement() {
+	
+	public Double getLoanAmount() {
+		return loanAmount;
+	}
+	public void setLoanAmount(Double loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+	public Double getMonthManagement() {
 		return monthManagement;
 	}
-	public void setMonthManagement(double monthManagement) {
+	public void setMonthManagement(Double monthManagement) {
 		this.monthManagement = monthManagement;
 	}
-	public double getMonthCashIncome() {
+	public Double getMonthCashIncome() {
 		return monthCashIncome;
 	}
-	public void setMonthCashIncome(double monthCashIncome) {
+	public void setMonthCashIncome(Double monthCashIncome) {
 		this.monthCashIncome = monthCashIncome;
 	}
 	public String getManagementLife() {

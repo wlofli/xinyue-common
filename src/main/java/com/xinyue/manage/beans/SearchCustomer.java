@@ -21,7 +21,16 @@ public class SearchCustomer {
 	private String applicantPhone;//客户电话
 	private String applicantName;//客户姓名
 	private String orderType;//订单类型:1立即领取,2竞拍,3唯一低价,4指定推送,
+	//ywh start
+	private String orderStatus;//订单状态查询 
 	
+	public String getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+	//ywh end
 	//add by mzj 2015/09/11 start
 	//页
 	private int page = 1;

@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.xinyue.manage.beans.OrgOrder;
 import com.xinyue.manage.beans.OrganizationInfo;
 import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.beans.QuestionBean;
@@ -36,6 +37,7 @@ import com.xinyue.manage.dao.ProductTypeDao;
 import com.xinyue.manage.model.Answer;
 import com.xinyue.manage.model.CreditManager;
 import com.xinyue.manage.model.LinkMan;
+import com.xinyue.manage.model.Order;
 import com.xinyue.manage.model.Organization;
 import com.xinyue.manage.model.OrganizationType;
 import com.xinyue.manage.model.ProductType;
@@ -417,6 +419,19 @@ public class OrganizationServiceImpl implements OrganizationService {
 		return new PageData<CreditManager>(
 				orgDao.findCreditByOrgid(sc, start, GlobalConstant.PAGE_SIZE), 
 				orgDao.getCreditByOrgidCount(sc), 
+				currentPage);
+	}
+	
+	
+	@Override
+	public PageData<Order> findOrgOrder(OrgOrder order) {
+		// TODO Auto-generated method stub
+		String topage = order.getTopage();
+		int currentPage = (GlobalConstant.isNull(topage) || "0".equals(topage))?1:Integer.valueOf(topage);
+		int start = (currentPage-1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<Order>(
+				orgDao.findOrgOrder(order, start, GlobalConstant.PAGE_SIZE), 
+				orgDao.getOrgOrder(order),
 				currentPage);
 	}
 }

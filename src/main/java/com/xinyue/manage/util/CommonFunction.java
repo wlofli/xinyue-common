@@ -16,12 +16,15 @@
  */
 package com.xinyue.manage.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,7 +58,9 @@ import com.xinyue.authe.AutheManage;
 import com.xinyue.manage.beans.PageInfo;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.dao.SelectDao;
-
+/**
+ * modify ywh 2015-11-30 downLoadFile
+ */
 public class CommonFunction {
 
 	private static Properties props = new Properties();
@@ -308,22 +313,20 @@ public class CommonFunction {
 
 	private static int BUFF_SIZE = 1024;
 
+	
 	/**
 	 * 下载
-	 * 
+	 * modify ywh 2015-11-30 
 	 * @param response
 	 */
 	public void downLoadFile(HttpServletResponse response, String filePath) {
-
-		// 文件路径
-		// String filePath = "D:/maozj/S8722F.pdf";
-
+		 response.setContentType("text/html;charset=utf-8");  
+		
 		// 下载文件名
 		String fileName = "";
-
-		// 输入流
-		InputStream is = null;
-
+		BufferedInputStream bis = null;  
+        BufferedOutputStream bos = null;  
+	
 		try {
 			// 文件名+文件后缀取得
 			int lastindex = filePath.lastIndexOf("/");
@@ -332,36 +335,32 @@ public class CommonFunction {
 				fileName = filePath.substring(lastindex + 1);
 			}
 
-			// 文件读入
-			is = new FileInputStream(filePath);
-
-			response.reset();
 
 			// 下载文件名字与类型
-			response.setContentType("text/plain");
-			response.addHeader("Content-Disposition", "attachment;filename="
-					+ fileName);
-
-			byte[] b = new byte[BUFF_SIZE];
-
-			int length;
-
-			try {
-				// 文件输出
-				while ((length = is.read(b)) > -1) {
-					response.getOutputStream().write(b, 0, length);
-				}
-			} catch (IOException e) {
-
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
+			long fileLength = new File(filePath).length();
+			response.setContentType("application/x-msdownload;");
+			response.setHeader("Content-Disposition", "attachment;filename="
+					+ new String(fileName.getBytes("utf-8"), "ISO8859-1"));
+			response.setHeader("Content-Length", String.valueOf(fileLength)); 
+			bis = new BufferedInputStream(new FileInputStream(filePath));  
+            bos = new BufferedOutputStream(response.getOutputStream());  
+            byte[] buff = new byte[2048];  
+            int bytesRead;  
+            while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {  
+                bos.write(buff, 0, bytesRead);  
+            }  
+			bos.flush();
+			
+		} catch (Exception e) {
 
 			e.printStackTrace();
 		} finally {
 			try {
-				if (is != null) {
-					is.close();
+				if (bis != null) {
+					bis.close();
+				}
+				if (bos != null) {
+					bos.close();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -433,4 +432,34 @@ public class CommonFunction {
 		}
 		return date;
 	}
+	
+	
+	/**
+	 * add by lzc     date: 2015年12月29日
+	 * @param filePath
+	 * @return
+	 */
+	public static String read(String filePath) {
+		String code = "UTF-8";
+		String fileContent = "";
+		File file = new File(filePath);
+		try {
+			InputStreamReader read = new InputStreamReader(new FileInputStream(
+					file), code);
+			BufferedReader reader = new BufferedReader(read);
+			String line;
+			while ((line = reader.readLine()) != null) {
+				fileContent = fileContent + line + "\n";
+			}
+			read.close();
+			reader.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			fileContent = null;
+		}
+		return fileContent;
+	}
+	
+	
+	
 }

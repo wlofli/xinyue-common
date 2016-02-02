@@ -22,8 +22,6 @@
 		<result column="created_time" property="createdTime" />
 		<result column="modified_id" property="modifiedId" />
 		<result column="modified_time" property="modifiedTime" />
-<!-- 		<result column="order_status" property="orderStatus" /> -->
-<!-- 		<result column="order_type" property="orderType" /> -->
 		<result column="credit_real" property="creditReal"/>
 		<result column="remark" property="remark" />
 		<result column="audite_time" property="auditeTime" />
@@ -46,8 +44,6 @@
 		<result column="type" property="type"/>
 		<association column="order_status"  property="orderStatus" javaType="String" select="getOrderStatus"></association>
 		<association column="order_type" property="orderType" javaType="String" select="getOrderType"></association>
-<!-- 		<association  column="blank_audite_person"  property="blankAuditePerson" javaType="String" select="getBlankAuditePersonName"></association> -->
-<!-- 		<association  column="tax_audite_person"  property="taxAuditePerson" javaType="String" select="getTaxAuditePersonName"></association> -->
 	</resultMap>
 	
 	
@@ -97,13 +93,6 @@
 	<select id="getOrderType" resultType="String">
 		select select_value from m_select_info where select_key = #{order_type} and type_code = 'order_type'
 	</select>
-<!-- 	<select id="getBlankAuditePersonName" resultType="String"> -->
-<!-- 		select name from m_user_info where id = #{blank_audite_person} -->
-<!-- 	</select> -->
-	
-<!-- 	<select id="getTaxAuditePersonName" resultType="String"> -->
-<!-- 		select name from m_user_info where id = #{tax_audite_person} -->
-<!-- 	</select> -->
 	<resultMap id="selectInfo" type="com.xinyue.manage.beans.SelectInfo">
 		<result column="key" property="key" />
 		<result column="value" property="value" />
@@ -114,7 +103,7 @@
 		select m.id,
 			   m.company,
 			   m.code,
-			   u.name receiver,
+			   u.real_name receiver,
 			   m.receive_time,
 			   p.name area_province,
 			   c.name area_city,
@@ -132,11 +121,13 @@
 			   m.modified_time,
 			   m.remark
 			 from m_product_fast_info  m
-			 left join m_area_province p on  m.area_province = p.id
-			 left join m_area_city     c on m.area_city = c.id
-			 left join m_area_zone     z on m.area_zone = z.id
+			 <!--ywh start modify 2015-12-17-->
+			 left join m_area_province p on  m.area_province = p.code 
+			 left join m_area_city     c on m.area_city = c.code 
+			 left join m_area_zone     z on m.area_zone = z.code 
+			 <!--ywh over modify 2015-12-17-->
 			 left join m_select_info   s on s.select_key = m.status and type_code = #{typeCode}
-			 left join m_user_info     u on u.id = m.receiver
+			 left join c_manager_info     u on u.id = m.receiver
 			 where
 			 m.deleted = 0 and  m.type = 1
 			 <if test="fspdt.code != null and fspdt.code !=''">
@@ -214,16 +205,20 @@
 		select m.id,
 			   m.company,
 			   m.code,
-			   u.name receiver,
+			   u.real_name receiver,
 			   p.name area_province,
 			   c.name area_city,
 			   z.name area_zone,
-			   m.contact_name,
+			   <!--ywh start modify 2015-12-23-->
+			   ma.name contact_name,
+			   <!--ywh end-->
 			   m.order_type,
 			   m.order_status,
 			   m.deleted,
 			   s.select_value as `status`,
-			   m.credit,
+			   <!--ywh start modify 2015-12-23-->
+			   ma.loan_amount credit,
+			   <!--ywh end-->
 			   m.contact_phone,
 			   m.created_id,
 			   m.created_time,
@@ -241,11 +236,16 @@
 			   pd.code as product_code,
 			   o.name as organization
 			 from m_product_fast_info  m
-			 left join m_area_province p on  m.area_province = p.id
-			 left join m_area_city     c on m.area_city = c.id
-			 left join m_area_zone     z on m.area_zone = z.id
+			 <!--ywh start modify 2015-12-17-->
+			 left join m_area_province p on  m.area_province = p.code 
+			 left join m_area_city     c on m.area_city = c.code 
+			 left join m_area_zone     z on m.area_zone = z.code 
+			 <!--ywh over modify 2015-12-17-->
+			  <!--ywh start modify 2015-12-23-->
+			 left join m_applicant_fast_info ma on ma.applicant_fast_id = m.applicant_fast_id 
+			 <!--ywh end-->
 			 left join m_select_info   s on s.select_key = m.status and type_code = 'order_status'
-			 left join m_user_info     u on u.id = m.receiver
+			 left join c_manager_info     u on u.id = m.receiver
 			 left join m_product_info  pd on pd.id = m.product_id
 			 left join m_organization_info o on o.id = pd.bank
 			 where
@@ -275,14 +275,67 @@
 			 limit #{pageNo},#{pageSize}
 	
 	</select>
-	
-	
-	
+	 <!--ywh start modify 2015-12-23-->
+	<select id="getTypeFastProduct" resultMap="fspdt">
+		select m.id,
+			   m.company,
+			   m.code,
+			   u.real_name receiver,
+			   u.tel_number receiver_phone,
+			   p.name area_province,
+			   c.name area_city,
+			   z.name area_zone,
+			   ma.name contact_name,
+			   m.order_type,
+			   m.order_status,
+			   m.receive_time,			   
+			   m.deleted,
+			   m.tax_audite_time,
+			   m.tax_audite_person,
+			   m.tax_audite_status,
+			   m.tax_audite_remark,
+			   m.blank_audite_time,
+			   m.blank_audite_person,
+			   m.blank_audite_status,
+			   m.blank_audite_remark,
+			   s.select_value as `status`,
+			   ma.loan_amount credit,
+			   m.credit_real,
+			   m.contact_phone,
+			   m.created_id,
+			   m.created_time,
+			   m.modified_id,
+			   m.modified_time,
+			   m.audite_time,
+			   m.audite_person,
+			   m.remark,
+			   m.type,
+			   pd.name as product_name,
+			   pd.code as product_code,
+			   o.name as organization,
+			   m.applicant_fast_id,
+			   m.company_fast_id
+			 from m_product_fast_info  m
+			 <!--ywh start modify 2015-12-17-->
+			 left join m_area_province p on  m.area_province = p.code
+			 left join m_area_city     c on m.area_city = c.code 
+			 left join m_area_zone     z on m.area_zone = z.code 
+			 <!--ywh over modify 2015-12-17-->
+			 left join m_applicant_fast_info ma on ma.applicant_fast_id = m.applicant_fast_id 
+			 left join m_select_info   s on s.select_key = m.status and s.type_code = #{typeCode} 
+			 left join c_manager_info  u on u.id = m.receiver
+			 left join m_product_info pd on pd.id = m.product_id 
+			 left join m_organization_info o on o.id = pd.bank
+		where m.id= #{id}
+	</select>
+	 <!--ywh end-->
 	<select id="getFastProduct" resultMap="fspdt">
 		select m.id,
 			   m.company,
 			   m.code,
-			   u.name receiver,
+			   u.real_name receiver,
+			   m.receive_time , <!--ywh 2015-12-24-->
+			   u.tel_number receiver_phone ,<!--ywh 2015-12-24-->
 			   p.name area_province,
 			   c.name area_city,
 			   z.name area_zone,
@@ -316,11 +369,15 @@
 			   m.applicant_fast_id,
 			   m.company_fast_id
 			 from m_product_fast_info  m
-			 left join m_area_province p on  m.area_province = p.id
-			 left join m_area_city     c on m.area_city = c.id
-			 left join m_area_zone     z on m.area_zone = z.id
-			 left join m_select_info   s on s.select_key = m.status and type_code = #{typeCode} 
-			 left join m_user_info     u on u.id = m.receiver
+			 <!--ywh start modify 2015-12-17-->
+			 left join m_area_province p on  m.area_province = p.code
+			 left join m_area_city     c on m.area_city = c.code 
+			 left join m_area_zone     z on m.area_zone = z.code 
+			 <!--ywh over modify 2015-12-17-->
+			  <!--ywh start modify 2015-12-23-->
+			 left join m_select_info   s on s.select_key = m.status and s.type_code = #{typeCode} 
+			  <!--ywh end-->
+			 left join c_manager_info  u on u.id = m.receiver
 			 left join m_product_info pd on pd.id = m.product_id 
 			 left join m_organization_info o on o.id = pd.bank
 		where m.id= #{id}
@@ -339,13 +396,19 @@
 			m.register_province,
 			m.register_city,
 			m.register_zone,
-			m.two_year_credit,
-			m.house_type,
+			 <!--ywh start modify 2015-12-23-->
+			s1.select_value two_year_credit,
+			s2.select_value house_type,
+			 <!--ywh end-->
 			m.name
 		
-		from m_applicant_fast_info m
+		from m_applicant_fast_info m 
+		 <!--ywh start modify 2015-12-23-->
+		left join m_select_info s1 on s1.select_key = m.two_year_credit  and s1.type_code = 'credit_type' 
+		left join m_select_info s2 on s2.select_key = m.house_type  and s2.type_code = 'house_type'
+		 <!--ywh end-->
+		where m.applicant_fast_id = #{id} 
 		
-		where m.applicant_fast_id = #{id}
 	
 	</select>
 	
@@ -354,13 +417,17 @@
 			m.company_fast_id,
 			m.company_name,
 			m.legal_representative,
-			m.parpers_type,
+			 <!--ywh start modify 2015-12-23-->
+			s1.select_value parpers_type,
+			 <!--ywh end-->
 			m.papers_number,
 			m.business_license_number,
 			m.register_time,
 			m.register_fund,
-			m.company_type,
-			m.industry,
+			 <!--ywh start modify 2015-12-23-->
+			s2.select_value company_type,
+			i.name industry,
+			 <!--ywh end-->
 			m.register_address,
 			m.fact_business_area,
 			m.year_turnover,
@@ -372,7 +439,13 @@
 			m.person_information
 			
 		FROM m_company_fast_info m
+		 <!--ywh start modify 2015-12-23-->
+		left join m_select_info s1 on s1.select_key = m.parpers_type  and s1.type_code = 'idcard_type'
+		left join m_select_info s2 on s2.select_key = m.company_type  and s2.type_code = 'hold_type'
+		left join m_industry_info i on i.code = m.industry 
+		 <!--ywh end-->
 		WHERE  m.company_fast_id = #{id}
+		
 	</select>
 	
 	
@@ -453,6 +526,9 @@
 				deleted,
 				created_time,
 				type,
+<!-- 				add by lzc -->
+				status,
+<!-- 				end -->
 				modified_time
 			)
 		values(
@@ -468,6 +544,9 @@
 			0,
 			now(),
 			#{type},
+<!-- 			add by lzc -->
+			#{status},
+<!-- 			end -->
 			now()
 		);
 	</insert>

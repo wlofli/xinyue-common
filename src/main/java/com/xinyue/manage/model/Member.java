@@ -36,6 +36,7 @@ public class Member implements Serializable {
 	private String zoneids;
 	private String address;
 	private String memberid;
+	private String type;
 	private Object createUser;
 	private Object modifyUser;
 	private String status;
@@ -46,6 +47,13 @@ public class Member implements Serializable {
 	//2015/07/15 茅 追加 END
 	private String invitationCode;//邀请码
 	
+	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 	public String getProvince() {
 		return province;
 	}

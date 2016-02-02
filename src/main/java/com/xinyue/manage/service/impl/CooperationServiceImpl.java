@@ -126,11 +126,11 @@ public class CooperationServiceImpl implements CooperationService {
 			//网址
 			parMap.put("url", cooperation.getCoopUrl());
 			//所属城市
-			if (!cooperation.getCoopZone().equals("") && !cooperation.getCoopZone().equals("0")) {
+			if (cooperation.getCoopZone() != null && !cooperation.getCoopZone().equals("") && !cooperation.getCoopZone().equals("0")) {
 				parMap.put("location", cooperation.getCoopZone());
-			}else if (!cooperation.getCoopCity().equals("") && !cooperation.getCoopCity().equals("0")) {
+			}else if (cooperation.getCoopCity() != null && !cooperation.getCoopCity().equals("") && !cooperation.getCoopCity().equals("0")) {
 				parMap.put("location", cooperation.getCoopCity());
-			}else if (!cooperation.getCoopProvince().equals("") && !cooperation.getCoopProvince().equals("0")) {
+			}else if (cooperation.getCoopProvince() != null && !cooperation.getCoopProvince().equals("") && !cooperation.getCoopProvince().equals("0")) {
 				parMap.put("location", cooperation.getCoopProvince());
 			}else {
 				parMap.put("location", "");

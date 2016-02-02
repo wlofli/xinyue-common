@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.xinyue.manage.beans.BusinessInfos;
 import com.xinyue.manage.beans.CustomerInfo;
@@ -37,8 +38,12 @@ import com.xinyue.manage.service.OrderService;
 import com.xinyue.manage.util.GlobalConstant;
 
 /**
- * author lzc
+ * author lzc addOrUpdateApplicant 更新订单金额
  * 2015年6月1日上午11:01:50
+ */
+/**
+ *  lzc  2015年12月18日 
+ *
  */
 @Service
 public class OrderServiceImpl implements OrderService{
@@ -249,6 +254,9 @@ public class OrderServiceImpl implements OrderService{
 			}else {
 				companyInfoDAO.updateApplicant(map);
 			}
+			//add by lzc 15-12-18
+			orderDAO.updateOrderCredit(applicant.getMoney(), applicant.getId());
+			//end
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -445,7 +453,10 @@ public class OrderServiceImpl implements OrderService{
 			if(documentList.size() > 0){
 				List<String> documentIdList = new LinkedList<String>();
 				for (Document document : documentList) {
-					documentIdList.add(document.getDocumentId());
+					//add by lzc 增加判空标志
+					if(!StringUtils.isEmpty(document.getDocumentId().trim())){
+						documentIdList.add(document.getDocumentId());
+					}
 				}
 				orderDAO.addDocumentList(documentIdList, orderId);
 			}
@@ -751,9 +762,14 @@ public class OrderServiceImpl implements OrderService{
 			map.put("province", applicantFast.getRegisterProvince());
 			map.put("city", applicantFast.getRegisterCity());
 			map.put("zone", applicantFast.getRegisterZone());
-			map.put("phone", stepOneData.split("&")[0]);
+			//modified by lzc 顺序交换 添加status
+			map.put("status", "1");
+			map.put("phone", stepOneData.split("&")[2]);
 			map.put("manageid", stepOneData.split("&")[1]);
-			map.put("productid", stepOneData.split("&")[2]);
+			map.put("productid", stepOneData.split("&")[0]);
+			map.put("contactName", applicantFast.getName());
+			
+			//end
 			map.put("type", 2);
 //			if (stepOneData.split("&").length>2) {
 //				map.put("mark", stepOneData.split("&")[1]);
@@ -770,6 +786,7 @@ public class OrderServiceImpl implements OrderService{
 			}
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			log.error(e.getMessage());
 			throw new RuntimeException();
 		}

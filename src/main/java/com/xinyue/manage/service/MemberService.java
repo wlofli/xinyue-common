@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.MemberInfo;
 import com.xinyue.manage.beans.OrderInfo;
@@ -24,7 +22,7 @@ import com.xinyue.manage.model.Reward;
  */
 public interface MemberService {
 
-	public List<Member> findPageList(MemberInfo memberinfo);
+	public PageData<Member> findPageList(MemberInfo memberinfo);
 	
 	
 	public int getCount(MemberInfo memberinfo);
@@ -42,33 +40,6 @@ public interface MemberService {
 	
 	public Member editMember(String id);
 	
-	
-	public List<Member> findXinYuePage(MemberInfo memberinfo);
-	public int getXinYueCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findQQPage(MemberInfo memberinfo);
-	public int getQQCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findWeixinPage(MemberInfo memberinfo);
-	public int getWeixinCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findWeiboPage(MemberInfo memberinfo);
-	public int getWeiboCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findSuiwuPage(MemberInfo memberinfo);
-	public int getSuiwuCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findDisuiPage(MemberInfo memberinfo);
-	public int getDisuiCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findGuoPage(MemberInfo memberinfo);
-	public int getGuoCount(MemberInfo memberinfo);
 	
 	
 	public void exprot(HttpServletResponse response, List<Member> list)throws Exception;

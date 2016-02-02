@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.xinyue.manage.beans.AdvertisingInfo;
+import com.xinyue.manage.beans.PageData;
 import com.xinyue.manage.dao.AdvertisingDao;
 import com.xinyue.manage.model.Advertising;
 import com.xinyue.manage.service.AdvertisingService;
@@ -39,14 +40,48 @@ public class AdvertisingServiceImpl implements AdvertisingService {
 	public List<Advertising> getAdvertising(AdvertisingInfo info) {
 		// TODO Auto-generated method stub
 		
-		return advertisingDao.findForPage(info);
+		return advertisingDao.findForPage(info.getTitle(), 0 , 10);
 	}
-
 	@Override
-	public int getAdvertCountByType(String title) {
+	public PageData<Advertising> findAdvertisingPage(AdvertisingInfo info) {
+		// TODO Auto-generated method stub
+		String topage = info.getTopage();
+		if(!GlobalConstant.isNull(info.getAdtype())){
+			
+			int type = Integer.valueOf(info.getAdtype());
+			
+			if( type == 0){
+				info.setPageAll(topage);
+			}else if(type == 1){
+				info.setPageBig(topage);
+			}else if(type == 2){
+				info.setPageSmall(topage);
+			}else{
+				info.setPageIn(topage);
+			}
+		}
 		
-		return advertisingDao.getCountByType(title);
+		String title = info.getTitle();
+		switch (title) {
+		case "首页大广告":
+			topage = info.getPageBig();
+			
+			break;
+		case "首页小广告":
+			topage = info.getPageSmall();
+			break;
+		case "内页广告":
+			topage = info.getPageIn();
+			break;
+		default:
+			topage = info.getPageAll();
+			break;
+		}
+		int currentPage = GlobalConstant.isNull(topage) || "0".equals(topage)?1:Integer.valueOf(topage);
+		int start = (currentPage - 1)*GlobalConstant.PAGE_SIZE;
+		return new PageData<Advertising>(advertisingDao.findForPage(title , start , GlobalConstant.PAGE_SIZE), advertisingDao.getCountByType(title), currentPage);
 	}
+	
 	
 	@Override
 	public boolean delAdvertisingMulti(List<String> list , String modifyUser) {

@@ -23,6 +23,9 @@
 	<!-- ywh 前台显示产品详情  -->
 	<select id="findProductById" resultType="com.xinyue.manage.model.Product">
 		select p.id id , p.name name ,p.logo ,  concat_ws('' , a.name , c.name , z.name ) area , p.credit, 
+<!-- 		add by lzc -->
+		p.content,
+<!-- 		end -->
 		t.name productTypeName , i.name orgName , i.id orgid from m_product_info p 
 		left join m_product_type t on p.type = t.id and t.deleted = 0 and t.status = 0  
 		left join m_area_province a on a.code  = p.province_id 
@@ -35,18 +38,22 @@
      
 <!--      add by lzc -->
      <select id="getListByRecommend" resultType="com.xinyue.manage.model.Product">
-     	select * from m_product_info
-     	where deleted = 0 and recommend = #{recommend}
+     	SELECT  
+			id id,
+			name name,
+			logo logo
+		FROM m_product_info
+		WHERE  deleted = 0 AND status = 2 AND recommend = #{recommend}
      </select>
      
      <!-- add by maozj -->
      <resultMap type="com.xinyue.manage.beans.SelectInfo" id="productsResult">
-     	<result property="id" column="key"/>
-     	<result property="name" column="value"/>
+     	<result property="key" column="id"/>
+     	<result property="value" column="name"/>
      </resultMap>
      <select id="findProductsManagerId" parameterType="String" resultMap="productsResult">
 		select 
-		    pi.id, pi.name
+		    pi.id, pi.`name`
 		from
 		    m_product_info pi,
 		    c_manager_info mi
@@ -60,8 +67,11 @@
      select 
 	     pi.id as id,
 	     pi.name as name,
-	     pi.credit_from as creditFrom,
-	     pi.credit_to as creditTo,
+<!-- 	     modified by lzc 字段已经删除 -->
+<!-- 	     pi.credit_from as creditFrom, -->
+<!-- 	     pi.credit_to as creditTo, -->
+		 pi.credit as credit,
+<!-- 		 end -->
 	     pt.name as productTypeName,
 	     concat_ws('/', pi.file_dir, pi.file_name) as logo
 	 from
@@ -96,7 +106,7 @@
      <!-- 2015-09-11 ywh 以后修改 -->
      <!-- ywh 产品列表展示 -->
      <select id="findProList" resultMap="product_list" parameterType="com.xinyue.manage.beans.ProductInfo">
-		select  i.* , concat_ws('' , p.name , c.name , z.name ) area , 
+		select  i.* , concat_ws('' , p.name , c.name , z.name ) area , o.id orgid, o.name orgName , 
 			s.select_key statusKey , s.select_value statusName 
 		from m_product_info i   
 			left join m_product_type t on i.type = t.id and t.deleted = 0 
@@ -105,6 +115,7 @@
 		 	left join m_area_city c on c.code = i.city_id 
 		 	left join m_area_zone z on z.code = i.area_id 
 		 	left join m_select_info s on i.status = s.select_key and s.type_code = 'product_status' 
+		
 		where i.deleted = 0 
 		 <if test="productName != null and productName != ''">
 		 	and i.name like concat(#{productName} , '%') 
@@ -325,15 +336,16 @@
     <insert id="saveOption" parameterType="com.xinyue.manage.model.ProductContent">
     	INSERT INTO m_checkoptions_info
 			(productcode, applicantname, phonenumber, email, loandate, loanamount, interestrate, repaymenttype, collateraltype, guaranteeamount,
-			guarantearea, localareathing,  companyname, legalperson, certificatetype_1, certificatenum_1, businesslicensenum,
+			guarantearea, localareathing,  companyname, legalperson, certificatetype_1, certificatenum_1, businesslicensenum,collateralthinkname,
 			registerdate, lastinspectiondate, inspectionrecord, registercapital, realcapital, companytype, placearea, codenum, companyphone, companyfax,
 			licensedate, registertype, organizationtype, nationtaxnum, localtaxnum, staketype, stakeperson, certificatetype_2, certificatenum_2, employeeage,
 			education, marriage, industry, managementstartdate, localarea, salearea, managementplace, entertime, creditstatus, audittype, employeenum, loancard,
 			loancardnum, totalincome, monthlywater, totalordermoney, monthlyelectric, workshop, land, officebuilding, shop, priviatehouse, machine, other, debtrate,
-			incomerate, collateral, fristincome, relevantindustry, netasset, assetflowrate, mainasset, deleted, salegrowthtype)
+			incomerate, collateral, fristincome, relevantindustry, netasset, assetflowrate, mainasset, deleted, salegrowthtype , purpose , collateralname,enterpriseno,
+			annualvatamount,annualtaxamount)
 			VALUES (#{productcode }, #{applicantname}, #{phonenumber}, #{email}, #{loandate}, #{loanamount}, #{interestrate},
 				#{repaymenttype}, #{collateraltype}, #{guaranteeamount}, #{guarantearea}, #{localareathing}, 
-				#{companyname}, #{legalperson}, #{certificatetype_1}, #{certificatenum_1}, #{businesslicensenum},
+				#{companyname}, #{legalperson}, #{certificatetype_1}, #{certificatenum_1}, #{businesslicensenum},#{collateralthinkname}
 				#{registerdate}, #{lastinspectiondate}, #{inspectionrecord}, #{registercapital}, #{realcapital}, #{companytype},
 				#{placearea}, #{codenum}, #{companyphone}, #{companyfax}, #{licensedate}, #{registertype}, #{organizationtype},
 				#{nationtaxnum}, #{localtaxnum}, #{staketype}, #{stakeperson}, #{certificatetype_2}, #{certificatenum_2}, #{employeeage},
@@ -341,13 +353,13 @@
 				#{creditstatus}, #{audittype}, #{employeenum}, #{loancard}, #{loancardnum}, #{totalincome}, #{monthlywater}, #{totalordermoney},
 				#{monthlyelectric}, #{workshop}, #{land}, #{officebuilding}, #{shop}, #{priviatehouse}, #{machine}, #{other}, #{debtrate},
 				#{incomerate}, #{collateral}, #{fristincome}, #{relevantindustry}, #{netasset}, #{assetflowrate}, #{mainasset}, #{deleted},
- 				#{salegrowthtype});
+ 				#{salegrowthtype} , #{purpose} , #{collateralname} , #{enterpriseno} , #{annualvatamount}, #{annualtaxamount});
 	</insert>
 	<!-- ywh 修改选项 -->
 	<update id="updateOption" parameterType="com.xinyue.manage.model.ProductContent">
 		UPDATE m_checkoptions_info SET applicantname = #{applicantname}, phonenumber = #{phonenumber}, email = #{email}, loandate = #{loandate},
 			loanamount = #{loanamount}, interestrate = #{interestrate}, repaymenttype = #{repaymenttype}, collateraltype = #{collateraltype},
-			guaranteeamount = #{guaranteeamount}, guarantearea = #{guarantearea}, localareathing = #{localareathing},
+			guaranteeamount = #{guaranteeamount}, guarantearea = #{guarantearea}, localareathing = #{localareathing},collateralthinkname=#{collateralthinkname},
 			companyname = #{companyname}, legalperson = #{legalperson}, certificatetype_1 = #{certificatetype_1}, certificatenum_1 = #{certificatenum_1},
 			businesslicensenum = #{businesslicensenum}, registerdate = #{registerdate}, lastinspectiondate = #{lastinspectiondate}, inspectionrecord = #{inspectionrecord},
 			registercapital = #{registercapital}, realcapital = #{realcapital}, companytype = #{companytype}, placearea = #{placearea}, codenum = #{codenum}, companyphone = #{companyphone},
@@ -358,7 +370,8 @@
 			loancard = #{loancard}, loancardnum = #{loancardnum}, totalincome = #{totalincome}, monthlywater = #{monthlywater}, totalordermoney = #{totalordermoney}, 
 			monthlyelectric = #{monthlyelectric}, workshop = #{workshop}, land = #{land}, officebuilding = #{officebuilding}, shop = #{shop}, priviatehouse = #{priviatehouse}, 
 			machine = #{machine}, other = #{other}, debtrate = #{debtrate}, incomerate = #{incomerate}, collateral = #{collateral}, fristincome = #{fristincome},
-			relevantindustry = #{relevantindustry}, netasset = #{netasset}, assetflowrate = #{assetflowrate}, mainasset = #{mainasset}, deleted = #{deleted},salegrowthtype = #{salegrowthtype}
+			relevantindustry = #{relevantindustry}, netasset = #{netasset}, assetflowrate = #{assetflowrate}, mainasset = #{mainasset}, deleted = #{deleted},salegrowthtype = #{salegrowthtype},
+			purpose = #{purpose}, collateralname=#{collateralname},enterpriseno=#{enterpriseno},annualvatamount=#{annualvatamount} , annualtaxamount=#{annualtaxamount}
 			WHERE  productcode = #{productcode} 
 
 	</update>
@@ -450,6 +463,26 @@
 		when add_time>curdate() then 1 end 
      </update>
      
-     
+<!--   add by    lzc -->
+	<select id="getListByType" resultMap="pro_profile">
+		SELECT
+			p.id,
+			p.name,
+			p.bank,
+			p.credit,
+			p.logo,
+			p.type
+		FROM
+			m_product_info p
+		WHERE
+			p.type IN (
+				SELECT t.id
+				FROM
+					m_product_type t
+				WHERE
+					t.parent_id = #{typeId}
+				OR t.id = #{typeId})
+		LIMIT #{pageNo}, #{pageSize}
+	</select>
     
 </mapper>

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.xinyue.manage.beans.AnswerTypeBean;
 import com.xinyue.manage.beans.PageData;
+import com.xinyue.manage.dao.AnswerDao;
 import com.xinyue.manage.dao.AnswerTypeDao;
 import com.xinyue.manage.model.AnswerType;
 import com.xinyue.manage.service.AnswerTypeService;
@@ -26,6 +27,9 @@ public class AnswerTypeServiceImpl implements AnswerTypeService {
 	
 	@Resource
 	private AnswerTypeDao adao;
+	
+	@Resource
+	private AnswerDao answerDao;
 	
 	private Logger logger = Logger.getLogger(AnswerTypeServiceImpl.class); 
 	@Override
@@ -71,17 +75,18 @@ public class AnswerTypeServiceImpl implements AnswerTypeService {
 	}
 	
 	@Override
-	public boolean delAnswertype(String id) {
+	public boolean delAnswertype(String id, String createUser) {
 		// TODO Auto-generated method stub
 		try {
+			List<String> ids = adao.findIdByParentid(id);
 			adao.delAnswertype(id);
-			adao.delAllAnswerTypeByParentid(id);
-			logger.info("删除问题类型成功");
+			answerDao.cleanForeignByQuestionType(ids, createUser);
+			logger.info("删除问题类型成功并清空问题对应问题类型外键成功");
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error("删除问题类型失败", e);
-			throw new RuntimeException("删除问题类型失败", e);
+			logger.error("删除问题类型并清空问题对应问题类型外键失败", e);
+			throw new RuntimeException("删除问题类型并清空问题对应问题类型外键失败", e);
 		}
 	}
 	

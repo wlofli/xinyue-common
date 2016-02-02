@@ -14,7 +14,7 @@ public class QuestionBean implements Serializable {
 	private int fail;//审核失败
 	private int pass;//审核通过
 	private int total;//某个下的总记录数
-	private int rate;//审核通过率
+	private double rate;//审核通过率
 	private int today;//今日回答
 	private int yesterday;//昨日回答
 	private int rank;//今日排名
@@ -141,10 +141,10 @@ public class QuestionBean implements Serializable {
 	public void setPass(int pass) {
 		this.pass = pass;
 	}
-	public int getRate() {
+	public double getRate() {
 		return rate;
 	}
-	public void setRate(int rate) {
+	public void setRate(double rate) {
 		this.rate = rate;
 	}
 	public int getToday() {

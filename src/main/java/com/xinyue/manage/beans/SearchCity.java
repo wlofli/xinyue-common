@@ -22,6 +22,16 @@ public class SearchCity {
 	private String searchZoneHid;
 	
 	private int searchPage;
+	
+	private int start;
+	
+	public int getStart() {
+		return start;
+	}
+
+	public void setStart(int start) {
+		this.start = start;
+	}
 
 	/**
 	 * @return the searchName

@@ -264,6 +264,13 @@ public class NewServiceImpl implements NewService {
 		return newDAO.getListByTop(pageSize, 0);
 	}
 
+	@Override
+	public List<NewInfo> getNewInfoByNewTypeName(String typeName, int pageNo,
+			int pageSize) {
+		// TODO Auto-generated method stub
+		return newDAO.getNewInfoByNewTypeName(typeName, pageNo, pageSize);
+	}
+
 	
 
 

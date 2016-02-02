@@ -20,7 +20,7 @@
 		m_order_track
 	(id,order_id,order_type,status,price,info,remark,deleted,created_time,created_id)
 	values
-	(#{id},#{orderId},#{orderType},#{status},#{price},#{info},#{remark},0,now(),#{createdId})
+	(#{id},#{orderId},#{orderType},#{orderStatus},#{price},#{info},#{remark},0,now(),#{createdId})
 </insert>
 
 <select id="getOrderTrackList" resultMap="track">

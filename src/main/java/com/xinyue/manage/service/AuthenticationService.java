@@ -7,7 +7,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.xinyue.manage.beans.SearchAuthentication;
 import com.xinyue.manage.beans.SelectInfo;
 import com.xinyue.manage.model.Authentication;
-
+/**
+ * modify 2015-12-01 ywh getAllCount 
+ */
 public interface AuthenticationService {
 
 	List<SelectInfo> getIndustryList();
@@ -15,7 +17,10 @@ public interface AuthenticationService {
 	List<Authentication> getAuthenticationInfo(
 			SearchAuthentication searchAuthentication, int index);
 
-	int getAllCount();
+	/**
+	 * modify 2015-12-01 ywh 
+	 */
+	int getAllCount(SearchAuthentication searchAuthentication);
 
 	Authentication getDetailByCode(String code);
 

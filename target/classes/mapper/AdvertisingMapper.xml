@@ -153,6 +153,9 @@
 	<select id="getIndexAD" resultType="com.xinyue.manage.model.Advertising">
 		select 
     		title as title,
+<!--     	add by lzc 15-12-01 -->
+    		link_url as url,
+<!--     		end -->
     		logo_file_dir as directory, 
     		logo_file_name as thumbnail
 		from
@@ -160,6 +163,9 @@
 		where
 		    type in ('1' , '4', '5', '12', '13', '14')
 		        and deleted = 0
+<!-- 		        add by lzc 15-12-01 -->
+				and publish = 2
+<!-- 				end -->
 		        and (end_time > now() or end_time is NULL)
 		order by type;
 	</select>
@@ -167,6 +173,7 @@
 	<select id="findAdByType" parameterType="int" resultType="com.xinyue.manage.model.Advertising">
 		select 
     		title as title,
+    		link_url as url,
     		logo_file_dir as directory, 
     		logo_file_name as thumbnail
 		from

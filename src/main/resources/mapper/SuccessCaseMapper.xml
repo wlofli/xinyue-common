@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--ywh 2015-12-09 getCountByManagerId-->
 <mapper namespace="com.xinyue.manage.dao.SuccessCaseDAO">
 	<select id="findSuccessCasesByManagerId" parameterType="String" resultType="com.xinyue.manage.model.SuccessCase">
 		select 
@@ -28,7 +29,7 @@
 		    m_product_info pi
 		where
 			sc.product_id = pi.id
-			and credit_manager_id=#{managerId}
+			and sc.credit_manager_id=#{managerId}
 			<if test="productName != ''">
 			and pi.name like concat(concat('%', #{productName}),'%')
 			</if>
@@ -91,6 +92,11 @@
 				<if test="dateEnd !=''">
 				and sc.loan_date<![CDATA[ <= ]]>#{dateEnd}
 				</if>
+				<!-- ywh 2015-11-13   因为成功案例 无论是谁都会显示 -->
+				<if test="managerId != null and managerId != ''">
+				and sc.credit_manager_id = #{managerId}
+				</if>
+				
 		order by sc.order_number
 		limit #{index} , 10;
 	</select>
@@ -110,28 +116,34 @@
 	
 	<select id="getSuccessCaseByCaseId" parameterType="String" resultType="com.xinyue.manage.model.SuccessCase">
 		select 
-		    id as id,
-		    product_id as productId,
-		    applicant_company as applicantCompany,
-		    loan_amount as loanAmount,
-		    date_format(loan_date, '%Y-%m-%d') as loanDate,
-		    loan_period as loanPeriod,
-		    loan_days as loanDays,
-		    loan_type as loanType,
-		    loan_province as loanProvince,
-		    loan_city as loanCity,
-		    month_interest as monthInterest,
-		    order_number as orderNumber,
-		    description as description
+		    c.id as id,
+		    c.product_id as productId,
+		    p.name as productName,
+		    c.applicant_company as applicantCompany,
+		    c.loan_amount as loanAmount,
+		    date_format(c.loan_date, '%Y-%m-%d') as loanDate,
+		    c.loan_period as loanPeriod,
+		    c.loan_days as loanDays,
+		    s.select_value as loanType,
+		    m.name as loanProvince,
+		    a.name as loanCity,
+		    c.month_interest as monthInterest,
+		    c.order_number as orderNumber,
+		    c.description as description
 		from
-		    c_success_case
+		    c_success_case c
+		    left join m_product_info p on p.deleted = 0 and p.id = c.product_id 
+		    left join m_area_province m on m.code = c.loan_province 
+		    left join m_area_city a on a.code = c.loan_city 
+		    left join m_select_info s on s.type_code = 'loan_type' and s.select_key = c.loan_type
 		where
-		    id = #{caseId};
+		    c.id = #{caseId};
 	</select>
 	
 	<insert id="addCase" parameterType="com.xinyue.manage.model.SuccessCase">
-		insert into 
-			c_success_case
+		insert into  c_success_case
+		(id , credit_manager_id , product_id , applicant_company , loan_amount , loan_date , loan_period , loan_days , loan_type , loan_province , loan_city , 
+		month_interest , order_number, description , deleted , created_time , modified_time , created_id , modified_id , use_flag , manager_name)
 		values(
 			#{id},
 			#{creditManagerId},
@@ -151,7 +163,9 @@
 			now(),
 			now(),
 			#{creditManagerId},
-			#{creditManagerId}
+			#{creditManagerId},
+			0,
+			#{creditManagerName}
 		);
 	</insert>
 	
@@ -180,7 +194,7 @@
 		select 
 		    sc.id as id,
 		    sc.product_id as productId,
-		    pi.name as productname,
+		    pi.name as productName,
 		    sc.applicant_company as applicantCompany,
 		    sc.loan_amount as loanAmount,
 		    date_format(sc.loan_date, '%Y-%m-%d') as loanDate,
@@ -210,4 +224,87 @@
 		        and ap.code = sc.loan_province
 		        and ac.code = sc.loan_city;	
 	</select>
+	
+	<select id="getSuccessCasesByOrgId" resultType="com.xinyue.manage.model.SuccessCase">
+		select 
+		    sc.id as id,
+		    pi.name as productName,
+		    sc.applicant_company as applicantCompany,
+		    sc.loan_amount as loanAmount,
+		    date_format(sc.loan_date, '%Y-%m-%d') as loanDate,
+		    sc.loan_period as loanPeriod,
+		    lt.select_value as loanDays,
+		    ap.name as loanProvince,
+		    ac.name as loanCity,
+		    sc.month_interest as monthInterest,
+		    sc.order_number as orderNumber,
+		    sc.manager_name as creditManagerName,
+		    sc.use_flag as useFlag
+		from
+		    c_success_case sc
+		        left join
+		    m_product_info pi ON pi.id = sc.product_id
+		        left join
+		    (select 
+		        *
+		    from
+		        m_select_info
+		    where
+		        type_code = 'loan_type') lt ON lt.select_key = sc.loan_type
+		        left join
+		    m_area_province ap ON ap.code = sc.loan_province
+		        left join
+		    m_area_city ac ON ac.code = sc.loan_city
+		where
+		    sc.organization = #{orgid} and sc.deleted = 0 
+		order by sc.created_time desc
+		limit #{index},10;	
+	</select>
+	
+	<select id="getSuccessCasesCountByOrgId" resultType="int" parameterType="String">
+		select 
+		    count(sc.id)
+		from
+		    c_success_case sc
+		where deleted = 0 and 
+		    sc.organization = #{orgid}
+	</select>
+	
+	<update id="updateOrgSuccessCaseUseFlag" parameterType="list">
+		
+			update 
+				c_success_case 
+			set
+				use_flag=#{type},
+				modified_time=now(),
+				modified_id = #{updateUser}
+			where
+			<foreach collection="codes" item="code" open="id = " separator=" or id = ">
+				#{code}
+			</foreach>
+	</update>
+	
+	<update id="deleteSuccessCaseByIds" parameterType="list">
+		
+			update 
+				c_success_case 
+			set
+				deleted=1
+			where
+		<foreach collection="codes" item="code" open="id = " separator=" or id = ">
+				#{code}
+		</foreach>
+	</update>
+	
+<!-- 	add by lzc -->
+	<select id="getSuccessByTime" resultType="com.xinyue.manage.model.SuccessCase"> 
+		SELECT s.applicant_company AS applicantCompany,
+			   s.loan_amount AS loanAmount
+		FROM c_success_case s
+		ORDER BY s.modified_time
+		LIMIT #{pageNo}, #{pageSize}
+	
+	</select>
+<!-- 	end -->
+	
 </mapper>

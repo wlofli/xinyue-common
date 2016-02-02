@@ -33,7 +33,7 @@ public interface AnswerTypeService {
 	 * ywh 删除
 	 * @param id
 	 */
-	public boolean delAnswertype(String id);
+	public boolean delAnswertype(String id , String createUser);
 	
 	/**
 	 * ywh 添加

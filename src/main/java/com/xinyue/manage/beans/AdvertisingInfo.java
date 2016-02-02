@@ -13,10 +13,9 @@ import com.xinyue.manage.util.GlobalConstant;
 public class AdvertisingInfo implements Serializable {
 
 	private String title;//广告类型  用来显示数据
-	private int start = 0;//分页起始行
 	
 	private int adtype = 0;//用于标识显示哪个叶签   默认为0显示在全部广告
-	private int pageSize = GlobalConstant.PAGE_SIZE;
+	private String topage;
 	/**
 	 * 用于记录各个叶签 显示在 哪一页默认都显示在第一页
 	 */
@@ -26,23 +25,17 @@ public class AdvertisingInfo implements Serializable {
 	private String pageIn = "1";//内页广告
 	
 	
-	public int getPageSize() {
-		return pageSize;
+	public String getTopage() {
+		return topage;
 	}
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
+	public void setTopage(String topage) {
+		this.topage = topage;
 	}
 	public String getTitle() {
 		return title;
 	}
 	public void setTitle(String title) {
 		this.title = title;
-	}
-	public int getStart() {
-		return start;
-	}
-	public void setStart(int start) {
-		this.start = start;
 	}
 	public int getAdtype() {
 		return adtype;
@@ -83,8 +76,7 @@ public class AdvertisingInfo implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "AdvertisingInfo [title=" + title + ", start=" + start
-				+ ", adtype=" + adtype + ", pageAll=" + pageAll + ", pageBig="
+		return "AdvertisingInfo [title=" + title + ", adtype=" + adtype + ", pageAll=" + pageAll + ", pageBig="
 				+ pageBig + ", pageSmall=" + pageSmall + ", pageIn=" + pageIn
 				+ "]";
 	}

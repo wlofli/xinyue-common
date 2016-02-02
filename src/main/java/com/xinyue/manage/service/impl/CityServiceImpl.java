@@ -175,7 +175,9 @@ public class CityServiceImpl implements CityService {
 
 	@Override
 	public List<CityInfo> getCityInfoBySearchConditions(SearchCity searchCity) {
-		
+		int searchPage = searchCity.getSearchPage();
+		searchPage = searchPage*10;
+		searchCity.setStart(searchPage);
 		return cityInfoDAO.getCityInfoBySearchConditions(searchCity);
 	}
 

@@ -46,15 +46,15 @@ public class SericalNumber {
         String id = null;
         number++;
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssS");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyMMddHHmmss");
 //        if (sno == null) {
 //            id = formatter.format(date) + "0001";
 //        } else {
 //            DecimalFormat df = new DecimalFormat("0000");
-            id = formatter.format(date) + String.format("%04d", number);
+            id = formatter.format(date) + String.format("%02d", number);
 //                    + df.format(number + Integer.parseInt(sno.substring(14, 18)));
 //        }
-        if(number == 9999){
+        if(number == 99){
         	number = 0;
         }
         return id;

@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.xinyue.manage.beans.InvitationMemberInfo;
 import com.xinyue.manage.beans.MemberInfo;
-import com.xinyue.manage.beans.Recommend;
 import com.xinyue.manage.beans.SearchReward;
 import com.xinyue.manage.model.Member;
 import com.xinyue.manage.model.Order;
@@ -36,32 +35,7 @@ public interface MemberDao {
 	
 	public Member editMember(String id);
 	
-	public List<Member> findXinYuePage(MemberInfo memberinfo);
-	public int getXinYueCount(MemberInfo memberinfo);
 	
-	
-	public List<Member> findQQPage(MemberInfo memberinfo);
-	public int getQQCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findWeixinPage(MemberInfo memberinfo);
-	public int getWeixinCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findWeiboPage(MemberInfo memberinfo);
-	public int getWeiboCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findSuiwuPage(MemberInfo memberinfo);
-	public int getSuiwuCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findDisuiPage(MemberInfo memberinfo);
-	public int getDisuiCount(MemberInfo memberinfo);
-	
-	
-	public List<Member> findGuoPage(MemberInfo memberinfo);
-	public int getGuoCount(MemberInfo memberinfo);
 
 	public int findMemberByPhone(String contactPhone);
 	
@@ -74,10 +48,10 @@ public interface MemberDao {
 	
 	//2015-10-20
 	//推荐
-	public List<InvitationMemberInfo> findRecommendMember(@Param("memberid") String memberid , @Param("start") int start , @Param("pageSize") int pageSize);
+	public List<InvitationMemberInfo> findRecommendMember(@Param("memberid") String memberid , @Param("rank") String rank , @Param("start") int start , @Param("pageSize") int pageSize);
 	public int getRecommendMemberCount(String memberid);
 	
-	public List<InvitationMemberInfo> findRecommendCredit(@Param("memberid") String memberid , @Param("start") int start , @Param("pageSize") int pageSize);
+	public List<InvitationMemberInfo> findRecommendCredit(@Param("memberid") String memberid , @Param("rank") String rank , @Param("start") int start , @Param("pageSize") int pageSize);
 	public int getRecommendCredit(String memberid);
 	
 	//订单

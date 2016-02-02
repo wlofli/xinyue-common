@@ -19,6 +19,8 @@ public class Question {
 	
 	private String createid;
 	private String createName;//提问者
+	private String memberName;
+	private String adminName;
 	private String type;//大分类
 	private String cityid;//用于提交
 	private String city;
@@ -37,6 +39,18 @@ public class Question {
 	private String publish = "0";
 	private String userName;//用户名
 	
+	public String getMemberName() {
+		return memberName;
+	}
+	public void setMemberName(String memberName) {
+		this.memberName = memberName;
+	}
+	public String getAdminName() {
+		return adminName;
+	}
+	public void setAdminName(String adminName) {
+		this.adminName = adminName;
+	}
 	public String getType() {
 		return type;
 	}

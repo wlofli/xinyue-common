@@ -18,7 +18,7 @@ public interface OrganizationTypeDao {
 	
 	public int getCount();
 	
-	public void delOrganizationType(List<String> id);
+	public void delOrganizationType(List<String> list);
 	
 	public void updateOrganizationType(OrganizationType type);
 	
@@ -26,7 +26,7 @@ public interface OrganizationTypeDao {
 	
 	public OrganizationType findTypeById(String id);
 	
-	public void updateOrgByType(List<String> id , String modifyUser);
+	public void updateOrgByType(@Param("list")List<String> id , @Param("modifyUser")String modifyUser);
 
 	//2015/08/12 茅 追加 START
 	/**

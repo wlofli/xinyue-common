@@ -34,6 +34,16 @@ public interface OrderCustomerDAO {
 	void addOrderLowPrice(OrderLowPrice orderLowPrice);
 	
 	/**
+	 * add by lzc     date: 2015年12月16日
+	 * @param tebName
+	 * @param manageId
+	 * @param orderId
+	 * @param modifiedId
+	 */
+	void addReceiver(@Param("tabName")String tabName, @Param("manageId")String manageId, 
+			@Param("orderId")String orderId, @Param("modifiedId")String modifiedId);
+	
+	/**
 	 * add by lzc
 	 * date: 2015年7月2日
 	 * @param tabName (2)快速申贷表或(1)订单表表名
@@ -155,7 +165,7 @@ public interface OrderCustomerDAO {
 	public OrderInfo getOrderInfoByFixedOrder(@Param("customerId")String customerId);
 	
 	public OrderInfo getOrderInfoByFixedFast(@Param("customerId")String customerId);
-
+	public OrderInfo getTypeOrderInfoByFixedFast(@Param("customerId")String customerId , @Param("type")String type);//ywh 2015-12-24
 	public OrderInfo getOrderInfoByAppointedOrder(@Param("customerId")String customerId);
 
 	public OrderInfo getOrderInfoByAppointedFast(@Param("customerId")String customerId);

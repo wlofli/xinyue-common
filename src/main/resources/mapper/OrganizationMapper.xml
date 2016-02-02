@@ -9,10 +9,13 @@
 
 	<!-- ywh 添加机构信息 -->
 	<insert id="addOrg">
+		<selectKey resultType="string" keyProperty="org.id" order="BEFORE" >
+	      SELECT replace(uuid(),'-','') id
+	    </selectKey>
 		insert into m_organization_info 
 		 (id, name, genre,number, site, province_id , city_id , zone_id , postcode, pinying , created_time , modified_time , modified_id , created_id , deleted , status)
 		VALUES 
-		 (replace(uuid(),'-' , ''), #{org.name} , #{org.genre} , #{org.number} , #{org.site} ,#{org.provinceid} , #{org.cityid} , #{org.zoneid},
+		 (#{org.id}, #{org.name} , #{org.genre} , #{org.number} , #{org.site} ,#{org.provinceid} , #{org.cityid} , #{org.zoneid},
 		  #{org.postcode} , #{org.pinyin},now() ,now(), #{createUser} , #{createUser} , 0 , #{org.status});
 		
 	</insert>
@@ -395,5 +398,135 @@
 			</choose>			
 		</if>
 	</select>
-	
+	<!-- 机构上的订单 -->
+	<select id="findOrgOrder" resultType="com.xinyue.manage.model.Order">
+		select * from (
+		select 
+		c.order_id id, m.code , c.applicant_name applicant, p.name productName, c.applicant_phone linkPhone, m.credit ,m.credit_real realCredit, c.type,
+		c.limit_date limitDate, c.company_name companyInfo, m.created_time createdTime, c.credit_name creditManager,s.select_key status , s.select_value statusName 
+		from c_order_appoint c  
+		inner join m_order_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		left join m_product_info p on p.id = m.product_info and p.deleted = 0 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status'  
+		where c.deleted = 0 and c.blank = #{org.orgid} 
+		union  
+		select 
+		c.order_id id, m.code , c.applicant_name applicant, p.name productName, c.applicant_phone linkPhone, m.credit , m.credit_real realCredit, c.type,
+		c.limit_date limitDate, c.company_name companyInfo, m.created_time createdTime, c.credit_name creditManager,s.select_key status , s.select_value statusName 
+		from c_order_appoint c 
+		inner join m_product_fast_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		left join m_product_info p on p.id = m.product_id and p.deleted = 0 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status' 
+		where c.deleted = 0 and c.blank = #{org.orgid} 
+		union  
+		select  
+		c.order_id id, m.code , a.name applicant, p.name productName, a.phone linkPhone, m.credit , m.credit_real realCredit, c.type,
+		c.limit_date limitDate, l.company_name companyInfo, m.created_time createdTime, i.real_name creditManager,s.select_key status ,  s.select_value statusName 
+		from c_order_fixed c 
+		inner join m_order_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		inner join c_manager_info i on i.id = c.manage_id and i.deleted = 0 
+		left join m_applicant_info a on a.id = m.applicant_info and a.deleted = 0 
+		left join m_product_info p on p.id = m.product_info and p.deleted = 0 
+		left join m_license_info l on l.id = m.license_info and (l.deleted !=1  or l.deleted  is null) 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status'  
+		where c.deleted = 0 and i.organization = #{org.orgid} 
+		union  
+		select 
+		c.order_id id, m.code , m.contact_name applicant, p.name productName, m.contact_phone linkPhone,concat_ws('',ma.loan_amount , m.credit) credit , m.credit_real realCredit, c.type,
+		c.limit_date limitDate, m.company companyInfo, m.created_time createdTime, i.real_name creditManager,s.select_key status ,  s.select_value  statusName 
+		from c_order_fixed c 
+		inner join m_product_fast_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		left join m_applicant_fast_info ma on ma.applicant_fast_id = m.applicant_fast_id 
+		inner join c_manager_info i on i.id = c.manage_id and i.deleted = 0 
+		left join m_product_info p on p.id = m.product_id and p.deleted = 0 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status'  
+		where c.deleted = 0 and i.organization = #{org.orgid} ) s 
+		where 1=1 
+		<if test="org.startTime != null and org.startTime != ''">
+			and createdTime >= #{org.startTime}
+		</if>
+		<if test="org.overTime != null and org.overTime != ''">
+			and createdTime <![CDATA[<]]> #{org.overTime}
+		</if>
+		<if test="org.productName != null and org.productName != ''">
+			and productName like concat(#{org.productName} , '%') 
+		</if>
+		<if test="org.code != null and org.code != ''">
+			and code like concat(#{org.code} , '%')
+		</if>
+		<if test="org.phone != null and org.phone != ''">
+			and linkPhone like concat(#{org.phone} , '%')
+		</if>	
+		<if test="org.name != null and org.name != ''">
+			and applicant like concat(#{org.name} , '%') 
+		</if>
+		<if test="org.status != null and org.status != ''">
+			and status = #{org.status}
+		</if>
+		limit #{start} , #{pageSize}		
+	</select>
+	<select id="getOrgOrder" resultType="int">
+		select count(*) from (
+		select 
+		c.order_id id, m.code , c.applicant_name applicant, p.name productName, c.applicant_phone linkPhone, m.credit ,m.credit_real realCredit, 
+		c.limit_date limitDate, c.company_name companyInfo, m.created_time createdTime, c.credit_name creditManager,s.select_key status , s.select_value statusName 
+		from c_order_appoint c  
+		inner join m_order_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		left join m_product_info p on p.id = m.product_info and p.deleted = 0 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status'  
+		where c.deleted = 0 and c.blank = #{org.orgid} 
+		union  
+		select 
+		c.order_id id, m.code , c.applicant_name applicant, p.name productName, c.applicant_phone linkPhone, m.credit , m.credit_real realCredit, 
+		c.limit_date limitDate, c.company_name companyInfo, m.created_time createdTime, c.credit_name creditManager,s.select_key status , s.select_value statusName 
+		from c_order_appoint c 
+		inner join m_product_fast_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		left join m_product_info p on p.id = m.product_id and p.deleted = 0 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status' 
+		where c.deleted = 0 and c.blank = #{org.orgid} 
+		union  
+		select  
+		c.order_id id, m.code , a.name applicant, p.name productName, a.phone linkPhone, m.credit , m.credit_real realCredit, 
+		c.limit_date limitDate, l.company_name companyInfo, m.created_time createdTime, i.real_name creditManager,s.select_key status ,  s.select_value statusName 
+		from c_order_fixed c 
+		inner join m_order_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		inner join c_manager_info i on i.id = c.manage_id and i.deleted = 0 
+		left join m_applicant_info a on a.id = m.applicant_info and a.deleted = 0 
+		left join m_product_info p on p.id = m.product_info and p.deleted = 0 
+		left join m_license_info l on l.id = m.company_info and l.deleted = 0 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status'  
+		where c.deleted = 0 and i.organization = #{org.orgid} 
+		union  
+		select 
+		c.order_id id, m.code , m.contact_name applicant, p.name productName, m.contact_phone linkPhone, m.credit , m.credit_real realCredit, 
+		c.limit_date limitDate, m.company companyInfo, m.created_time createdTime, i.real_name creditManager,s.select_key status ,  s.select_value  statusName 
+		from c_order_fixed c 
+		inner join m_product_fast_info m on m.id = c.order_id and m.deleted = 0 and m.order_status = 1 
+		inner join c_manager_info i on i.id = c.manage_id and i.deleted = 0 
+		left join m_product_info p on p.id = m.product_id and p.deleted = 0 
+		left join m_select_info s on s.select_key = m.status and s.type_code = 'order_status'  
+		where c.deleted = 0 and i.organization = #{org.orgid} ) s 
+		where 1=1 
+		<if test="org.startTime != null and org.startTime != ''">
+			and createdTime >= #{org.startTime}
+		</if>
+		<if test="org.overTime != null and org.overTime != ''">
+			and createdTime <![CDATA[<]]> #{org.overTime}
+		</if>
+		<if test="org.productName != null and org.productName != ''">
+			and productName like concat(#{org.productName} , '%') 
+		</if>
+		<if test="org.code != null and org.code != ''">
+			and code like concat(#{org.code} , '%')
+		</if>
+		<if test="org.phone != null and org.phone != ''">
+			and linkPhone like concat(#{org.phone} , '%')
+		</if>	
+		<if test="org.name != null and org.name != ''">
+			and applicant like concat(#{org.name} , '%') 
+		</if>
+		<if test="org.status != null and org.status != ''">
+			and status = #{org.status}
+		</if>	
+	</select>
 </mapper>

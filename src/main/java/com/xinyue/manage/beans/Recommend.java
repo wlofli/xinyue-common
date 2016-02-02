@@ -23,9 +23,25 @@ public class Recommend implements Serializable{
 	private String memberid;
 	private String membertopage;
 	private String credittopage;
+	//gg admin
+	private String topage; 
+	private String rank;
 	//ywh over
 	
 	
+	
+	public String getTopage() {
+		return topage;
+	}
+	public void setTopage(String topage) {
+		this.topage = topage;
+	}
+	public String getRank() {
+		return rank;
+	}
+	public void setRank(String rank) {
+		this.rank = rank;
+	}
 	public String getUserName() {
 		return userName;
 	}
